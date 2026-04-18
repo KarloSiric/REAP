@@ -13,6 +13,10 @@
 /install_manifest.txt
 /Makefile
 
+# Ignoring unnecessary MD files
+CLAUDE.md
+CODEX.md
+
 # Compiler and linker artifacts
 *.o
 *.obj
