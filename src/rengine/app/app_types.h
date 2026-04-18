@@ -4,7 +4,7 @@
 
 namespace reap::rengine 
 {
-
+    
 enum class app_state_t : u8 {
     Uninitialized,
     Initializing,
@@ -43,7 +43,7 @@ struct frame_t {
 
 struct app_config_t {
     build_config_t build_config{ build_config_t::Unknown };
-    window_config_t window_config{};
+    // window_config_t window_config{};
 };
 
 struct app_t {
