@@ -1,0 +1,74 @@
+cmake_minimum_required(VERSION 3.20)
+
+project(REAP
+    VERSION 0.1.0
+    DESCRIPTION "REAP game engine and gameplay sandbox"
+    LANGUAGES CXX
+)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+# Keep binaries and intermediate files in the build directory.
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
+
+set(REAP_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+set(REAP_SRC_DIR "${REAP_ROOT_DIR}/src")
+set(REAP_THIRDPARTY_DIR "${REAP_ROOT_DIR}/thirdparty")
+
+# Optional dependencies: only enabled when the corresponding files exist.
+set(REAP_LINK_LIBS "")
+
+if (EXISTS "${REAP_THIRDPARTY_DIR}/raylib/CMakeLists.txt")
+    message(STATUS "Found vendored raylib")
+    add_subdirectory(${REAP_THIRDPARTY_DIR}/raylib raylib_build)
+    list(APPEND REAP_LINK_LIBS raylib)
+elseif (EXISTS "${REAP_THIRDPARTY_DIR}/raylib/src")
+    message(STATUS "Found raylib tree but no CMakeLists.txt; skipping raylib add_subdirectory")
+else()
+    message(STATUS "No vendored raylib yet. Add thirdparty/raylib before enabling rendering.")
+endif()
+
+if (EXISTS "${REAP_THIRDPARTY_DIR}/flecs/include/flecs.h")
+    add_library(flecs INTERFACE)
+    target_include_directories(flecs INTERFACE "${REAP_THIRDPARTY_DIR}/flecs/include")
+    list(APPEND REAP_LINK_LIBS flecs)
+else()
+    message(STATUS "No vendored Flecs headers yet. Add thirdparty/flecs/include/flecs.h.")
+endif()
+
+if (EXISTS "${REAP_THIRDPARTY_DIR}/glm/glm/glm.hpp")
+    add_library(glm INTERFACE)
+    target_include_directories(glm INTERFACE "${REAP_THIRDPARTY_DIR}/glm")
+    list(APPEND REAP_LINK_LIBS glm)
+else()
+    message(STATUS "No vendored GLM headers yet. Add thirdparty/glm/glm/glm.hpp.")
+endif()
+
+file(GLOB_RECURSE REAP_GAME_SOURCES CONFIGURE_DEPENDS
+    "${REAP_SRC_DIR}/*.cpp"
+    "${REAP_SRC_DIR}/*.cxx"
+    "${REAP_SRC_DIR}/*.cc"
+)
+
+if (REAP_GAME_SOURCES)
+    add_executable(reap ${REAP_GAME_SOURCES})
+    target_include_directories(reap PRIVATE "${REAP_SRC_DIR}")
+    if (REAP_LINK_LIBS)
+        target_link_libraries(reap PRIVATE ${REAP_LINK_LIBS})
+    endif()
+else()
+    message(STATUS "src/ has no C++ sources yet. Add your first entry file at src/main.cpp to enable executable target.")
+endif()
+
+if (EXISTS "${REAP_ROOT_DIR}/tools/CMakeLists.txt")
+    option(REAP_BUILD_TOOLS "Build tool targets" OFF)
+    if (REAP_BUILD_TOOLS)
+        add_subdirectory("${REAP_ROOT_DIR}/tools")
+    endif()
+else()
+    message(STATUS "No tools/CMakeLists.txt yet. Tool targets will be added in a later phase.")
+endif()
