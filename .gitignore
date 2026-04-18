@@ -1,0 +1,71 @@
+# Build directories
+/build/
+/bin/
+/out/
+/dist/
+/cmake-build-*/
+/CMakeFiles/
+/CMakeCache.txt
+/compile_commands.json
+/Testing/
+/CTestTestfile.cmake
+/cmake_install.cmake
+/install_manifest.txt
+/Makefile
+
+# Compiler and linker artifacts
+*.o
+*.obj
+*.lo
+*.la
+*.a
+*.lib
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+*.out
+*.app
+*.pdb
+*.idb
+*.ilk
+*.dSYM/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*.orig
+*.rej
+
+# IDE and editor files
+.idea/
+.vscode/
+.vs/
+*.code-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Python helpers and caches
+__pycache__/
+*.pyc
+
+# Asset pipeline outputs
+/data/**/*.rmdl
+/data/**/*.rtex
+/data/**/*.rpak
+/data/**/*.bin
+/data/**/*.bsp
+
+# Tool caches
+/.cache/
+/tools/**/build/
+/tools/**/out/
+
