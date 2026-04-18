@@ -8,7 +8,8 @@
 #define REAP_TOSTRING( x ) REAP_STRINGIFY( x )
 #define REAP_FILE_LINE __FILE__ ":" REAP_TOSTRING( __LINE__ )
 
-namespace reap::engine {
+namespace reap::rengine 
+{
     
 using i8 = std::int8_t;
 using i16 = std::int16_t;
@@ -31,11 +32,11 @@ using entity_id_t = u32;
 constexpr frame_index_t INVALID_FRAME_INDEX = std::numeric_limits<frame_index_t>::max();
 constexpr entity_id_t INVALID_ENTITY_ID = std::numeric_limits<entity_id_t>::max();
 
-constexpr f32 PI_F = 3.14159265358979323846f;
-constexpr f32 TAU_F = 6.28318530717958647692f;
-constexpr f32 DEG2RAD_F = PI_F / 180.0f;
-constexpr f32 RAD2DEG_F = 180.0f / PI_F;
-constexpr f32 EPSILON_F = 1.0e-6f;
+constexpr f32 PI_F       = 3.14159265358979323846f;
+constexpr f32 TAU_F      = 6.28318530717958647692f;
+constexpr f32 DEG2RAD_F  = PI_F / 180.0f;
+constexpr f32 RAD2DEG_F  = 180.0f / PI_F;
+constexpr f32 EPSILON_F  = 1.0e-6f;
 constexpr f32 INFINITY_F = std::numeric_limits<f32>::infinity();
 
 static_assert( sizeof( i8 )  == 1, "i8 must be 1 byte" );
