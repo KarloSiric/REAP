@@ -1,46 +1,43 @@
-# Coding Style
+# REAP Coding Style
 
 ## Core Style
-
-REAP uses C++20, but the coding style should remain close to clear, explicit C-style engine code.
+REAP uses C++20, with an explicit C-style, data-oriented engine style.
 
 ## Rules
-
-- Prefer `struct` plus free functions
-- Avoid class hierarchies as the main design pattern
-- Avoid inheritance unless there is a compelling, concrete need
-- Avoid virtual dispatch by default
-- Prefer explicit data flow over hidden behavior
-- Prefer simple modules over framework-like subsystems
+- Use `struct` plus free functions.
+- Keep ownership and lifetime explicit at module boundaries.
+- Avoid class hierarchies as the primary architecture style.
+- Avoid inheritance and virtual dispatch by default.
+- Prefer explicit data flow over hidden behavior.
+- Prefer simple modules over framework-like monoliths.
 
 ## Naming
-
-- Types: `snake_case_t` where that style fits the engine layer
-- Functions: `module_verb_noun`
-- Constants and macros: `SCREAMING_SNAKE_CASE`
-- Files: lowercase with module prefixes where useful
+- Types: `snake_case_t`.
+- Functions: `module_verb_noun`.
+- Constants and macros: `SCREAMING_SNAKE_CASE`.
+- Files: lowercase module names where useful.
 
 ## C++ Features To Prefer
-
-- `std::array`
-- `std::vector`
-- `std::span`
-- `std::string_view`
-- RAII for narrow ownership cases such as small wrappers
+- `std::array`, `std::span`, and `std::string_view`.
+- `std::vector` when dynamic ownership is explicit.
+- Scoped ownership objects (`std::unique_ptr`, `std::shared_ptr`) only where object ownership semantics are obvious.
+- RAII for narrow resource ownership boundaries.
 
 ## C++ Features To Use Sparingly
-
-- templates beyond small utility cases
-- exceptions
-- RTTI
-- operator-heavy APIs
-- metaprogramming
-- smart abstraction layers that hide cost
+- Templates beyond small utility cases.
+- Exceptions.
+- RTTI.
+- Operator-heavy APIs.
+- Heavy metaprogramming.
+- Indirection layers that hide cost or intent.
 
 ## Engine Mindset
+- Make data layout visible.
+- Make ownership visible.
+- Make frame-to-frame behavior easy to trace.
+- Optimize for comprehension and iteration speed first.
 
-- make data layout visible
-- make ownership visible
-- make frame-to-frame behavior easy to trace
-- optimize for comprehension and iteration speed first
-
+## Logging and Erroring Contracts
+- Keep logs channeled and leveled.
+- Keep public logging API minimal and explicit.
+- Treat `record_t` as the canonical event payload, and keep output functions as sinks.

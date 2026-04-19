@@ -1,42 +1,27 @@
 # Quake Reference Policy
 
 ## Purpose
-
-REAP may learn from Quake III Arena and related open-source descendants, but that does not mean the codebase should absorb those sources wholesale.
-
-This document defines the working boundary for safe and disciplined use of Quake-derived material.
+We may study historical references (especially Quake-era design), but REAP code must stay original and legally clean.
 
 ## Allowed
+- Study mechanics, architecture, and architecture-level tradeoffs.
+- Reimplement ideas from scratch.
+- Create notes that capture what was studied and what was adapted.
 
-- Study gameplay systems and architecture
-- Study movement logic and simulation ideas
-- Study command buffer, console, snapshot, and BSP concepts
-- Write fresh notes from that study
-- Reimplement ideas in original REAP code
+## Not Allowed by default
+- Copy-paste imports into REAP modules.
+- Rename-only ports.
+- Unattributed or unlicensed integration.
 
-## Not Allowed By Default
+## If direct reuse ever happens
+Before adapting external source code:
+1. Record exact source project/file.
+2. Record license and compatibility details.
+3. Justify the adaptation.
+4. Keep adapted code isolated.
+5. Add explicit provenance comments to changed modules.
 
-- Copy entire modules into REAP just because they already exist
-- Bulk-port headers and source files with rename-only edits
-- Blend imported code into original REAP files without provenance
-- Assume license compatibility is solved by intent alone
-
-## If Direct Reuse Ever Happens
-
-Before any direct code adaptation or import:
-
-1. Identify the exact source project and file
-2. Record the original license and notices
-3. Decide whether adaptation is actually necessary
-4. Keep imported material isolated and documented
-5. Mark changed files clearly
-
-## Preferred Default
-
-The preferred default for REAP is:
-
-- understand the system
-- write it ourselves
-- document the inspiration
-- keep the codebase clean
-
+## Implementation Discipline
+- Understand first.
+- Re-derive second.
+- Document decisions in `docs/adr/`.

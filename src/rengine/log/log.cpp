@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-19 22:31:16
    Last Modified by: ksiric
-   Last Modified: 2026-04-19 23:01:08
+   Last Modified: 2026-04-20 01:24:07
    ---------------------------------------------------------------------
    Description:
        
@@ -87,22 +87,84 @@ bool log_channel_enabled( const u32 channel_mask, const channel_t channel ) {
     return ( channel_mask & ( 1u << channel_as_int ) ) != 0u;
 }
 
+void log_emit( const record_t &record ) {
+    if ( record.message[0] == '\0' ) {
+        return;   
+    }
+    
+    if ( !log_level_enabled( record.log_level, record.channel ) ) {
+        return ;
+    }
+    
+    const auto &cfg = log_get_config();
+    
+    // @TODO: For now we will not be touching this, because this will need to be addressed later only
+    if ( !cfg.use_console_stdout ) {
+        return ;
+    }
+    
+    if ( cfg.include_timestamps == true ) {
+        std::time_t now_time = std::time( nullptr );
+        std::tm tm_value{};
+        
+        // @NOTE: This will also be converted because as soon as we add the 
+        //        so called platform independency
+#       if defined( _WIN32)
+            localtime_s( &tm_value, &now_time );
+#       else 
+            localtime_r( &now_time, &tm_value );
+#       endif
+            
+        char timestamp[32]{};
+        
+        std::strftime( timestamp, sizeof( timestamp ), "%H:%M:%S", &tm_value );
+        std::printf( "[%s] ", timestamp );
+    }
+    
+    std::printf( 
+                "[%s][%s] %s:%d (%s) %s\n",
+                 log_level_name( record.log_level ),
+                 channel_name( record.channel ),
+                 record.file,
+                 record.line,
+                 record.function,
+                 record.message
+                  );
+    // @NOTE: So first we will be pushing it to the stdout but later this will have to be adopted to whatever we will be either in game or this and that right...
+    std::fflush( stdout );
+}
 
+void log_emitf( const log_level_t log_level, const channel_t channel,
+                const char *file, const char *function, const i32 line,
+                const char *format, ... ) {
+    if ( !log_level_enabled( log_level, channel ) ) {
+        return ;
+    }
+    va_list args;
+    va_start( args, format );
+    log_emitf( log_level, channel, file, function, line, format, args );
+    va_end( args );
+}
 
-
-
-
-
+void log_emitfv( const log_level_t log_level, const channel_t channel,
+                 const char *file, const char *function, const i32 line,
+                 const char *format, va_list args ) {
+    
+    if ( !log_level_enabled( log_level, channel ) ) {
+        return ;
+    }   
+    
+    record_t record{};
+    record.log_level = log_level;
+    record.channel = channel;
+    record.file = file ? file : "<unknown_file>";
+    record.function = function ? function : "<unknown_function>";
+    record.line = line;
+    
+    const char *safe_format = format ? format : "<null format>";
+    std::vsnprintf( record.message, sizeof ( record.message ), safe_format, args );
+    
+    log_emit( record );
+}
 
 }       // namespace reap::rengine::log
-
-
-
-
-
-
-
-
-        
-
-

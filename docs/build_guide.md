@@ -1,41 +1,40 @@
 # Build Guide
 
-## Current State
+## Objective
+Keep project startup reproducible across machines and preserve a clear path from source to playable build.
 
-The repository is not buildable yet.
+## Tooling
+- CMake 3.20+
+- C++20 toolchain (Apple Clang, Clang, GCC, or MSVC)
+- Git
 
-This document exists to define the intended build direction before source files are added.
+## Quick build
+```bash
+cmake -S . -B build
+cmake --build build
+```
 
-## Planned Toolchain
+Run:
+```bash
+./build/bin/reap
+```
+(Path may vary by platform and generator.)
 
-- CMake
-- A C++20-capable compiler
-  - Apple Clang
-  - Clang
-  - GCC
-  - MSVC
+## Current Minimum Goal
+The first runnable executable should:
+- Initialize app lifecycle.
+- Run frame update loop.
+- Render a graybox scene.
+- Exit cleanly.
+- Keep logging and config paths visible from runtime.
 
-## Planned External Dependencies
+## Dependency Strategy (v1)
+- Raylib and Flecs remain planned.
+- GLM remains planned for math where needed.
+- Third-party code can be vendored under `thirdparty/`.
+- Build scripts should degrade gracefully if optional dependencies are absent.
 
-- Raylib
-- Flecs
-- GLM
-
-These are expected to be added intentionally under `thirdparty/` or wired in through a clearly documented dependency strategy.
-
-## Build Philosophy
-
-- A fresh clone should be able to configure the project with minimal manual steps
-- Dependencies should not be hidden behind undocumented machine-local setup
-- Build outputs should stay out of source control
-- Debug builds should be the default during early development
-
-## First Build Milestone
-
-The first successful build should produce a tiny desktop executable that:
-
-- opens a window
-- processes input
-- runs a frame loop
-- draws a graybox test arena
-
+## Build Hygiene
+- Build outputs in `build/` only.
+- Do not commit binaries or generated artifacts.
+- Keep documentation and source independent from platform-specific machine state.

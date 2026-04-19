@@ -15,15 +15,15 @@ void log_set_config( const init_t &config );
 bool log_level_enabled( const log_level_t log_level, const channel_t channel );
 bool log_channel_enabled( const u32 channel_mask, const channel_t channel );
 
-void log_emit( const record_t &record, const char *message );
+void log_emit( const record_t &record );
 
 void log_emitf( const log_level_t log_level, const channel_t channel,
-				const char *file, const char *function, const i32 line,
-				const char *format, ... );
+                const char *file, const char *function, const i32 line,
+                const char *format, ... );
 
 void log_emitfv( const log_level_t log_level, const channel_t channel,
-				 const char *file, const char *function, const i32 line,
-				 const char *format, va_list args );
+                 const char *file, const char *function, const i32 line,
+                 const char *format, va_list args );
 
 } // namespace reap::rengine::log
 
