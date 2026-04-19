@@ -5,7 +5,7 @@
 namespace reap::rengine 
 {
     
-enum class app_state_t : u8 {
+enum class app_stage_t : u8 {
     Uninitialized,
     Initializing,
     Running,
@@ -43,11 +43,11 @@ struct frame_t {
 
 struct app_config_t {
     build_config_t build_config{ build_config_t::Unknown };
-    // window_config_t window_config{};
+    window_config_t window_config{};
 };
 
-struct app_t {
-    app_state_t state{ app_state_t::Uninitialized };
+struct app_state_t {
+    app_stage_t stage{ app_stage_t::Uninitialized };
     bool running{ false };
     bool has_focus{ false };
     frame_t frame{};
