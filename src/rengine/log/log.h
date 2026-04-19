@@ -27,8 +27,8 @@ void log_emitfv( const log_level_t log_level, const channel_t channel,
 
 } // namespace reap::rengine::log
 
-#define REAP_LOG_IF_DISABLED( LOG_LEVEL, LOG_CHANNEL ) \
-	if ( !reap::rengine::log : log_level_enabled( ( LOG_LEVEL ), ( LOG_CHANNEL ) ) )
+#define REAP_LOG_IF_ENABLED( LOG_LEVEL, LOG_CHANNEL )                                                           \
+	if ( reap::rengine::log : log_level_enabled( ( LOG_LEVEL ), ( LOG_CHANNEL ) ) )
 
 #define REAP_LOG( LOG_LEVEL, LOG_CHANNEL, LOG_MESSAGE )                                                         \
 	do {                                                                                                        \
