@@ -6,19 +6,19 @@ namespace reap::rengine
 {
     
 enum class app_stage_t : u8 {
-    Uninitialized,
-    Initializing,
-    Running,
-    Paused,
-    ShuttingDown,
-    Shutdown
+    UNINITIALIZED,
+    INITIALIZING,
+    RUNNING,
+    PAUSED,
+    SHUTTINGDOWN,
+    SHUTDOWN
 };
 
 enum class build_config_t : u8 {
-    Unknown,
-    Debug,
-    Release,
-    Distribution
+    UNKNOWN,
+    DEBUG,
+    RELEASE,
+    DISTRIBUTION
 };
 
 struct viewport_t {
@@ -42,12 +42,12 @@ struct frame_t {
 };
 
 struct app_config_t {
-    build_config_t build_config{ build_config_t::Unknown };
+    build_config_t build_config{ build_config_t::UNKNOWN };
     window_config_t window_config{};
 };
 
 struct app_state_t {
-    app_stage_t stage{ app_stage_t::Uninitialized };
+    app_stage_t stage{ app_stage_t::UNINITIALIZED };
     bool running{ false };
     bool has_focus{ false };
     frame_t frame{};
