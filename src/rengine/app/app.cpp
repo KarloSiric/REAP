@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-19 01:23:58
    Last Modified by: ksiric
-   Last Modified: 2026-04-19 01:52:12
+   Last Modified: 2026-04-19 02:10:10
    ---------------------------------------------------------------------
    Description:
        
@@ -73,7 +73,7 @@ void app_update( app_t &app ) {
     return ;
 }
 
-void app_render( app_t &app ) {
+void app_render( const app_t &app ) {
     
     // @TODO: Render the application state, and handle rendering of the scene, UI, etc.
     

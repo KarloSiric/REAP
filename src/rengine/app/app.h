@@ -13,7 +13,7 @@ void app_begin_frame( app_t &app, f32 delta_time_seconds );
 
 void app_update( app_t &app );
 
-void app_render( app_t &app );
+void app_render( const app_t &app );
 
 void app_end_frame( app_t &app );
 
