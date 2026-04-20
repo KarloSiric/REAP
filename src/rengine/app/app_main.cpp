@@ -1,10 +1,10 @@
 /*======================================================================
-   File: app.cpp
+   File: app_main.cpp
    Project: REAP
    Author: ksiric <email@example.com>
    Created: 2026-04-19 01:23:58
    Last Modified by: ksiric
-   Last Modified: 2026-04-20 18:30:09
+   Last Modified: 2026-04-20 20:34:20
    ---------------------------------------------------------------------
    Description:
        
@@ -14,7 +14,7 @@
    Version: 0.1.0
  ======================================================================
                                                                        */
-#include "rengine/app/app.h"
+#include "rengine/app/app_main.h"
 
 namespace reap::rengine
 {
@@ -59,7 +59,7 @@ void app_shutdown( app_state_t &app_state) {
  * @param[in,out] app_state Mutable application runtime state.
  * @param[in] delta_time_seconds Time elapsed since the previous frame.
  */
-void app_begin_frame( app_state_t &app_state, f32 delta_time_seconds ) {
+void app_begin_frame( app_state_t &app_state, com_f32 delta_time_seconds ) {
     if ( app_state.stage == app_stage_t::SHUTDOWN ) {
         return ;
     }

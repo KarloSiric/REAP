@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rengine/common/foundation.h"
+#include "rengine/rcommon/com_foundation.h"
 
 namespace reap::rengine 
 {
@@ -40,8 +40,8 @@ enum class build_config_t : u8 {
  * target width and height of the application view.
  */
 struct viewport_t {
-    u32 width{};
-    u32 height{};
+    com_u32 width{};
+    com_u32 height{};
 };
  
 /**
@@ -55,7 +55,7 @@ struct window_config_t {
     const char *title{ "REAP" };
     bool fullscreen{false};
     bool vsync{true};
-    u32 target_fps{60};
+    com_u32 target_fps{60};
 };
 
 /**
@@ -65,10 +65,10 @@ struct window_config_t {
  * engine can distinguish total runtime from simulation-controlled time.
  */
 struct frame_t {
-    frame_index_t index{};                  // index of the current frame, incremented every frame
-    f32 delta_time_seconds{};               // time between the current frame and the previous frame, used for real-time movement simulation 
-    f32 real_time_seconds{};                // time since the application started so total time including pauses
-    f32 simulation_time_seconds{};          // time used for simulation, can be paused or slowed down
+    com_frame_index_t index{};               // index of the current frame, incremented every frame
+    com_f32 delta_time_seconds{};               // time between the current frame and the previous frame, used for real-time movement simulation 
+    com_f32 real_time_seconds{};                // time since the application started so total time including pauses
+    com_f32 simulation_time_seconds{};          // time used for simulation, can be paused or slowed down
 };
 
 /**

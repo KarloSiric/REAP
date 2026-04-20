@@ -67,7 +67,7 @@ bool log_level_enabled( const log_level_t log_level, const channel_t channel );
  *
  * @return True if the channel bit is enabled in the mask.
  */
-bool log_channel_enabled( const u32 channel_mask, const channel_t channel );
+bool log_channel_enabled( const com_u32 channel_mask, const channel_t channel );
 
 /**
  * @brief Emits a fully built log record to the active output sink.
@@ -93,7 +93,7 @@ void log_emit( const record_t &record );
  * @param[in] format Printf-style message format string.
  */
 void log_emitf( const log_level_t log_level, const channel_t channel,
-                const char *file, const char *function, const i32 line,
+                const char *file, const char *function, const com_i32 line,
                 const char *format, ... );
 
 /**
@@ -111,7 +111,7 @@ void log_emitf( const log_level_t log_level, const channel_t channel,
  * @param[in] args Existing variadic argument list used for formatting.
  */
 void log_emitfv( const log_level_t log_level, const channel_t channel,
-                 const char *file, const char *function, const i32 line,
+                 const char *file, const char *function, const com_i32 line,
                  const char *format, va_list args );
 
 

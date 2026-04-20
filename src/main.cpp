@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-18 23:12:08
    Last Modified by: ksiric
-   Last Modified: 2026-04-19 17:14:13
+   Last Modified: 2026-04-20 20:36:18
    ---------------------------------------------------------------------
    Description:
        
@@ -14,7 +14,8 @@
    Version: 0.1.0
  ======================================================================
                                                                        */
-#include "rengine/app/app.h"
+#include "rengine/app/app_main.h"
+#include "rengine/platform/sys_platform.h"
 
 /**
  * @brief OS-level entry point for the REAP executable.
@@ -27,6 +28,9 @@
  *
  * @return Process exit code.
  */
+
+reap::rengine::com_f64 previous_time_seconds = reap::rengine::sys::sys_time_now_seconds();
+
 int main(int argc, char const *argv[])
 {   
     ( void )argc;
@@ -41,11 +45,12 @@ int main(int argc, char const *argv[])
     }   
     
     while ( reap::rengine::app_is_running( app ) ) {
-        // @TODO: Running the application here and all
+        const reap::rengine::com_f64 current_time_seconds = reap::rengine::sys::sys_time_now_seconds();
+        const reap::rengine::com_f64 delta_time_seconds = static_cast<reap::rengine::com_f32>( current_time_seconds - previous_time_seconds );
         
-        constexpr reap::rengine::f32 fixed_delta_seconds = 1.0f / 60.0f;
+        previous_time_seconds = current_time_seconds;
         
-        reap::rengine::app_begin_frame( app, fixed_delta_seconds );
+        reap::rengine::app_begin_frame( app, delta_time_seconds );
         reap::rengine::app_update( app );
         reap::rengine::app_render( app );
         reap::rengine::app_end_frame( app );

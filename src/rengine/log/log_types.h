@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rengine/common/foundation.h"
+#include "rengine/rcommon/com_foundation.h"
 
 namespace reap::rengine::log {
     
@@ -59,7 +59,7 @@ struct record_t {
 	channel_t channel{ channel_t::CORE };
 	const char *file{ "" };
 	const char *function{ "" };
-	i32 line{ 0 };
+	com_i32 line{ 0 };
 	char message[REAP_LOG_MESSAGE_MAX];
 };
 
@@ -71,7 +71,7 @@ struct record_t {
  */
 struct init_t {
 	log_level_t min_level{ log_level_t::INFO };
-	u32 channel_mask{ 0xFFFFFFFFu };
+	com_u32 channel_mask{ 0xFFFFFFFFu };
 	bool use_console_stdout{ true };
 	bool include_timestamps{ true };
 };
@@ -102,7 +102,7 @@ inline const char *log_level_name( const log_level_t log_level ) {
  *
  * @return Constant string representation of the channel.
  */
-inline const char *channel_name( const channel_t channel ) {
+inline const char *log_channel_name( const channel_t channel ) {
     switch ( channel ) {
         case channel_t::CORE:      return "CORE";
         case channel_t::APP:       return "APP";
@@ -128,8 +128,8 @@ inline const char *channel_name( const channel_t channel ) {
  *
  * @return Bit mask value for the supplied channel.
  */
-inline u32 channel_bit( const channel_t channel ) {
-    return 1u << static_cast<u32>( channel );
+inline com_u32 log_channel_bit( const channel_t channel ) {
+    return 1u << static_cast<com_u32>( channel );
 }
 
 }; // namespace reap::rengine::log

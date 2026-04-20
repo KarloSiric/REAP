@@ -38,7 +38,7 @@ void app_shutdown( app_state_t &app_state );
  * @param[in,out] app_state Runtime state owned by the application layer.
  * @param[in] delta_time_seconds Time elapsed since the previous frame.
  */
-void app_begin_frame( app_state_t &app_state, f32 delta_time_seconds );
+void app_begin_frame( app_state_t &app_state, com_f32 delta_time_seconds );
 
 /**
  * @brief Updates the application simulation for the current frame.

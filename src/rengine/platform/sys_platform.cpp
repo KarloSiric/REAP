@@ -1,10 +1,10 @@
 /*======================================================================
-   File: platform.cpp
+   File: sys_platform.cpp
    Project: REAP
    Author: ksiric <email@example.com>
    Created: 2026-04-20 17:42:16
    Last Modified by: ksiric
-   Last Modified: 2026-04-20 18:27:44
+   Last Modified: 2026-04-20 20:33:24
    ---------------------------------------------------------------------
    Description:
        
@@ -15,10 +15,10 @@
  ======================================================================
                                                                        */
 
-#include "rengine/platform/platform.h"
+#include "rengine/platform/sys_platform.h"
 #include <chrono>
 
-namespace reap::rengine::platform 
+namespace reap::rengine::sys
 {
 
 /**
@@ -30,15 +30,15 @@ namespace reap::rengine::platform
  *
  * @return Detected platform type for the current build.
  */
-platform_type_t current_platform() {
+platform_t sys_platform_type() {
 #   if defined( _WIN32 ) 
-        return platform_type_t::WINDOWS;
+        return platform_t::WINDOWS;
 #   elif defined( __APPLE__ ) 
-        return platform_type_t::MACOSX;
+        return platform_t::MACOSX;
 #   elif defined( __linux__ ) 
-        return platform_type_t::LINUX;
+        return platform_t::LINUX;
 #   else 
-        return platform_type_t::UNKNOWN;
+        return platform_t::UNKNOWN;
 #   endif
 }    
 
@@ -50,15 +50,15 @@ platform_type_t current_platform() {
  *
  * @return Detected compiler type for the current build.
  */
-compiler_type_t current_compiler() {
+compiler_t sys_compiler_type() {
 #   if defined( __clang__ ) 
-        return compiler_type_t::CLANG;
+        return compiler_t::CLANG;
 #   elif defined( _MSC_VER )
-        return compiler_type_t::MSVC;
+        return compiler_t::MSVC;
 #   elif defined( __GNUC__ )
-        return compiler_type_t::GCC;
+        return compiler_t::GCC;
 #   else
-        return compiler_type_t::UNKNOWN;
+        return compiler_t::UNKNOWN;
 #   endif
 }
 
@@ -69,11 +69,11 @@ compiler_type_t current_compiler() {
  *
  * @return Constant string representation of the supplied platform.
  */
-const char *platform_name( platform_type_t type ) {
+const char *sys_platform_name( platform_t type ) {
     switch( type ) {
-        case reap::rengine::platform::platform_type_t::WINDOWS: return "Window";
-        case reap::rengine::platform::platform_type_t::LINUX: return "Linux";
-        case reap::rengine::platform::platform_type_t::MACOSX: return "MacOS";
+        case reap::rengine::sys::platform_t::WINDOWS: return "Windows";
+        case reap::rengine::sys::platform_t::LINUX: return "Linux";
+        case reap::rengine::sys::platform_t::MACOSX: return "MacOS";
         default: return "Unknown";
     }
 }   
@@ -85,11 +85,11 @@ const char *platform_name( platform_type_t type ) {
  *
  * @return Constant string representation of the supplied compiler.
  */
-const char *compiler_name( compiler_type_t type ) {
+const char *sys_compiler_name( compiler_t type ) {
     switch( type ) {
-        case reap::rengine::platform::compiler_type_t::CLANG: return "Clang";
-        case reap::rengine::platform::compiler_type_t::GCC: return "GCC";
-        case reap::rengine::platform::compiler_type_t::MSVC: return "MSVC";
+        case reap::rengine::sys::compiler_t::CLANG: return "Clang";
+        case reap::rengine::sys::compiler_t::GCC: return "GCC";
+        case reap::rengine::sys::compiler_t::MSVC: return "MSVC";
         default: return "Unknown";
     }
 }
@@ -107,7 +107,7 @@ const char *compiler_name( compiler_type_t type ) {
  *
  * @return Pointer to the basename within the original path string.
  */
-const char *path_basename( const char *path ) {
+const char *sys_path_basename( const char *path ) {
     if ( path == nullptr || path[0] == '\0' ) {
         return "";
     }
@@ -132,10 +132,20 @@ const char *path_basename( const char *path ) {
  *
  * @return Current monotonic timestamp in seconds.
  */
-f64 time_now_seconds() {
+com_f64 sys_time_now_seconds() {
     const auto now = std::chrono::steady_clock::now();
-    const auto seconds = std::chrono::duration<f64>( now.time_since_epoch() );
+    const auto seconds = std::chrono::duration<com_f64>( now.time_since_epoch() );
     return seconds.count();
 }
+
+bool sys_local_time( std::time_t time_value, std::tm &time_out ) {
+
+#   if defined( _WIN32 ) 
+        return localtime_s( &time_out, &time_value );
+#   else 
+        return localtime_r( &time_value, &time_out );
+#   endif
+        
+}
     
-}       // namespace reap::rengine::platform
+}       // namespace reap::rengine::sys

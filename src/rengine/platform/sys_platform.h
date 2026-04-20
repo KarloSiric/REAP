@@ -1,18 +1,19 @@
 #pragma once
 
-#include "rengine/common/foundation.h"
+#include "rengine/rcommon/com_foundation.h"
+#include <ctime>
 
-namespace reap::rengine::platform
+namespace reap::rengine::sys
 {
 
-enum class platform_type_t : u8 {
+enum class platform_t : com_u8 {
     UNKNOWN = 0,
     WINDOWS,
     LINUX,
     MACOSX
 };    
 
-enum class compiler_type_t : u8 {
+enum class compiler_t : com_u8 {
     UNKNOWN = 0,
     CLANG,
     GCC,
@@ -28,7 +29,7 @@ enum class compiler_type_t : u8 {
  *
  * @return The detected platform type for the current build.
  */
-platform_type_t current_platform();
+platform_t sys_platform_type();
 
 /**
  * @brief Returns the compiler used to build the engine.
@@ -38,7 +39,7 @@ platform_type_t current_platform();
  *
  * @return The detected compiler type for the current build.
  */
-compiler_type_t current_compiler();
+compiler_t sys_compiler_type();
 
 /**
  * @brief Converts a platform enum value into a readable string.
@@ -49,7 +50,7 @@ compiler_type_t current_compiler();
  *
  * @return Constant string representation of the platform value.
  */
-const char *platform_name( platform_type_t type );
+const char *sys_platform_name( platform_t type );
 
 /**
  * @brief Converts a compiler enum value into a readable string.
@@ -60,7 +61,7 @@ const char *platform_name( platform_type_t type );
  *
  * @return Constant string representation of the compiler value.
  */
-const char *compiler_name( compiler_type_t type );
+const char *sys_compiler_name( compiler_t type );
 
 /**
  * @brief Returns the basename portion of a path string.
@@ -76,7 +77,7 @@ const char *compiler_name( compiler_type_t type );
  *
  * @return Pointer to the basename within the original path string.
  */
-const char *path_basename( const char *path );
+const char *sys_path_basename( const char *path );
 
 /**
  * @brief Returns the current monotonic time in seconds.
@@ -87,6 +88,7 @@ const char *path_basename( const char *path );
  *
  * @return Current monotonic timestamp in seconds.
  */
-f64 time_now_seconds();
-    
-}       // namespace reap::rengine::platform
+com_f64 sys_time_now_seconds();
+
+bool sys_local_time( std::time_t time_value, std::tm &time_out );
+}       // namespace reap::rengine::sys

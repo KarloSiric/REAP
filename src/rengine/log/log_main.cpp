@@ -1,10 +1,10 @@
 /*======================================================================
-   File: log.cpp
+   File: log_main.cpp
    Project: REAP
    Author: ksiric <email@example.com>
    Created: 2026-04-19 22:31:16
    Last Modified by: ksiric
-   Last Modified: 2026-04-20 01:24:07
+   Last Modified: 2026-04-20 20:36:09
    ---------------------------------------------------------------------
    Description:
        
@@ -18,7 +18,8 @@
 #include <cstring>
 #include <ctime>
 
-#include "rengine/log/log.h"
+#include "rengine/log/log_main.h"
+#include "rengine/platform/sys_platform.h"
 
 namespace 
 {
@@ -95,8 +96,8 @@ bool log_level_enabled( const log_level_t log_level, const channel_t channel ) {
         return false;
     }
     
-    const auto level_as_int = static_cast<reap::rengine::u32>( log_level );
-    const auto min_level_as_int = static_cast<reap::rengine::u32>( g_log_runtime_state_t.config.min_level );
+    const auto level_as_int = static_cast<reap::rengine::com_u32>( log_level );
+    const auto min_level_as_int = static_cast<reap::rengine::com_u32>( g_log_runtime_state_t.config.min_level );
     
     if ( level_as_int < min_level_as_int ) {
         return false;
@@ -113,12 +114,12 @@ bool log_level_enabled( const log_level_t log_level, const channel_t channel ) {
  *
  * @return True if the supplied channel bit is enabled.
  */
-bool log_channel_enabled( const u32 channel_mask, const channel_t channel ) {
+bool log_channel_enabled( const com_u32 channel_mask, const channel_t channel ) {
     if ( channel == channel_t::NONE || channel == channel_t::COUNT ) {
         return false;
     }
     
-    const auto channel_as_int = static_cast<reap::rengine::u32>( channel );
+    const auto channel_as_int = static_cast<reap::rengine::com_u32>( channel );
     
     if ( channel_as_int >= 32 ) {
         return false;
@@ -148,29 +149,26 @@ void log_emit( const record_t &record ) {
         return ;
     }
     
-    if ( cfg.include_timestamps == true ) {
+    if ( cfg.include_timestamps ) {
         std::time_t now_time = std::time( nullptr );
         std::tm tm_value{};
         
-        // @NOTE: This will also be converted because as soon as we add the 
-        //        so called platform independency
-#       if defined( _WIN32)
-            localtime_s( &tm_value, &now_time );
-#       else 
-            localtime_r( &now_time, &tm_value );
-#       endif
+        if ( sys::sys_local_time( now_time, tm_value ) ) {
             
-        char timestamp[32]{};
-        
-        std::strftime( timestamp, sizeof( timestamp ), "%H:%M:%S", &tm_value );
-        std::printf( "[%s] ", timestamp );
+            char timestamp[32]{};
+            
+            std::strftime( timestamp, sizeof( timestamp ), "%H:%M:%S", &tm_value );
+            std::printf( "[%s] ", timestamp );
+        }
     }
+    
+    const char *file_name = reap::rengine::sys::sys_path_basename( record.file );
     
     std::printf( 
                 "[%s][%s] %s:%d (%s) %s\n",
                  log_level_name( record.log_level ),
-                 channel_name( record.channel ),
-                 record.file,
+                 log_channel_name( record.channel ),
+                 file_name,
                  record.line,
                  record.function,
                  record.message
@@ -193,7 +191,7 @@ void log_emit( const record_t &record ) {
  * @param[in] format Printf-style message format string.
  */
 void log_emitf( const log_level_t log_level, const channel_t channel,
-                const char *file, const char *function, const i32 line,
+                const char *file, const char *function, const com_i32 line,
                 const char *format, ... ) {
     if ( !log_level_enabled( log_level, channel ) ) {
         return ;
@@ -216,7 +214,7 @@ void log_emitf( const log_level_t log_level, const channel_t channel,
  * @param[in] args Existing variadic argument list used for formatting.
  */
 void log_emitfv( const log_level_t log_level, const channel_t channel,
-                 const char *file, const char *function, const i32 line,
+                 const char *file, const char *function, const com_i32 line,
                  const char *format, va_list args ) {
     
     if ( !log_level_enabled( log_level, channel ) ) {
