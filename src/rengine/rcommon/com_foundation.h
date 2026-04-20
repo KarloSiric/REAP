@@ -19,7 +19,7 @@
  */
 #define REAP_FILE_LINE __FILE__ ":" REAP_TOSTRING( __LINE__ )
 
-namespace reap::rengine
+namespace reap::rengine::rcommon
 {
 
 /**

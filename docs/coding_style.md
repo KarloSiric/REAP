@@ -1,43 +1,61 @@
 # REAP Coding Style
 
-## Core Style
-REAP uses C++20, with an explicit C-style, data-oriented engine style.
+REAP is written in C++20, but the code style should stay close to disciplined C-style engine code.
 
-## Rules
-- Use `struct` plus free functions.
-- Keep ownership and lifetime explicit at module boundaries.
-- Avoid class hierarchies as the primary architecture style.
-- Avoid inheritance and virtual dispatch by default.
-- Prefer explicit data flow over hidden behavior.
-- Prefer simple modules over framework-like monoliths.
+## Style principles
 
-## Naming
-- Types: `snake_case_t`.
-- Functions: `module_verb_noun`.
-- Constants and macros: `SCREAMING_SNAKE_CASE`.
-- Files: lowercase module names where useful.
+- explicit ownership
+- explicit data flow
+- narrow module boundaries
+- free functions over class hierarchies
+- low-magic C++
+- predictable runtime cost
 
-## C++ Features To Prefer
-- `std::array`, `std::span`, and `std::string_view`.
-- `std::vector` when dynamic ownership is explicit.
-- Scoped ownership objects (`std::unique_ptr`, `std::shared_ptr`) only where object ownership semantics are obvious.
-- RAII for narrow resource ownership boundaries.
+## Naming direction
 
-## C++ Features To Use Sparingly
-- Templates beyond small utility cases.
-- Exceptions.
-- RTTI.
-- Operator-heavy APIs.
-- Heavy metaprogramming.
-- Indirection layers that hide cost or intent.
+REAP follows Quake-style subsystem prefixes adapted to this project.
 
-## Engine Mindset
-- Make data layout visible.
-- Make ownership visible.
-- Make frame-to-frame behavior easy to trace.
-- Optimize for comprehension and iteration speed first.
+Examples:
 
-## Logging and Erroring Contracts
-- Keep logs channeled and leveled.
-- Keep public logging API minimal and explicit.
-- Treat `record_t` as the canonical event payload, and keep output functions as sinks.
+- `com_` for common
+- `r_` for renderer
+- `sv_` for server
+- `cl_` for client
+- `net_` for network
+- `bsp_` for BSP
+- `pm_` for physics/movement
+- `snd_` for audio
+- `ecs_` for ECS integration
+- `vm_` for engine/VM bridge
+- `sys_` for platform
+- `g_` for gameplay script modules
+
+## Type style
+
+- engine-facing types: `snake_case_t`
+- constants/macros: `SCREAMING_SNAKE_CASE`
+- file names: subsystem-prefixed and lowercase
+
+## Documentation rule
+
+Public engine-facing headers should document:
+- what the type/function is for
+- ownership/lifetime assumptions
+- whether a helper allocates or returns a pointer into existing memory
+- whether a time source is wall-clock or monotonic
+
+## C++ features to prefer
+
+- `std::array`
+- `std::span`
+- `std::string_view`
+- `std::vector` where ownership is clear
+- RAII in narrow, explicit cases
+
+## C++ features to use sparingly
+
+- exceptions
+- RTTI
+- heavy templates
+- metaprogramming
+- abstraction layers that hide runtime cost

@@ -6,14 +6,14 @@
 namespace reap::rengine::sys
 {
 
-enum class platform_t : com_u8 {
+enum class platform_t : rcommon::com_u8 {
     UNKNOWN = 0,
     WINDOWS,
     LINUX,
     MACOSX
 };    
 
-enum class compiler_t : com_u8 {
+enum class compiler_t : rcommon::com_u8 {
     UNKNOWN = 0,
     CLANG,
     GCC,
@@ -88,7 +88,7 @@ const char *sys_path_basename( const char *path );
  *
  * @return Current monotonic timestamp in seconds.
  */
-com_f64 sys_time_now_seconds();
+rcommon::com_f64 sys_time_now_seconds();
 
 bool sys_local_time( std::time_t time_value, std::tm &time_out );
 }       // namespace reap::rengine::sys

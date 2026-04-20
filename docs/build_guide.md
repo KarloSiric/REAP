@@ -1,40 +1,46 @@
 # Build Guide
 
-## Objective
-Keep project startup reproducible across machines and preserve a clear path from source to playable build.
+## Current build path
 
-## Tooling
-- CMake 3.20+
-- C++20 toolchain (Apple Clang, Clang, GCC, or MSVC)
-- Git
+The repository currently builds through CMake.
 
-## Quick build
 ```bash
 cmake -S . -B build
 cmake --build build
 ```
 
-Run:
+Current executable:
+
 ```bash
 ./build/bin/reap
 ```
-(Path may vary by platform and generator.)
 
-## Current Minimum Goal
-The first runnable executable should:
-- Initialize app lifecycle.
-- Run frame update loop.
-- Render a graybox scene.
-- Exit cleanly.
-- Keep logging and config paths visible from runtime.
+## Planned convenience layer
 
-## Dependency Strategy (v1)
-- Raylib and Flecs remain planned.
-- GLM remains planned for math where needed.
-- Third-party code can be vendored under `thirdparty/`.
-- Build scripts should degrade gracefully if optional dependencies are absent.
+A top-level `build.sh` will be introduced as a thin wrapper so the day-to-day build flow stays simple over the life of the project.
 
-## Build Hygiene
-- Build outputs in `build/` only.
-- Do not commit binaries or generated artifacts.
-- Keep documentation and source independent from platform-specific machine state.
+That script should remain:
+- thin
+- explicit
+- a wrapper around the real build system
+
+It should not replace the real build configuration.
+
+## Long-term build picture
+
+The intended full project has multiple build bodies:
+
+- engine runtime
+- standalone `rvm`
+- game scripts
+- tools
+
+That means the eventual top-level build flow must account for:
+- runtime compilation
+- VM compilation
+- script compilation
+- asset pipeline invocation
+
+## Current rule
+
+Use the simplest build path that supports the current milestone.

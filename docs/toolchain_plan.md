@@ -1,83 +1,84 @@
 # REAP Toolchain Plan
 
-This file describes the intended content and offline pipeline strategy for REAP.
+REAP’s toolchain should follow the runtime, not lead it.
 
-The rule is simple:
+That means:
+- build runtime consumption first
+- then build the offline pipeline that supports it
 
-- runtime needs come first
-- offline tools follow real pressure from runtime/content workflows
+## Maps and BSP
 
-## Maps
+Target:
+- authored arenas
+- entity metadata
+- collision-ready world representation
+- visibility-ready world representation
 
-### Goal
+Recommended order:
+1. learn and load BSP at runtime
+2. parse the entity lump
+3. use BSP for collision and visibility queries
+4. build debug inspection tools
+5. only then consider compiler/decompiler work if it is truly needed
 
-Use authored 3D arenas with gameplay metadata, collision support, and enough visibility into the format to debug runtime issues confidently.
-
-### Recommended order
-
-1. Use an existing editor workflow first.
-2. Load BSP maps at runtime.
-3. Parse entity data for spawns, pickups, wave triggers, and metadata.
-4. Add runtime debug visualization.
-5. Add map inspection/decompile utilities if they help iteration.
-6. Only build a custom compiler if external tooling becomes a real blocker.
-
-### Why
-
-Writing a correct map compiler is substantial work.  
-A loader and inspection path teach the runtime side sooner and get gameplay on screen faster.
+Important rule:
+- runtime BSP support comes before custom map compiler ambitions
 
 ## Models
 
-### Goal
+Target:
+- runtime model loading
+- later custom `.rmdl` format
+- later compiler/decompiler tooling
 
-Move from temporary/raw content loading to a predictable runtime-ready model format with explicit control over mesh data, materials, and later animation.
+Recommended order:
+1. get visible content on screen using the simplest viable path
+2. define the runtime model requirements
+3. design `.rmdl`
+4. build runtime `.rmdl` loader
+5. build model compiler
+6. build decompiler/inspector if useful
 
-### Recommended order
+## Textures and materials
 
-1. Start with the simplest import path that gets visible content on screen.
-2. Define runtime requirements for a custom model format.
-3. Design the format on paper.
-4. Write runtime loader.
-5. Write model compiler.
-6. Add decompiler or inspector tool if it improves debugging and pipeline trust.
+Target:
+- predictable runtime texture loading
+- material definition files
+- later atlas/packing tools
 
-### Why
+Recommended order:
+1. simple direct texture loading
+2. material file conventions
+3. texture conversion/mip work
+4. atlas tools only when they reduce pain
 
-The format should be designed around actual runtime needs, not invented too early.
+## Scripts
 
-## Materials and textures
+Target:
+- `game.bin` bytecode generated from the REAP script path
 
-Start simple:
-- texture references
-- material names
-- minimal render properties
+Recommended order:
+1. `rvm` runtime
+2. assembler
+3. game script bytecode
+4. later language compiler
+5. debug symbol support
 
-Delay:
-- advanced material graphs
-- heavy editor UX
+## Archives / packaging
 
-## Packaging
+Target:
+- packaged shipping asset archives
 
-Archive/package formats should arrive after:
-- runtime asset loading exists
-- enough assets exist to justify packaging
-- iteration pain is real
+Recommended order:
+1. direct loose-file runtime loading
+2. define archive format only once asset pressure exists
+3. build create/list/extract tool
 
-## Validation tooling
+## Tooling rule
 
-Validation tools are worth writing when:
-- bad assets waste runtime debugging time
-- multiple formats start interacting
-- content production becomes repeatable
+Do not build a full toolchain because it sounds impressive.
 
-## Scope guardrails
-
-Build now:
-- runtime-friendly loading path
-- visibility/debuggability
-
-Delay:
-- full custom authoring stack
-- compiler/decompiler for every format
-- packaging polish before content pressure exists
+Build the specific tool when:
+- the runtime path exists
+- the manual workflow is painful
+- the tool will clearly save future development time

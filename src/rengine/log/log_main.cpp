@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-19 22:31:16
    Last Modified by: ksiric
-   Last Modified: 2026-04-20 20:36:09
+   Last Modified: 2026-04-20 21:53:24
    ---------------------------------------------------------------------
    Description:
        
@@ -96,8 +96,8 @@ bool log_level_enabled( const log_level_t log_level, const channel_t channel ) {
         return false;
     }
     
-    const auto level_as_int = static_cast<reap::rengine::com_u32>( log_level );
-    const auto min_level_as_int = static_cast<reap::rengine::com_u32>( g_log_runtime_state_t.config.min_level );
+    const auto level_as_int = static_cast<rcommon::com_u32>( log_level );
+    const auto min_level_as_int = static_cast<rcommon::com_u32>( g_log_runtime_state_t.config.min_level );
     
     if ( level_as_int < min_level_as_int ) {
         return false;
@@ -114,12 +114,12 @@ bool log_level_enabled( const log_level_t log_level, const channel_t channel ) {
  *
  * @return True if the supplied channel bit is enabled.
  */
-bool log_channel_enabled( const com_u32 channel_mask, const channel_t channel ) {
+bool log_channel_enabled( const rcommon::com_u32 channel_mask, const channel_t channel ) {
     if ( channel == channel_t::NONE || channel == channel_t::COUNT ) {
         return false;
     }
     
-    const auto channel_as_int = static_cast<reap::rengine::com_u32>( channel );
+    const auto channel_as_int = static_cast<rcommon::com_u32>( channel );
     
     if ( channel_as_int >= 32 ) {
         return false;
@@ -191,7 +191,7 @@ void log_emit( const record_t &record ) {
  * @param[in] format Printf-style message format string.
  */
 void log_emitf( const log_level_t log_level, const channel_t channel,
-                const char *file, const char *function, const com_i32 line,
+                const char *file, const char *function, const rcommon::com_i32 line,
                 const char *format, ... ) {
     if ( !log_level_enabled( log_level, channel ) ) {
         return ;
@@ -214,7 +214,7 @@ void log_emitf( const log_level_t log_level, const channel_t channel,
  * @param[in] args Existing variadic argument list used for formatting.
  */
 void log_emitfv( const log_level_t log_level, const channel_t channel,
-                 const char *file, const char *function, const com_i32 line,
+                 const char *file, const char *function, const rcommon::com_i32 line,
                  const char *format, va_list args ) {
     
     if ( !log_level_enabled( log_level, channel ) ) {

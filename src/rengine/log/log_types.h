@@ -10,14 +10,14 @@ namespace reap::rengine::log {
  * Log records own their formatted message payload in fixed-size storage so
  * they can be emitted without depending on temporary external buffers.
  */
-constexpr usize REAP_LOG_MESSAGE_MAX = 1024u;
+constexpr rcommon::usize REAP_LOG_MESSAGE_MAX = 1024u;
 
 /**
  * @brief Describes the severity level of a log event.
  *
  * Levels progress from highly verbose tracing to fatal runtime failures.
  */
-enum class log_level_t : u8 {
+enum class log_level_t : rcommon::u8 {
 	TRACE,
 	DEBUG,
 	INFO,
@@ -32,7 +32,7 @@ enum class log_level_t : u8 {
  * Channels allow runtime filtering and make log output readable as the
  * engine grows into multiple subsystems.
  */
-enum class channel_t : u8 {
+enum class channel_t : rcommon::u8 {
 	NONE = 0,
 	CORE,
 	APP,
@@ -59,7 +59,7 @@ struct record_t {
 	channel_t channel{ channel_t::CORE };
 	const char *file{ "" };
 	const char *function{ "" };
-	com_i32 line{ 0 };
+	rcommon::com_i32 line{ 0 };
 	char message[REAP_LOG_MESSAGE_MAX];
 };
 
@@ -71,7 +71,7 @@ struct record_t {
  */
 struct init_t {
 	log_level_t min_level{ log_level_t::INFO };
-	com_u32 channel_mask{ 0xFFFFFFFFu };
+	rcommon::com_u32 channel_mask{ 0xFFFFFFFFu };
 	bool use_console_stdout{ true };
 	bool include_timestamps{ true };
 };
@@ -128,8 +128,8 @@ inline const char *log_channel_name( const channel_t channel ) {
  *
  * @return Bit mask value for the supplied channel.
  */
-inline com_u32 log_channel_bit( const channel_t channel ) {
-    return 1u << static_cast<com_u32>( channel );
+inline rcommon::com_u32 log_channel_bit( const channel_t channel ) {
+    return 1u << static_cast<rcommon::com_u32>( channel );
 }
 
 }; // namespace reap::rengine::log

@@ -1,72 +1,89 @@
-# REAP Architecture Notes
+# REAP Architecture
 
-## Guiding Principle
+REAP is a large, layered project made of three connected bodies of work:
 
-REAP grows outward from a runnable cooperative survival loop, not from speculative systems.
+- `engine runtime`
+- `game logic`
+- `tools and offline pipeline`
 
-The architecture is built around the smallest valid v1 that people can play, then expanded when the loop proves the need.
+The long-term structure follows Quake-style separation, adapted to REAP and modern C++.
 
-## Delivery Priorities
+## Top-level architecture
 
-The current v1 target is:
+### `src/`
+The native engine runtime.
 
-1. Foundation and frame lifecycle (`app`, `common`, `log`)
-2. Platform and input wrapper (`platform`)
-3. Host/client application runtime (`app` + `network` shaping)
-4. Graybox rendering and movement loop
-5. One enemy, one weapon, one wave state, shared HUD baseline
-6. Host-authoritative match sync path (listen-server)
-7. Menu/settings, session restart, and stability pass
-8. Gameplay expansion (enemy variety, pickups, classes, content tuning)
+Target modules:
+- `common`
+- `renderer`
+- `server`
+- `client`
+- `network`
+- `bsp`
+- `physics`
+- `audio`
+- `ecs`
+- `vm`
+- `platform`
 
-Only after those milestones should the project grow into:
+### `rvm/`
+Standalone REAP Virtual Machine project.
 
-1. ECS integration
-2. richer gameplay state
-3. asset pipeline tools
-4. BSP map loading and map tooling
-5. custom formats and scripting
+Owns:
+- VM runtime
+- assembler
+- disassembler
+- later the REAP Script compiler
 
-## Initial Runtime Shape
+### `game/`
+Gameplay scripts intended to run on the VM.
 
-The first shipped target should remain intentionally constrained:
+This is where high-level REAP gameplay should live once the VM path is real:
+- players
+- waves
+- enemies
+- combat
+- items
+- rules
 
-- one executable
-- one game loop
-- one local player with network scaffolding ready
-- one test arena
-- host/client role-aware runtime
-- no VM or full toolchain dependency in v1
-- no dedicated server until v1 stability gates are passed
+### `tools/`
+Offline pipeline executables.
 
-## Long-Term Runtime Shape
+Owns:
+- model compiler/decompiler
+- texture pipeline
+- pak/archive tooling
+- asset build scripts
 
-Once the project matures, the codebase can be organized into a few clear layers:
+## Boundary rules
 
-- `rengine`: startup, shutdown, frame loop, platform/runtime services, logging, asset interfaces
-- `platform`: file access, timers, input, OS glue
-- `render`: drawing and frame presentation
-- `network`: host/client transport and session flow
-- `ecs`: composition and systems
-- `physics`: movement, traces, projectiles
-- `rgame`: rules, waves, enemies, weapons, pickups
-- `assets`: loading and runtime asset management
-- `tools`: offline compilers and packers
+- `common` is shared foundation
+- `renderer` owns drawing and GPU-facing code
+- `server` owns authoritative simulation
+- `client` owns local input/prediction/presentation bridge
+- `network` owns transport and serialization primitives
+- `bsp` owns map loading and collision queries
+- `physics` owns movement and shared simulation code
+- `audio` owns sound runtime
+- `ecs` owns entity/component integration layer
+- `vm` is the bridge between engine runtime and `rvm`
+- `platform` owns OS-specific behavior
 
-## Design Guardrails
+## Current implementation reality
 
-- The game loop should stay understandable to a single reader
-- Tooling should support the game, not lead it
-- Networking shapes simulation ownership from v1 onward
-- Serialization and custom formats should arrive late, after stable runtime loop needs
+The current repository is earlier than the target structure.
 
-## Runtime Ownership Rule
+Today:
+- code is still concentrated in `src/rengine/`
+- the project is still in runtime bootstrap
+- many target modules are planned but not yet created
 
-- `rengine` provides runtime services and stays independent of game rules.
-- `rgame` owns all gameplay semantics and depends on `rengine`.
-- `tools` may use shared low-level utilities, but never pull gameplay runtime logic.
+That is acceptable for now, as long as new work follows the documented target structure from this point forward.
 
-## Engineering Rule
+## Design philosophy
 
-- If a subsystem does not improve the playable loop, it is deferred.
-- If it improves visibility, stability, or debugging for an existing loop, it is implemented now.
+- engine-owned interfaces at subsystem boundaries
+- explicit data flow
+- no heavy abstraction without runtime pressure
+- original implementations inspired by Quake/DOOM lineage, not copied
+- long-term maintainability for a solo developer

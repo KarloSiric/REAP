@@ -1,27 +1,31 @@
-# Quake Reference Policy
+# Quake / id Reference Policy
 
-## Purpose
-We may study historical references (especially Quake-era design), but REAP code must stay original and legally clean.
+REAP is structurally inspired by Quake 3 / id Software style architecture.
 
-## Allowed
-- Study mechanics, architecture, and architecture-level tradeoffs.
-- Reimplement ideas from scratch.
-- Create notes that capture what was studied and what was adapted.
+That inspiration is allowed and intentional.
 
-## Not Allowed by default
-- Copy-paste imports into REAP modules.
-- Rename-only ports.
-- Unattributed or unlicensed integration.
+## What is allowed
 
-## If direct reuse ever happens
-Before adapting external source code:
-1. Record exact source project/file.
-2. Record license and compatibility details.
-3. Justify the adaptation.
-4. Keep adapted code isolated.
-5. Add explicit provenance comments to changed modules.
+- studying subsystem boundaries
+- studying gameplay/runtime architecture
+- studying patterns like:
+  - command buffer
+  - cvars
+  - snapshots
+  - BSP handling
+  - VM boundaries
+  - client/server split
+- re-deriving systems in original REAP code
 
-## Implementation Discipline
-- Understand first.
-- Re-derive second.
-- Document decisions in `docs/adr/`.
+## What is not allowed by default
+
+- copying source files wholesale
+- rename-only ports
+- blending copied code into original modules without provenance
+- assuming license concerns disappear because the architecture is similar
+
+## Working rule
+
+We can be heavily inspired by the shape and discipline of Quake-style engines.
+
+We still write REAP’s implementation ourselves unless a later deliberate decision is documented and license-reviewed.

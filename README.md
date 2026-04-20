@@ -1,129 +1,97 @@
 # REAP
 
-REAP is a from-scratch 3D arena survival FPS with fast movement, wave combat, and a strong Quake-era action feel.
+REAP is a from-scratch 3D arena survival FPS built with a Quake-era mindset:
 
-The project is being built in modern C++20 with a C-style, data-oriented architecture. The goal is not to assemble a game out of engine features first. The goal is to learn by building the game, the engine layers it truly needs, and the supporting tools in the right order.
+- explicit systems
+- clear module boundaries
+- fast iteration
+- gameplay-first engine growth
+- tools built when runtime pressure justifies them
 
-## Current Status
+The long-term goal is not only to ship the game, but to build the surrounding runtime, toolchain, formats, and scripting path in a disciplined way.
 
-REAP is in pre-production bootstrap.
+## Project Direction
 
-The repository currently contains project foundations only:
+REAP follows a Quake 3 / id Software style structure adapted to this project:
 
-- licensing and source reference policy
-- repository hygiene and workflow docs
-- coding style and architecture notes
-- early app/common/log runtime scaffolding
-- no renderer, platform layer, gameplay loop, or asset pipeline yet
+- `src/common` for shared engine foundation
+- `src/renderer` for all rendering
+- `src/server` for authoritative simulation
+- `src/client` for local player runtime and presentation bridge
+- `src/network` for low-level networking
+- `src/bsp` for map loading and collision
+- `src/physics` for shared movement and simulation
+- `src/audio` for sound runtime
+- `src/ecs` for entity/component integration
+- `src/vm` for engine-side VM bridge
+- `src/platform` for OS-specific code
+- `rvm/` as a standalone virtual machine project
+- `game/` for gameplay scripts
+- `tools/` for asset pipeline executables
+- `data/` for runtime assets
+- `config/` for default configuration
 
-The current active milestone is tracked in [docs/current_status.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/current_status.md).
+This is the intended destination structure.  
+The current codebase is still early and has not been fully migrated into that layout yet.
 
-## Project Goals
+## Core Principles
 
-- Build a playable arena shooter vertical slice from scratch
-- Learn engine architecture by implementing only what the game actually needs
-- Keep the codebase explicit, understandable, and performant
-- Favor iteration speed and clarity over premature feature sprawl
-- Ship a graybox-first playable loop before building advanced tools
+- Build one real subsystem at a time.
+- Keep engine-owned interfaces between subsystems.
+- Avoid speculative overengineering.
+- Re-derive ideas from Quake/DOOM lineage instead of copying code.
+- Make the project resumable after long breaks through strong documentation.
 
-## Design Pillars
+## Current State
 
-- Fast, aggressive first-person movement
-- Minimal HUD and high combat readability
-- Arena layouts that reward circulation, verticality, and pickup control
-- Wave-based combat with room for solo play first and coop later
-- Brutal, readable game feel before polish systems
+The project is still in foundation/bootstrap stage.
 
-## Technical Direction
+Currently in place:
+- foundational types
+- app lifecycle scaffold
+- logger scaffold
+- early platform scaffold
+- documentation system and architecture direction
 
-- Language: C++20
-- Style: C-style, data-oriented, low-magic C++
-- Build system: CMake
-- Planned libraries:
-  - Raylib for windowing, input, rendering bootstrap, and basic audio
-  - Flecs for ECS
-  - GLM for math
+Currently missing:
+- render bootstrap
+- windowed runtime
+- command/cvar backend
+- real gameplay loop
+- BSP runtime
+- VM runtime
+- asset pipeline
 
-These libraries are planned, not yet vendored into the repository.
-
-## Engineering Principles
-
-- No classical OOP architecture
-- No inheritance trees as the core design tool
-- No virtual-by-default abstractions
-- Explicit ownership and lifetime
-- Small modules with clear prefixes and boundaries
-- Build the playable loop first, the tools second
-
-## Quake III Reference Boundary
-
-REAP may study Quake III Arena and related open-source descendants for architectural ideas, gameplay patterns, and historical reference.
-
-REAP does not assume that the Quake III source can be copied wholesale into this codebase.
-
-Project policy:
-
-- Study systems and reimplement what we understand
-- Keep REAP code original by default
-- If any code is ever imported or adapted from Quake-derived sources, preserve notices, record provenance, and review license implications first
-- Do not blend copied engine code into original modules casually
-
-See [docs/reference_policy.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/reference_policy.md) for the working rules.
-
-## Development Strategy
-
-The project will be built in layers, with each phase producing something runnable:
-
-1. Repo and tooling foundation
-2. Runtime bootstrap and render/platform spine
-3. Window, input, camera, and graybox arena
-4. Coop runtime skeleton
-5. One enemy, one weapon, one wave loop
-6. Broader engine systems and tools only after the core loop is real
-
-Read the full roadmap in [docs/roadmap.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/roadmap.md).
-
-## Planned Repository Shape
-
-This is the intended structure once implementation begins:
-
-```text
-REAP/
-├── CMakeLists.txt
-├── README.md
-├── CLAUDE.md
-├── CODEX.md
-├── docs/
-├── src/
-├── thirdparty/
-├── tools/
-├── data/
-└── config/
-```
-
-## Workflow Rules
-
-- Discuss substantial implementation before broad code changes
-- Prefer file-by-file progress for learning-heavy work
-- Keep snippets small and explain why each file exists
-- Avoid overbuilding engine subsystems before the vertical slice proves the need
+Read the current active status in [docs/current_status.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/current_status.md).
 
 ## Documentation Map
 
-The project memory system lives here:
+Start here:
 
 - [docs/index.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/index.md)
+- [docs/project_structure.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/project_structure.md)
+- [docs/development_phases.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/development_phases.md)
 - [docs/current_status.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/current_status.md)
-- [docs/roadmap.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/roadmap.md)
+- [docs/architecture.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/architecture.md)
 - [docs/subsystems.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/subsystems.md)
 - [docs/toolchain_plan.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/toolchain_plan.md)
+- [docs/build_guide.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/build_guide.md)
+- [docs/coding_style.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/coding_style.md)
+- [docs/reference_policy.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/reference_policy.md)
+
+Long-lived project memory:
+
+- [CHANGELOG.md](/Users/karlosiric/Documents/MyProjects/REAP/CHANGELOG.md)
 - [docs/devlog/2026-04.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/devlog/2026-04.md)
+- [docs/adr/0001-coop-first-listen-server-architecture.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/adr/0001-coop-first-listen-server-architecture.md)
 
-## Near-Term Next Step
+## Build
 
-The next milestone is to build the runtime spine:
+Current build path:
 
-- `platform` helpers
-- engine-owned render interface
-- Raylib bootstrap backend
-- visible window and frame loop
+```bash
+cmake -S . -B build
+cmake --build build
+```
+
+Long-term, a thin `build.sh` wrapper will sit on top of the real build system for convenience.

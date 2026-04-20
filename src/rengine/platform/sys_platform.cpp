@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-20 17:42:16
    Last Modified by: ksiric
-   Last Modified: 2026-04-20 20:33:24
+   Last Modified: 2026-04-20 22:01:21
    ---------------------------------------------------------------------
    Description:
        
@@ -132,9 +132,9 @@ const char *sys_path_basename( const char *path ) {
  *
  * @return Current monotonic timestamp in seconds.
  */
-com_f64 sys_time_now_seconds() {
+rcommon::com_f64 sys_time_now_seconds() {
     const auto now = std::chrono::steady_clock::now();
-    const auto seconds = std::chrono::duration<com_f64>( now.time_since_epoch() );
+    const auto seconds = std::chrono::duration<rcommon::com_f64>( now.time_since_epoch() );
     return seconds.count();
 }
 

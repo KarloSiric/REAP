@@ -1,174 +1,166 @@
-# REAP Subsystem Map
+# REAP Subsystems
 
-This file defines what each major subsystem is responsible for and where it should live.
+This file defines what the major REAP modules are supposed to do.
 
-## Product layers
+## `common`
 
-### `rengine`
-Reusable runtime and engine services.
+Shared engine foundation used by both client and server style code.
 
-Owns:
-- app lifecycle
-- platform/runtime helpers
+Expected contents:
+- engine bootstrap
+- memory helpers
+- command system
+- cvar system
+- console backend
+- filesystem
+- pak/archive reading
 - logging
-- renderer bootstrap and frame submission
-- networking runtime
-- physics/runtime math
-- asset runtime loading
-- debug services
+- string helpers
+- math
+- common types
 
-Must not own:
-- REAP-specific enemy logic
-- wave rules
-- weapon balance
-- class abilities
+This is the layer everything else stands on.
 
-### `rgame`
-REAP-specific game code.
+## `renderer`
 
 Owns:
-- player rules
-- weapon behavior
-- pickups
-- enemies
-- waves
-- scoring
-- match flow
-- HUD and gameplay-facing UI state
-
-### `tools`
-Offline authoring and build pipeline support.
-
-Owns:
-- model compile/decompile tools
-- map inspection/debug tools
-- package/archive tools
-- asset validation and conversion
-
-## Engine runtime subsystems
-
-### `common`
-Purpose:
-- low-level shared types, constants, and small utilities
-
-Build early:
-- yes
-
-Keep small:
-- yes
-
-### `app`
-Purpose:
-- top-level runtime lifecycle
-- coordinates init, frame stages, shutdown
-
-Build early:
-- yes
-
-### `platform`
-Purpose:
-- OS-facing utilities that should not leak everywhere
-
-Examples:
-- timers
-- file/path helpers
-- compiler/platform macros
-- input/window glue if abstracted at this layer
-
-Build early:
-- yes
-
-### `log`
-Purpose:
-- runtime visibility, diagnostics, and early error tracing
-
-Build early:
-- yes
-
-### `render`
-Purpose:
-- engine-owned rendering interface and backend boundary
+- frame begin/end
+- world rendering
+- BSP rendering
+- model rendering
+- materials
+- shaders
+- particles
+- lightmaps
+- sky
+- debug draw
 
 Rule:
-- gameplay should not talk directly to Raylib
+- the rest of the engine should not call Raylib directly
 
-Build early:
-- yes, as a bootstrap layer
+## `server`
 
-### `network`
-Purpose:
-- transport, connection state, snapshots/messages, session flow
+Owns:
+- authoritative simulation
+- client connection management
+- snapshot generation
+- receiving input
+- sending world state
+- game VM bridge on the authoritative side
 
-Build early:
-- yes, because REAP is coop-first
+## `client`
 
-### `physics`
-Purpose:
-- movement, traces, collision, projectile motion
+Owns:
+- local input
+- prediction
+- interpolation
+- view/camera
+- client-side effects
+- HUD
+- scoreboard
+- console UI
+- menus
 
-Build early:
-- partially
+## `network`
 
-Start with:
-- player movement and simple collision
+Owns:
+- socket-level communication
+- packet framing
+- reliable/unreliable channel logic
+- serialization
 
-### `ecs` or custom composition runtime
-Purpose:
-- manage gameplay entities and systems
+Both client and server depend on this layer.
 
-Build early:
-- no, not before the simple loop proves the need
+## `bsp`
 
-### `assets`
-Purpose:
-- load and manage runtime asset data
+Owns:
+- BSP loading
+- BSP format definitions
+- traceline / tracebox
+- PVS lookup
+- entity lump parsing
+- collision against brush geometry
 
-Build early:
-- lightly
+## `physics`
 
-Start with:
-- the minimum runtime loading needed for graybox and early authored content
+Owns:
+- player movement
+- slide movement
+- step movement
+- air movement
+- shared movement code used by both prediction and authoritative simulation
 
-## Tool subsystems
+## `audio`
 
-### Map toolchain
-Includes:
-- BSP inspection
-- entity lump inspection
-- later: map compiler/decompiler only if needed
+Owns:
+- audio runtime startup/shutdown
+- loading sounds
+- mixing
+- spatial sound
+- music playback
 
-Recommended order:
-1. load BSP in runtime
-2. inspect/debug BSP
-3. only then consider custom compile/decompile tools
+## `ecs`
 
-### Model toolchain
-Includes:
-- raw import strategy
-- custom runtime format
-- model compiler
-- model decompiler/debug inspector
+Owns:
+- entity/component definitions
+- system registration
+- prefab setup
+- query helpers
 
-Recommended order:
-1. use raw/intermediate content path first
-2. design runtime format second
-3. compiler/decompiler third
+This is the replacement for a monolithic entity array.
 
-### Packaging toolchain
-Includes:
-- archive format
-- pack/unpack tools
-- validation
+## `vm`
 
-Recommended order:
-- later, after runtime asset loading pressure exists
+Owns:
+- loading the gameplay VM in the engine runtime
+- trap bridge between VM and native engine code
+- engine-side debugging of VM state
 
-## Placement rule
+## `platform`
 
-Before adding a new file, ask:
+Owns:
+- OS entry point details
+- timing
+- file/path wrappers where needed
+- OS socket differences where needed
+- crash/error/platform-specific behavior
 
-- is this runtime-generic or REAP-specific?
-- does it belong in `rengine`, `rgame`, or `tools`?
-- is it needed now, or is it being invented early?
+This is the engine/OS seam.
 
-If the answer is unclear, resolve that before writing code.
+## `rvm`
+
+Standalone virtual machine project.
+
+Owns:
+- VM runtime
+- memory model
+- stack
+- opcodes
+- loader
+- debugger
+- assembler
+- disassembler
+- later language compiler
+
+## `game`
+
+Owns gameplay logic intended to run on the VM:
+- players
+- weapons
+- projectiles
+- combat
+- enemies
+- AI
+- waves
+- spawn logic
+- items
+- triggers
+- rules
+
+## `tools`
+
+Owns offline content pipeline:
+- model compiler/decompiler
+- texture processing
+- pak/archive creation and extraction
+- asset build orchestration
