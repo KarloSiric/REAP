@@ -4,7 +4,7 @@
 
 namespace reap::rengine::log {
     
-constexpr usize REAP_LOG_LOG_MESSAGE_MAX = 1024u;
+constexpr usize REAP_LOG_MESSAGE_MAX = 1024u;
 
 enum class log_level_t : u8 {
 	TRACE,
@@ -37,7 +37,7 @@ struct record_t {
 	const char *file{ "" };
 	const char *function{ "" };
 	i32 line{ 0 };
-	char message[REAP_LOG_LOG_MESSAGE_MAX];
+	char message[REAP_LOG_MESSAGE_MAX];
 };
 
 struct init_t {

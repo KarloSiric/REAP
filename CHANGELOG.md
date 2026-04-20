@@ -8,9 +8,16 @@ All notable changes to REAP are tracked here.
 - Baseline engineering docs for v1 direction (release notes, devlog, ADR, architecture, style, build guide, reference policy).
 - Engine/game split formalization (rengine + rgame boundary) aligned to coop-first execution.
 - Logging subsystem now has a record-driven emission path (`record_t`, filtering, formatted emit pipeline).
+- Project navigation docs for long-horizon development:
+  - docs hub
+  - current status tracker
+  - milestone roadmap
+  - subsystem map
+  - toolchain plan
 
 ### Changed
 - Documentation and execution framing updated from prototype-first toward 4-player cooperative vertical slice.
+- README now points to the documentation hub and current active milestone.
 
 ### Fixed
 - None in this release window.

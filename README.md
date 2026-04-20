@@ -13,7 +13,10 @@ The repository currently contains project foundations only:
 - licensing and source reference policy
 - repository hygiene and workflow docs
 - coding style and architecture notes
-- no engine or gameplay code yet
+- early app/common/log runtime scaffolding
+- no renderer, platform layer, gameplay loop, or asset pipeline yet
+
+The current active milestone is tracked in [docs/current_status.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/current_status.md).
 
 ## Project Goals
 
@@ -72,11 +75,13 @@ See [docs/reference_policy.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/
 The project will be built in layers, with each phase producing something runnable:
 
 1. Repo and tooling foundation
-2. Window, input, camera, and graybox arena
-3. Basic movement and feel iteration
-4. One enemy, one weapon, one wave loop
-5. HUD, pickups, game over, win condition
-6. Broader engine systems only after the core loop is fun
+2. Runtime bootstrap and render/platform spine
+3. Window, input, camera, and graybox arena
+4. Coop runtime skeleton
+5. One enemy, one weapon, one wave loop
+6. Broader engine systems and tools only after the core loop is real
+
+Read the full roadmap in [docs/roadmap.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/roadmap.md).
 
 ## Planned Repository Shape
 
@@ -103,19 +108,22 @@ REAP/
 - Keep snippets small and explain why each file exists
 - Avoid overbuilding engine subsystems before the vertical slice proves the need
 
+## Documentation Map
+
+The project memory system lives here:
+
+- [docs/index.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/index.md)
+- [docs/current_status.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/current_status.md)
+- [docs/roadmap.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/roadmap.md)
+- [docs/subsystems.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/subsystems.md)
+- [docs/toolchain_plan.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/toolchain_plan.md)
+- [docs/devlog/2026-04.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/devlog/2026-04.md)
+
 ## Near-Term Next Step
 
-The next milestone after this docs setup is to create the actual repo scaffolding for:
+The next milestone is to build the runtime spine:
 
-- `CMakeLists.txt`
-- `src/`
-- `thirdparty/`
-- the first tiny application entry point
-
-That first application should do only one thing well:
-
-- open a window
-- run a frame loop
-- capture mouse input
-- render a simple graybox arena
-
+- `platform` helpers
+- engine-owned render interface
+- Raylib bootstrap backend
+- visible window and frame loop

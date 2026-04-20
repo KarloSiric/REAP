@@ -21,9 +21,6 @@ void log_emitf( const log_level_t log_level, const channel_t channel,
                 const char *file, const char *function, const i32 line,
                 const char *format, ... );
 
-void log_emitfv( const log_level_t log_level, const channel_t channel,
-                 const char *file, const char *function, const i32 line,
-                 const char *format, va_list args );
 
 } // namespace reap::rengine::log
 
