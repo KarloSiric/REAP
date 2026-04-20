@@ -16,6 +16,17 @@
                                                                        */
 #include "rengine/app/app.h"
 
+/**
+ * @brief OS-level entry point for the REAP executable.
+ *
+ * The executable owns the top-level application state and drives the main
+ * frame loop through the engine application interface.
+ *
+ * @param[in] argc Number of command-line arguments.
+ * @param[in] argv Command-line argument array.
+ *
+ * @return Process exit code.
+ */
 int main(int argc, char const *argv[])
 {   
     ( void )argc;

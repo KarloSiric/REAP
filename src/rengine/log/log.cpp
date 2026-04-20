@@ -23,6 +23,12 @@
 namespace 
 {
 
+/**
+ * @brief Owns the mutable runtime state of the logging subsystem.
+ *
+ * The logger is intentionally simple for now and keeps only configuration
+ * and initialization state in process-global storage.
+ */
 struct log_runtime_state_t {
     reap::rengine::log::init_t config{};
     bool initialized{ false };
@@ -37,23 +43,49 @@ namespace reap::rengine::log {
 // @TODO: Once the platform header is setup we will add the log_basename and
 //        log naming and so forth depending on different architectures
 
+/**
+ * @brief Installs the active logging configuration and marks the subsystem ready.
+ *
+ * @param[in] config Logging configuration to install.
+ */
 void log_init( const init_t &config ){
     g_log_runtime_state_t.config = config;
     g_log_runtime_state_t.initialized = true;
 }
 
+/**
+ * @brief Resets the logging subsystem back to its uninitialized state.
+ */
 void log_shutdown( ) {
     g_log_runtime_state_t = {};
 }
 
+/**
+ * @brief Returns the active runtime logging configuration.
+ *
+ * @return Read-only reference to the active logging configuration.
+ */
 const init_t &log_get_config( ) {
     return g_log_runtime_state_t.config;   
 }
 
+/**
+ * @brief Replaces the active logging configuration.
+ *
+ * @param[in] config New logging configuration to install.
+ */
 void log_set_config( const init_t &config ) {
     g_log_runtime_state_t.config = config;
 }
 
+/**
+ * @brief Tests whether a log event should be emitted under current policy.
+ *
+ * @param[in] log_level Severity level to test.
+ * @param[in] channel Logging channel to test.
+ *
+ * @return True if the log event is enabled.
+ */
 bool log_level_enabled( const log_level_t log_level, const channel_t channel ) {
     if ( !g_log_runtime_state_t.initialized ) {
         return false;
@@ -73,6 +105,14 @@ bool log_level_enabled( const log_level_t log_level, const channel_t channel ) {
     return log_channel_enabled( g_log_runtime_state_t.config.channel_mask, channel );
 }   
 
+/**
+ * @brief Tests whether a specific channel is enabled within a mask.
+ *
+ * @param[in] channel_mask Bit mask containing enabled channels.
+ * @param[in] channel Channel to test.
+ *
+ * @return True if the supplied channel bit is enabled.
+ */
 bool log_channel_enabled( const u32 channel_mask, const channel_t channel ) {
     if ( channel == channel_t::NONE || channel == channel_t::COUNT ) {
         return false;
@@ -87,6 +127,11 @@ bool log_channel_enabled( const u32 channel_mask, const channel_t channel ) {
     return ( channel_mask & ( 1u << channel_as_int ) ) != 0u;
 }
 
+/**
+ * @brief Emits a fully built log record to the current output sink.
+ *
+ * @param[in] record Fully constructed log record to emit.
+ */
 void log_emit( const record_t &record ) {
     if ( record.message[0] == '\0' ) {
         return;   
@@ -134,6 +179,19 @@ void log_emit( const record_t &record ) {
     std::fflush( stdout );
 }
 
+/**
+ * @brief Formats and emits a log event from variadic arguments.
+ *
+ * This is the convenience wrapper used by logging macros. The actual
+ * formatting work is forwarded into `log_emitfv`.
+ *
+ * @param[in] log_level Severity level of the log event.
+ * @param[in] channel Logging channel associated with the event.
+ * @param[in] file Source file where the event originated.
+ * @param[in] function Source function where the event originated.
+ * @param[in] line Source line where the event originated.
+ * @param[in] format Printf-style message format string.
+ */
 void log_emitf( const log_level_t log_level, const channel_t channel,
                 const char *file, const char *function, const i32 line,
                 const char *format, ... ) {
@@ -142,10 +200,21 @@ void log_emitf( const log_level_t log_level, const channel_t channel,
     }
     va_list args;
     va_start( args, format );
-    log_emitf( log_level, channel, file, function, line, format, args );
+    log_emitfv( log_level, channel, file, function, line, format, args );
     va_end( args );
 }
 
+/**
+ * @brief Formats and emits a log event from an existing `va_list`.
+ *
+ * @param[in] log_level Severity level of the log event.
+ * @param[in] channel Logging channel associated with the event.
+ * @param[in] file Source file where the event originated.
+ * @param[in] function Source function where the event originated.
+ * @param[in] line Source line where the event originated.
+ * @param[in] format Printf-style message format string.
+ * @param[in] args Existing variadic argument list used for formatting.
+ */
 void log_emitfv( const log_level_t log_level, const channel_t channel,
                  const char *file, const char *function, const i32 line,
                  const char *format, va_list args ) {
