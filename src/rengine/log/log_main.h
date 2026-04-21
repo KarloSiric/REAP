@@ -43,7 +43,7 @@ const log_config_t &log_get_config();
  *
  * @param[in] config New logging configuration to install.
  */
-bool log_set_config( const log_config_t &config );
+log_error_code_t log_set_config( const log_config_t &config );
 
 /**
  * @brief Tests whether a log event is enabled for the given level and channel.

@@ -36,7 +36,8 @@ enum class com_domain_t : u16 {
     COM_DOMAIN_AUDIO,
     COM_DOMAIN_FS,
     COM_DOMAIN_NET,
-    COM_DOMAIN_GAME
+    COM_DOMAIN_GAME,
+    COM_DOMAIN_CMD
 };
 
 

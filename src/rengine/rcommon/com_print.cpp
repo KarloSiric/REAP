@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-21 13:11:03
    Last Modified by: ksiric
-   Last Modified: 2026-04-21 18:27:06
+   Last Modified: 2026-04-21 20:51:07
    ---------------------------------------------------------------------
    Description:
        
@@ -75,7 +75,5 @@ void com_verrorf( const com_error_t error, const char *message, va_list args ) {
     std::fputs( msg_final, stderr );
     std::fflush( stderr );
 }
-
-
     
 }       // namespace reap::rengine::rcommon

@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-19 01:23:58
    Last Modified by: ksiric
-   Last Modified: 2026-04-21 17:42:47
+   Last Modified: 2026-04-21 21:40:58
    ---------------------------------------------------------------------
    Description:
        
@@ -15,7 +15,10 @@
  ======================================================================
                                                                        */
 #include "rengine/host/host_main.h"
+#include "rengine/rcommon/com_print.h"
 #include "rengine/render/r_main.h"
+
+namespace rc = reap::rengine::rcommon;
 
 namespace reap::rengine::host
 {
@@ -29,25 +32,30 @@ namespace reap::rengine::host
  * @param[in,out] host_state Mutable host runtime state.
  * @param[in] host_config Startup configuration for the host.
  *
- * @return True if initialization completed successfully.
+ * @return Host initialization result code.
  */
 host_error_code_t host_init( host_state_t &host_state, const host_config_t &host_config ) {
-    ( void )host_config;
-    
     host_state.stage = host_stage_t::INITIALIZING;
     host_state.running = true;
     host_state.has_focus = true;
     host_state.frame = {};
 
-    if ( render::r_init( host_config.window_config ) != render::r_error_code_t::OK ) {
+    const auto render_result = render::r_init( host_config.window_config );
+
+    if ( render_result != render::r_error_code_t::OK ) {
+        rc::com_errorf(
+            render::r_error_code( render_result ),
+            "host_init: renderer initialization failed."
+        );
+
         host_state.running = false;
         host_state.stage = host_stage_t::SHUTDOWN;
         return host_error_code_t::ERR_INITIALIZING;
     }
-    
+
     host_state.stage = host_stage_t::RUNNING;
-    
-    return host_error_code_t::OK;   
+
+    return host_error_code_t::OK;
 }
 
 /**
@@ -58,15 +66,13 @@ host_error_code_t host_init( host_state_t &host_state, const host_config_t &host
 void host_shutdown( host_state_t &host_state ) {
     host_state.running = false;
     host_state.stage = host_stage_t::SHUTDOWN;
-    
+
     // @TODO: Also has to shutdown all the other subsystems in the engine,
     //        the host has to be able to orchestrate things and
-    //        deal with the proper shutdown and cleaning of everything 
+    //        deal with the proper shutdown and cleaning of everything
     //        else.
-    
+
     render::r_shutdown();
-    
-    
 }
 
 /**
@@ -77,13 +83,26 @@ void host_shutdown( host_state_t &host_state ) {
  */
 void host_begin_frame( host_state_t &host_state, rcommon::com_f32 delta_time_seconds ) {
     if ( host_state.stage == host_stage_t::SHUTDOWN ) {
-        return ;
+        return;
     }
-    
-    render::r_begin_frame( delta_time_seconds );
+
+    const auto render_result = render::r_begin_frame( delta_time_seconds );
+
+    if ( render_result != render::r_error_code_t::OK ) {
+        rc::com_errorf(
+            render::r_error_code( render_result ),
+            "host_begin_frame: renderer begin-frame failed."
+        );
+
+        host_state.running = false;
+        host_state.stage = host_stage_t::SHUTTINGDOWN;
+        return;
+    }
+
     host_state.frame.index++;
     host_state.frame.delta_time_seconds = delta_time_seconds;
     host_state.frame.real_time_seconds += delta_time_seconds;
+
     if ( host_state.stage == host_stage_t::RUNNING ) {
         host_state.frame.simulation_time_seconds += delta_time_seconds;
     }
@@ -99,22 +118,14 @@ void host_begin_frame( host_state_t &host_state, rcommon::com_f32 delta_time_sec
  */
 void host_update( host_state_t &host_state ) {
     if ( host_state.stage != host_stage_t::RUNNING ) {
-        return ;
+        return;
     }
-    
-    if ( !host_state.running ) {
-        return ;
-    }
-    
-    // @TODO: Update the host stage, and handle input, AI, gameplay etc.
-    /*
-        
-    
-    
 
-    */   
-    
-    return ;
+    if ( !host_state.running ) {
+        return;
+    }
+
+    // @TODO: Update the host stage, and handle input, AI, gameplay etc.
 }
 
 /**
@@ -123,15 +134,25 @@ void host_update( host_state_t &host_state ) {
  * This function is currently a placeholder until the render subsystem is
  * wired into the host frame loop.
  *
- * @param[in] host_state Read-only host state for the current frame.
+ * @param[in,out] host_state Runtime state owned by the host layer.
  */
-void host_render( const host_state_t &host_state ) {
+void host_render( host_state_t &host_state ) {
+    if ( host_state.stage != host_stage_t::RUNNING || !host_state.running ) {
+        return;
+    }
+
     // @TODO: Render the host stage, and handle rendering of the scene, UI, etc.
-    
-    ( void )host_state;
-    render::r_render_frame();
-    
-    return ;
+    const auto render_result = render::r_render_frame();
+
+    if ( render_result != render::r_error_code_t::OK ) {
+        rc::com_errorf(
+            render::r_error_code( render_result ),
+            "host_render: renderer frame submission failed."
+        );
+
+        host_state.running = false;
+        host_state.stage = host_stage_t::SHUTTINGDOWN;
+    }
 }
 
 /**
@@ -140,12 +161,27 @@ void host_render( const host_state_t &host_state ) {
  * @param[in,out] host_state Mutable host runtime state.
  */
 void host_end_frame( host_state_t &host_state ) {
+    if ( host_state.stage == host_stage_t::SHUTDOWN ) {
+        return;
+    }
+
+    const auto render_result = render::r_render_end();
+
+    if ( render_result != render::r_error_code_t::OK ) {
+        rc::com_errorf(
+            render::r_error_code( render_result ),
+            "host_end_frame: renderer end-frame failed."
+        );
+
+        host_state.running = false;
+        host_state.stage = host_stage_t::SHUTDOWN;
+        return;
+    }
+
     if ( host_state.stage == host_stage_t::SHUTTINGDOWN ) {
         host_state.running = false;
         host_state.stage = host_stage_t::SHUTDOWN;
     }
-    render::r_render_end();
-    return ;
 }
 
 /**

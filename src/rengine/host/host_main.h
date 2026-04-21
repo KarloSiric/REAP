@@ -16,7 +16,7 @@ namespace reap::rengine::host
  * @param[in,out] host_state Runtime state owned by the host layer.
  * @param[in] host_config Startup configuration for the host.
  *
- * @return True if initialization succeeded, otherwise false.
+ * @return Host initialization result code.
  */
 host_error_code_t host_init( host_state_t &host_state, const host_config_t &host_config );
 
@@ -57,9 +57,9 @@ void host_update( host_state_t &host_state );
  * This stage is responsible for presentation-facing work and will later
  * coordinate render submission for engine and gameplay systems.
  *
- * @param[in] host_state Read-only host state for the current frame.
+ * @param[in,out] host_state Runtime state owned by the host layer.
  */
-void host_render( const host_state_t &host_state );
+void host_render( host_state_t &host_state );
 
 /**
  * @brief Finalizes the current host frame.

@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-20 21:01:21
    Last Modified by: ksiric
-   Last Modified: 2026-04-21 19:29:17
+   Last Modified: 2026-04-21 21:54:55
    ---------------------------------------------------------------------
    Description:
        
@@ -16,8 +16,6 @@
                                                                        */
 #include "rengine/render/r_main.h"
 #include "rengine/log/log_main.h"
-
-namespace log = reap::rengine::log;
 
 namespace {
 

@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-19 22:31:16
    Last Modified by: ksiric
-   Last Modified: 2026-04-21 19:14:51
+   Last Modified: 2026-04-21 21:53:13
    ---------------------------------------------------------------------
    Description:
        
@@ -68,8 +68,7 @@ log_error_code_t log_init( const log_config_t &config ){
         
         if ( g_log_runtime_state_t.file_handle == nullptr ) {
             g_log_runtime_state_t.initialized = false;
-            // @TODO: Add error later fix!
-            return log_error_code_t::ERR_INVALID_CONFIG;
+            return log_error_code_t::ERR_FILE_OPEN_FAILED;
         }        
     }
     
@@ -104,9 +103,9 @@ const log_config_t &log_get_config( ) {
  *
  * @param[in] config New logging configuration to install.
  */
-bool log_set_config( const log_config_t &config ) {
+log_error_code_t log_set_config( const log_config_t &config ) {
     if ( !g_log_runtime_state_t.initialized ) {
-        return false;
+        return log_error_code_t::ERR_NOT_INIT;
     }
     
     std::FILE *new_file_handle = g_log_runtime_state_t.file_handle;
@@ -123,7 +122,7 @@ bool log_set_config( const log_config_t &config ) {
             new_file_handle = std::fopen( config.file_path, open_mode );
             
             if ( new_file_handle == nullptr ) {
-                return false;
+                return log_error_code_t::ERR_FILE_OPEN_FAILED;
             }
         }
     }   
@@ -137,7 +136,7 @@ bool log_set_config( const log_config_t &config ) {
     g_log_runtime_state_t.file_handle = new_file_handle;
     g_log_runtime_state_t.file_error_reported = false;
     
-    return true;
+    return log_error_code_t::OK;
 }
 
 /**

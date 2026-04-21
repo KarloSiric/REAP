@@ -25,12 +25,12 @@ namespace reap::rengine::rcommon
 /**
  * @brief Fixed-width signed integer aliases used throughout the engine.
  */
-using com_i8 = std::int8_t;
+using com_i8  = std::int8_t;
 using com_i16 = std::int16_t;
 using com_i32 = std::int32_t;
 using com_i64 = std::int64_t;
 
-using i8 = com_i8;
+using i8  = com_i8;
 using i16 = com_i16;
 using i32 = com_i32;
 using i64 = com_i64;
@@ -38,12 +38,12 @@ using i64 = com_i64;
 /**
  * @brief Fixed-width unsigned integer aliases used throughout the engine.
  */
-using com_u8 = std::uint8_t;
+using com_u8  = std::uint8_t;
 using com_u16 = std::uint16_t;
 using com_u32 = std::uint32_t;
 using com_u64 = std::uint64_t;
 
-using u8 = com_u8;
+using u8  = com_u8;
 using u16 = com_u16;
 using u32 = com_u32;
 using u64 = com_u64;

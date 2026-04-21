@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-18 23:12:08
    Last Modified by: ksiric
-   Last Modified: 2026-04-21 19:23:09
+   Last Modified: 2026-04-21 21:34:25
    ---------------------------------------------------------------------
    Description:
        
@@ -54,7 +54,7 @@ int main(int argc, char const *argv[])
     // rc::com_errorf( render::r_error_code( render::r_error_code_t::ERR_INVALID_VIEWPORT ), "Temporary testing of the com_errorf to see how it will print an error." );
 
     host::host_config_t host_config{};
-    host::host_state_t host_state{};
+    host::host_state_t  host_state{};
     rc::com_f64 previous_time_seconds = sys::sys_time_now_seconds();
     
     if ( host::host_init( host_state, host_config ) != host::host_error_code_t::OK ) {
@@ -64,7 +64,7 @@ int main(int argc, char const *argv[])
     
     while ( host::host_is_running( host_state ) ) {
         const rc::com_f64 current_time_seconds = sys::sys_time_now_seconds();
-        const rc::com_f64 delta_time_seconds = static_cast<rc::com_f32>( current_time_seconds - previous_time_seconds );
+        const rc::com_f64 delta_time_seconds = static_cast<rc::com_f64>( current_time_seconds - previous_time_seconds );
         
         previous_time_seconds = current_time_seconds;
         
