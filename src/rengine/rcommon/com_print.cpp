@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-21 13:11:03
    Last Modified by: ksiric
-   Last Modified: 2026-04-21 14:39:30
+   Last Modified: 2026-04-21 14:54:27
    ---------------------------------------------------------------------
    Description:
        
@@ -16,6 +16,7 @@
                                                                        */
 
 #include "rengine/rcommon/com_print.h"
+#include "rengine/rcommon/com_error.h"
 
 #include <cstdarg>
 #include <cstdio>

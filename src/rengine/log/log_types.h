@@ -155,7 +155,7 @@ inline const char *log_level_name( const log_level_t log_level ) {
 inline const char *log_channel_name( const log_channel_t channel ) {
     switch ( channel ) {
         case log_channel_t::CORE:      return "CORE";
-        case log_channel_t::HOST:       return "HOST";
+        case log_channel_t::HOST:      return "HOST";
         case log_channel_t::PLATFORM:  return "PLATFORM";
         case log_channel_t::RENDER:    return "RENDER";
         case log_channel_t::PHYSICS:   return "PHYSICS";

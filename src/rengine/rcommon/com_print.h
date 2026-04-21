@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rengine/rcommon/com_error.h"
+#include <cstdarg>
 
 namespace reap::rengine::rcommon 
 {

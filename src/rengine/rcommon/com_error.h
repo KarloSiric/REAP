@@ -12,6 +12,28 @@
 #define COM_ERROR_MSG_MAX
 
 namespace reap::rengine::rcommon {
+    
+// @NOTE: One common error_code that is tightly packed for it to be 
+//        used by each and every other subsystem, or better say they
+//        all convert their local enum subsystem error type to this one
+//        so that the common Errorf printing function can use this.
+
+using com_error_t = com_u32;
+
+
+// @TODO: Simple domain name which can be extended to each and every single 
+//        subsystem as we keep expanding the engine and adding new things.
+enum class com_domain_t : u8 {
+    COM_DOMAIN_COMMON = 0,
+    COM_DOMAIN_RENDER,
+    COM_DOMAIN_HOST,
+    COM_DOMAIN_PLATFORM,
+    COM_DOMAIN_AUDIO,
+    COM_DOMAIN_FS,
+    COM_DOMAIN_NET,
+    COM_DOMAIN_GAME
+};
+
 
 /**
  * @brief Canonical result code used across the engine.
@@ -33,6 +55,7 @@ enum class com_error_code_t : com_u8 {
     ERR_IO_ERROR,
     ERR_INTERNAL_ERROR
 };
+
 
 /**
  * @brief Returns true when the code represents a success path.
@@ -81,6 +104,16 @@ inline const char *com_error_name( const com_error_code_t code ) {
     }
 }
 
-inline u32 
+constexpr inline com_error_t com_error_make( const com_domain_t domain, const com_u16 local_enum_error_code ) {
+    return ( static_cast<com_error_t>( domain) << 16u | static_cast<com_error_t>( local_enum_error_code ) );
+}
+
+constexpr inline com_domain_t com_error_domain( const com_error_t error ) {
+    return static_cast<com_domain_t>( ( error >> 16u ) | 0xFFFF );
+}
+
+constexpr inline com_u16 com_error_code( const com_error_t error ) {
+    return static_cast<com_u16>( error & 0xFFFF );
+}
 
 } // namespace reap::rengine::rcommon
