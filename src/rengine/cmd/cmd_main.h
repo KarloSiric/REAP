@@ -30,6 +30,8 @@ cmd_error_code_t cmd_register( const char *cmd_name, cmd_fn_t callback_fn, const
 
 const cmd_t *cmd_find( const char *cmd_name );
 
+cmd_error_code_t cmd_parse( char *command_line, rcommon::u32 &argc, char **argv );
+
 cmd_error_code_t cmd_execute( const char *command_line );
 
 }       // namespace reap::rengine::cmd

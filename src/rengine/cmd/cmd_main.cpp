@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-21 22:26:01
    Last Modified by: ksiric
-   Last Modified: 2026-04-21 23:13:42
+   Last Modified: 2026-04-21 23:52:10
    ---------------------------------------------------------------------
    Description:
        
@@ -17,6 +17,7 @@
 
 #include "rengine/cmd/cmd_main.h"
 #include "rengine/rcommon/com_print.h"
+#include <cstring>
 
 namespace reap::rengine::cmd
 {
@@ -92,18 +93,72 @@ cmd_error_code_t cmd_register( const char *cmd_name, cmd_fn_t callback_fn, const
     
     return cmd::cmd_error_code_t::OK;   
 }
-  
-  
-  
+ 
+const cmd_t *cmd_find( const char *cmd_name ) {
+    if ( !g_cmd_registery.initialized ) {
+        rcommon::com_printf( "cmd_find: cmd system is not initialized." );
+        return nullptr;
+    }
+    
+    if ( cmd_name == nullptr || cmd_name[0] == '\0' ) {
+        rcommon::com_printf( "cmd_find: invalid cmd name passed to find." );
+        return nullptr;
+    }
+    
+    for ( rcommon::u32 i = 0; i < g_cmd_registery.cmd_count; i++ ) {
+        if ( strcmp( cmd_name, g_cmd_registery.cmd_commands[i].name ) == 0 ) {
+            return &g_cmd_registery.cmd_commands[i];
+        } 
+    }
+    
+    return nullptr;
+} 
+
+cmd_error_code_t cmd_parse( char *command_line, rcommon::u32 &argc, char **argv ) {
+    
+    if ( command_line == nullptr || command_line[0] == '\0' ) {
+        rcommon::com_printf( "cmd_parse: invalid command line passed for parsing." );
+        return cmd::cmd_error_code_t::ERR_INVALID_COMMAND;
+    }
     
     
     
     
     
+    return cmd::cmd_error_code_t::OK;
+}
+
+cmd_error_code_t cmd_execute( const char *command_line ) {
+    if ( !g_cmd_registery.initialized ) {
+        rcommon::com_printf( "cmd_execute: cmd system is not initialized; nothing to execute." );
+        return cmd::cmd_error_code_t::ERR_NOT_INIT;
+    }        
+    
+    if ( command_line == nullptr || command_line[0] == '\0' ) {
+        rcommon::com_printf( "cmd_execute: invalid command line passed to execute." );
+        return cmd::cmd_error_code_t::ERR_INVALID_COMMAND;
+    }
+    
+    rcommon::u32 cmd_argc{};
+    char **cmd_argv{};
+    
+    // @TODO: Parsing the command line in the first place.
+    cmd_error_code_t err = cmd_parse( command_line, &cmd_argc, cmd_argv );
+    
+    if ( err != cmd::cmd_error_code_t::OK ) {
+        rcommon::com_errorf( cmd_error_code( err ), "cmd_execute: cmd_parse: invalid parsing command line." );
+    }
     
     
     
     
+       
     
+       
+       
+       
+}
+
+ 
     
 }
