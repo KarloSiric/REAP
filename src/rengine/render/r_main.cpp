@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-20 21:01:21
    Last Modified by: ksiric
-   Last Modified: 2026-04-20 23:43:44
+   Last Modified: 2026-04-21 15:54:13
    ---------------------------------------------------------------------
    Description:
        
@@ -14,7 +14,6 @@
    Version: 0.1.0
  ======================================================================
                                                                        */
-
 #include "rengine/render/r_main.h"
 #include "rengine/log/log_main.h"
 

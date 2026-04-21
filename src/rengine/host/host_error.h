@@ -1,0 +1,21 @@
+#pragma once
+
+#include "rengine/rcommon/com_error.h"
+#include "rengine/rcommon/com_foundation.h"
+
+namespace reap::rengine::host
+{
+    
+enum class host_error_code_t : rcommon::u8 { 
+    OK = 0,
+    
+    HOST_IS_INIT,                           // host already initialized.
+    HOST_NOT_INIT,                          // host not initialized.
+    
+};    
+
+constexpr inline rcommon::com_error_t host_error_code( host_error_code_t error ) {
+    return rcommon::com_error_make( rcommon::com_domain_t::COM_DOMAIN_HOST, static_cast<rcommon::com_u16>( error ) );
+}
+    
+}       // namespace reap::rengine::host

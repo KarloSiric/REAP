@@ -133,7 +133,7 @@ struct log_config_t {
  *
  * @return Constant string representation of the level.
  */
-inline const char *log_level_name( const log_level_t log_level ) {
+constexpr inline const char *log_level_name( const log_level_t log_level ) {
 	switch ( log_level ) {
         case log_level_t::TRACE:        return "TRACE";
         case log_level_t::DEBUG:        return "DEBUG";
@@ -152,7 +152,7 @@ inline const char *log_level_name( const log_level_t log_level ) {
  *
  * @return Constant string representation of the channel.
  */
-inline const char *log_channel_name( const log_channel_t channel ) {
+constexpr inline const char *log_channel_name( const log_channel_t channel ) {
     switch ( channel ) {
         case log_channel_t::CORE:      return "CORE";
         case log_channel_t::HOST:      return "HOST";
@@ -178,7 +178,7 @@ inline const char *log_channel_name( const log_channel_t channel ) {
  *
  * @return Bit mask value for the supplied channel.
  */
-inline rcommon::com_u32 log_channel_bit( const log_channel_t channel ) {
+constexpr inline rcommon::com_u32 log_channel_bit( const log_channel_t channel ) {
     return 1u << static_cast<rcommon::com_u32>( channel );
 }
 

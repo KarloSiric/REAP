@@ -8,8 +8,8 @@
  */
 #include "rengine/rcommon/com_foundation.h"
 
-#define COM_MSG_MAX
-#define COM_ERROR_MSG_MAX
+#define COM_MSG_MAX                 2048u
+#define COM_ERROR_MSG_MAX           2048u
 
 namespace reap::rengine::rcommon {
     
@@ -23,9 +23,10 @@ using com_error_t = com_u32;
 
 // @TODO: Simple domain name which can be extended to each and every single 
 //        subsystem as we keep expanding the engine and adding new things.
-enum class com_domain_t : u8 {
+enum class com_domain_t : u16 {
     COM_DOMAIN_COMMON = 0,
     COM_DOMAIN_RENDER,
+    COM_DOMAIN_LOG,
     COM_DOMAIN_HOST,
     COM_DOMAIN_SYS,
     COM_DOMAIN_AUDIO,
@@ -109,7 +110,7 @@ constexpr inline com_error_t com_error_make( const com_domain_t domain, const co
 }
 
 constexpr inline com_domain_t com_error_domain( const com_error_t error ) {
-    return static_cast<com_domain_t>( ( error >> 16u ) | 0xFFFF );
+    return static_cast<com_domain_t>( ( error >> 16u ) & 0xFFFF );
 }
 
 constexpr inline com_u16 com_error_code( const com_error_t error ) {

@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-21 13:11:03
    Last Modified by: ksiric
-   Last Modified: 2026-04-21 14:54:27
+   Last Modified: 2026-04-21 15:54:08
    ---------------------------------------------------------------------
    Description:
        
@@ -40,9 +40,6 @@ void com_vprintf( const char *message, va_list args ) {
     // @TODO: THis will later be changed as to where this will be flushed
     //        and this is important because we might have later func pointers
     //        and other things and it is better to just leave it as it is.
-    
-    
-    
     
 }   
 

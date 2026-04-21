@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-19 22:31:16
    Last Modified by: ksiric
-   Last Modified: 2026-04-21 01:58:58
+   Last Modified: 2026-04-21 15:57:37
    ---------------------------------------------------------------------
    Description:
        
@@ -84,9 +84,8 @@ void log_shutdown( ) {
     if ( g_log_runtime_state_t.file_handle != nullptr ) {
         std::fflush( g_log_runtime_state_t.file_handle );
         std::fclose( g_log_runtime_state_t.file_handle );
-        g_log_runtime_state_t.initialized = false;
     }
-    
+    g_log_runtime_state_t.initialized = false;      // @NOTE: not really needed.
     g_log_runtime_state_t = {};
 }
 
