@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-19 22:31:16
    Last Modified by: ksiric
-   Last Modified: 2026-04-21 15:57:37
+   Last Modified: 2026-04-21 19:14:51
    ---------------------------------------------------------------------
    Description:
        
@@ -51,7 +51,7 @@ namespace reap::rengine::log {
  *
  * @param[in] config Logging configuration to install.
  */
-bool log_init( const log_config_t &config ){
+log_error_code_t log_init( const log_config_t &config ){
     if ( g_log_runtime_state_t.file_handle != nullptr ) {
         std::fclose( g_log_runtime_state_t.file_handle );
         g_log_runtime_state_t.file_handle = nullptr;
@@ -68,13 +68,14 @@ bool log_init( const log_config_t &config ){
         
         if ( g_log_runtime_state_t.file_handle == nullptr ) {
             g_log_runtime_state_t.initialized = false;
-            return false;
+            // @TODO: Add error later fix!
+            return log_error_code_t::ERR_INVALID_CONFIG;
         }        
     }
     
     g_log_runtime_state_t.initialized = true;
     
-    return true;
+    return log_error_code_t::OK;
 }
 
 /**
@@ -173,6 +174,10 @@ bool log_level_enabled( const log_level_t level, const log_channel_t channel ) {
  * @param[in] channel Channel to test.
  *
  * @return True if the supplied channel bit is enabled.
+ *  
+ * 0xFFFFFFFF -> 1111 1111 1111 1111
+ * 
+ * Channel -> HOST
  * 
  */
 bool log_channel_enabled( const rcommon::com_u32 channel_mask, const log_channel_t channel ) { 
@@ -181,6 +186,12 @@ bool log_channel_enabled( const rcommon::com_u32 channel_mask, const log_channel
     }
     
     const auto channel_as_int = static_cast<rcommon::com_u32>( channel );
+    
+    // 5 ->                 0000 0000 0000 0101
+    // mask -> 0xFFFFFFF -> 1111 1111 1111 1111
+    // 1u                   0000 0000 0010 0000 << 2
+    // 
+    // 
     
     if ( channel_as_int >= 32 ) {
         return false;
@@ -196,14 +207,14 @@ bool log_channel_enabled( const rcommon::com_u32 channel_mask, const log_channel
  * for flushing
  * 
  ***********/
-bool log_should_flush( const reap::rengine::log::log_flush_policy_t flush_policy, const reap::rengine::log::log_level_t level ) {
+bool log_should_flush( const log_flush_policy_t flush_policy, const log_level_t level ) {
     
     switch ( flush_policy ) {
-        case reap::rengine::log::log_flush_policy_t::NEVER: 
+        case log_flush_policy_t::NEVER:
             return false;
-        case reap::rengine::log::log_flush_policy_t::ERRORS_AND_ABOVE:
-            return static_cast<reap::rengine::rcommon::u32>( level ) >= static_cast<reap::rengine::rcommon::u32>( log_level_t::ERROR );
-        case reap::rengine::log::log_flush_policy_t::EVERY_MESSAGE:
+        case log_flush_policy_t::ERRORS_AND_ABOVE:
+            return static_cast<rcommon::u32>( level ) >= static_cast<rcommon::u32>( log_level_t::ERROR );
+        case log_flush_policy_t::EVERY_MESSAGE:
             return true;
         default:
             return false;

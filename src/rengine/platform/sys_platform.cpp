@@ -71,9 +71,9 @@ compiler_t sys_compiler_type() {
  */
 const char *sys_platform_name( platform_t type ) {
     switch( type ) {
-        case reap::rengine::sys::platform_t::WINDOWS: return "Windows";
-        case reap::rengine::sys::platform_t::LINUX: return "Linux";
-        case reap::rengine::sys::platform_t::MACOSX: return "MacOS";
+        case platform_t::WINDOWS: return "Windows";
+        case platform_t::LINUX: return "Linux";
+        case platform_t::MACOSX: return "MacOS";
         default: return "Unknown";
     }
 }   
@@ -87,9 +87,9 @@ const char *sys_platform_name( platform_t type ) {
  */
 const char *sys_compiler_name( compiler_t type ) {
     switch( type ) {
-        case reap::rengine::sys::compiler_t::CLANG: return "Clang";
-        case reap::rengine::sys::compiler_t::GCC: return "GCC";
-        case reap::rengine::sys::compiler_t::MSVC: return "MSVC";
+        case compiler_t::CLANG: return "Clang";
+        case compiler_t::GCC: return "GCC";
+        case compiler_t::MSVC: return "MSVC";
         default: return "Unknown";
     }
 }

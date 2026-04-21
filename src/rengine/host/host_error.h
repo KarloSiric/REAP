@@ -9,8 +9,9 @@ namespace reap::rengine::host
 enum class host_error_code_t : rcommon::u8 { 
     OK = 0,
     
-    HOST_IS_INIT,                           // host already initialized.
-    HOST_NOT_INIT,                          // host not initialized.
+    ERR_NOT_INIT,                          // host not initialized.
+    ERR_IS_INIT,                           // host already initialized.
+    ERR_INITIALIZING,                      // host was initializing another system.
     
 };    
 

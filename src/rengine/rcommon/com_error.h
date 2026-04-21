@@ -8,9 +8,6 @@
  */
 #include "rengine/rcommon/com_foundation.h"
 
-#define COM_MSG_MAX                 2048u
-#define COM_ERROR_MSG_MAX           2048u
-
 namespace reap::rengine::rcommon {
     
 // @NOTE: One common error_code that is tightly packed for it to be 
@@ -18,6 +15,13 @@ namespace reap::rengine::rcommon {
 //        all convert their local enum subsystem error type to this one
 //        so that the common Errorf printing function can use this.
 
+/**
+ * @brief Common packed error value used when subsystem-local errors are surfaced.
+ *
+ * Individual subsystems keep their own strongly typed local error enums.
+ * When an error needs to cross subsystem boundaries, it is converted into
+ * this shared packed representation.
+ */
 using com_error_t = com_u32;
 
 
@@ -87,7 +91,7 @@ constexpr bool com_error_failed( const com_error_code_t code ) {
  *
  * @return Constant error name string.
  */
-inline const char *com_error_name( const com_error_code_t code ) {
+constexpr inline const char *com_error_name( const com_error_code_t code ) {
     switch ( code ) {
         case com_error_code_t::OK:                       return "OK";
         case com_error_code_t::ERR_FAILED:               return "COM_FAILED";
@@ -105,16 +109,44 @@ inline const char *com_error_name( const com_error_code_t code ) {
     }
 }
 
-constexpr inline com_error_t com_error_make( const com_domain_t domain, const com_u16 local_enum_error_code ) {
-    return ( static_cast<com_error_t>( domain) << 16u | static_cast<com_error_t>( local_enum_error_code ) );
+constexpr inline const char *com_domain_name( const com_domain_t domain ) {
+    switch( domain ) {
+        case com_domain_t::COM_DOMAIN_HOST:               return "HOST";
+        case com_domain_t::COM_DOMAIN_GAME:               return "GAME";
+        case com_domain_t::COM_DOMAIN_SYS:                return "SYS";
+        case com_domain_t::COM_DOMAIN_AUDIO:              return "AUDIO";
+        case com_domain_t::COM_DOMAIN_COMMON:             return "COMMON";
+        case com_domain_t::COM_DOMAIN_LOG:                return "LOG";
+        case com_domain_t::COM_DOMAIN_RENDER:             return "RENDER";
+        case com_domain_t::COM_DOMAIN_FS:                 return "FS";
+        case com_domain_t::COM_DOMAIN_NET:                return "NET";
+        default:                                          return "UNKNOWN";
+    }
 }
 
+/**
+ * @brief Packs a common error domain and a subsystem-local code into one value.
+ *
+ * The upper 16 bits store the domain and the lower 16 bits store the local
+ * subsystem error code.
+ */
+constexpr inline com_error_t com_error_make( const com_domain_t domain, const com_u16 local_error_code ) {
+    return ( static_cast<com_error_t>( domain ) << 16u ) |
+           static_cast<com_error_t>( local_error_code );
+}
+
+/**
+ * @brief Extracts the packed common error domain from a surfaced error value.
+ */
 constexpr inline com_domain_t com_error_domain( const com_error_t error ) {
-    return static_cast<com_domain_t>( ( error >> 16u ) & 0xFFFF );
+    return static_cast<com_domain_t>( ( error >> 16u ) & 0xFFFFu );
 }
 
+/**
+ * @brief Extracts the subsystem-local packed error code from a surfaced error.
+ */
 constexpr inline com_u16 com_error_code( const com_error_t error ) {
-    return static_cast<com_u16>( error & 0xFFFF );
+    return static_cast<com_u16>( error & 0xFFFFu );
 }
 
 } // namespace reap::rengine::rcommon

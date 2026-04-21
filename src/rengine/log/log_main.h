@@ -2,9 +2,10 @@
 
 #include <cstdarg>
 
+#include "rengine/log/log_error.h"
 #include "rengine/log/log_types.h"
 
-namespace reap::rengine::log 
+namespace reap::rengine::log
 {
 
 /**
@@ -15,7 +16,7 @@ namespace reap::rengine::log
  *
  * @param[in] config Logging configuration to install.
  */
-bool log_init( const log_config_t &config = {} );
+log_error_code_t log_init( const log_config_t &config = {} );
 
 /**
  * @brief Shuts down the logging subsystem.

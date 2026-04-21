@@ -8,7 +8,13 @@ namespace reap::rengine::log
 enum class log_error_code_t : rcommon::u8 {
       OK = 0,
       
-      LOG_NOT_INIT,
+      ERR_NOT_INIT,
+      ERR_IS_INIT,
+      ERR_INVALID_CONFIG,
+      ERR_FILE_OPEN_FAILED,
+      ERR_FILE_WRITE_FAILED,
+      ERR_INVALID_CHANNEL,
+      ERR_INVALID_LEVEL
 }; 
 
 constexpr inline rcommon::com_error_t log_error_code( log_error_code_t error ) {

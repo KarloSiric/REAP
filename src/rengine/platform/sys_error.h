@@ -12,6 +12,8 @@ enum class sys_error_code_t : rcommon::u8 {
     ERR_UNSUPPORTED_PLATFORM,
     ERR_UNSUPPORTED_COMPILER,
     ERR_INVALID_PATH,
+    ERR_TIME_UNAVAILABLE,
+    ERR_LOCALTIME_FAILED
 };
 
 constexpr inline rcommon::com_error_t sys_error_code( sys_error_code_t error ) {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "rengine/host/host_error.h"
 #include "rengine/host/host_types.h"
 
 namespace reap::rengine::host
@@ -17,7 +18,7 @@ namespace reap::rengine::host
  *
  * @return True if initialization succeeded, otherwise false.
  */
-bool host_init( host_state_t &host_state, const host_config_t &host_config );
+host_error_code_t host_init( host_state_t &host_state, const host_config_t &host_config );
 
 /**
  * @brief Shuts down the top-level host runtime.

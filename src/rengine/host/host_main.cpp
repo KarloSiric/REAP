@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-19 01:23:58
    Last Modified by: ksiric
-   Last Modified: 2026-04-21 12:27:19
+   Last Modified: 2026-04-21 17:42:47
    ---------------------------------------------------------------------
    Description:
        
@@ -31,7 +31,7 @@ namespace reap::rengine::host
  *
  * @return True if initialization completed successfully.
  */
-bool host_init( host_state_t &host_state, const host_config_t &host_config ) {
+host_error_code_t host_init( host_state_t &host_state, const host_config_t &host_config ) {
     ( void )host_config;
     
     host_state.stage = host_stage_t::INITIALIZING;
@@ -39,15 +39,15 @@ bool host_init( host_state_t &host_state, const host_config_t &host_config ) {
     host_state.has_focus = true;
     host_state.frame = {};
 
-    if ( !render::r_init( host_config.window_config ) ) {
+    if ( render::r_init( host_config.window_config ) != render::r_error_code_t::OK ) {
         host_state.running = false;
         host_state.stage = host_stage_t::SHUTDOWN;
-        return false;
+        return host_error_code_t::ERR_INITIALIZING;
     }
     
     host_state.stage = host_stage_t::RUNNING;
     
-    return true;   
+    return host_error_code_t::OK;   
 }
 
 /**
