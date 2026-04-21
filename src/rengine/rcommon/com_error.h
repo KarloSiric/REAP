@@ -27,7 +27,7 @@ enum class com_domain_t : u8 {
     COM_DOMAIN_COMMON = 0,
     COM_DOMAIN_RENDER,
     COM_DOMAIN_HOST,
-    COM_DOMAIN_PLATFORM,
+    COM_DOMAIN_SYS,
     COM_DOMAIN_AUDIO,
     COM_DOMAIN_FS,
     COM_DOMAIN_NET,

@@ -19,7 +19,7 @@ enum class r_error_code_t : rcommon::u8 {
     ERR_FRAME_NOT_ACTIVE,             // frame not active.
 };
 
-constexpr inline rcommon::com_error_t r_make_error( r_error_code_t code ) {
+constexpr inline rcommon::com_error_t r_error_code( r_error_code_t code ) {
     return rcommon::com_error_make( rcommon::com_domain_t::COM_DOMAIN_RENDER , static_cast<rcommon::u16>( code ) );
 }
 
