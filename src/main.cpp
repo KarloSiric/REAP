@@ -14,14 +14,14 @@
    Version: 0.1.0
  ======================================================================
                                                                        */
-#include "rengine/app/app_main.h"
+#include "rengine/host/host_main.h"
 #include "rengine/platform/sys_platform.h"
 
 /**
  * @brief OS-level entry point for the REAP executable.
  *
- * The executable owns the top-level application state and drives the main
- * frame loop through the engine application interface.
+ * The executable owns the top-level host state and drives the main
+ * frame loop through the engine host interface.
  *
  * @param[in] argc Number of command-line arguments.
  * @param[in] argv Command-line argument array.
@@ -36,27 +36,27 @@ int main(int argc, char const *argv[])
     ( void )argc;
     ( void )argv;
     
-    reap::rengine::app::app_config_t app_config{};   
-    reap::rengine::app::app_state_t app{};
+    reap::rengine::host::host_config_t host_config{};
+    reap::rengine::host::host_state_t host_state{};
     
-    if ( !reap::rengine::app::app_init( app, app_config ) ) {
+    if ( !reap::rengine::host::host_init( host_state, host_config ) ) {
         // @TODO: To add 
         return 1;
     }   
     
-    while ( reap::rengine::app::app_is_running( app ) ) {
+    while ( reap::rengine::host::host_is_running( host_state ) ) {
         const reap::rengine::rcommon::com_f64 current_time_seconds = reap::rengine::sys::sys_time_now_seconds();
         const reap::rengine::rcommon::com_f64 delta_time_seconds = static_cast<reap::rengine::rcommon::com_f32>( current_time_seconds - previous_time_seconds );
         
         previous_time_seconds = current_time_seconds;
         
-        reap::rengine::app::app_begin_frame( app, delta_time_seconds );
-        reap::rengine::app::app_update( app );
-        reap::rengine::app::app_render( app );
-        reap::rengine::app::app_end_frame( app );
+        reap::rengine::host::host_begin_frame( host_state, delta_time_seconds );
+        reap::rengine::host::host_update( host_state );
+        reap::rengine::host::host_render( host_state );
+        reap::rengine::host::host_end_frame( host_state );
     }
     
-    reap::rengine::app::app_shutdown( app );
+    reap::rengine::host::host_shutdown( host_state );
     
     return ( 0 );
 }

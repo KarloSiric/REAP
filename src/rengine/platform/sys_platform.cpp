@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-20 17:42:16
    Last Modified by: ksiric
-   Last Modified: 2026-04-20 22:01:21
+   Last Modified: 2026-04-21 01:54:55
    ---------------------------------------------------------------------
    Description:
        
@@ -141,9 +141,9 @@ rcommon::com_f64 sys_time_now_seconds() {
 bool sys_local_time( std::time_t time_value, std::tm &time_out ) {
 
 #   if defined( _WIN32 ) 
-        return localtime_s( &time_out, &time_value );
+        return localtime_s( &time_out, &time_value ) == 0;
 #   else 
-        return localtime_r( &time_value, &time_out );
+        return localtime_r( &time_value, &time_out ) != nullptr;
 #   endif
         
 }

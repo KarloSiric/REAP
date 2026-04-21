@@ -1,11 +1,11 @@
 #pragma once
 
-#include "rengine/app/app_types.h"
+#include "rengine/host/host_types.h"
 
 namespace reap::rengine::render 
 {
     
-bool r_init( const app::window_config_t &window_config );
+bool r_init( const host::window_config_t &window_config );
 
 void r_shutdown();
 

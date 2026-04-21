@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-19 22:31:16
    Last Modified by: ksiric
-   Last Modified: 2026-04-20 21:53:24
+   Last Modified: 2026-04-21 01:58:58
    ---------------------------------------------------------------------
    Description:
        
@@ -21,7 +21,7 @@
 #include "rengine/log/log_main.h"
 #include "rengine/platform/sys_platform.h"
 
-namespace 
+namespace reap::rengine::log
 {
 
 /**
@@ -31,8 +31,10 @@ namespace
  * and initialization state in process-global storage.
  */
 struct log_runtime_state_t {
-    reap::rengine::log::init_t config{};
+    log_config_t config{};
     bool initialized{ false };
+    std::FILE *file_handle{ nullptr };
+    bool file_error_reported{ false };
 };
 
 log_runtime_state_t g_log_runtime_state_t;
@@ -49,15 +51,42 @@ namespace reap::rengine::log {
  *
  * @param[in] config Logging configuration to install.
  */
-void log_init( const init_t &config ){
+bool log_init( const log_config_t &config ){
+    if ( g_log_runtime_state_t.file_handle != nullptr ) {
+        std::fclose( g_log_runtime_state_t.file_handle );
+        g_log_runtime_state_t.file_handle = nullptr;
+    }
+    
+    g_log_runtime_state_t = {};
+    
     g_log_runtime_state_t.config = config;
+    g_log_runtime_state_t.file_error_reported = false;
+    
+    if ( g_log_runtime_state_t.config.file_enabled ) {
+        const char *open_mode = ( g_log_runtime_state_t.config.file_mode == log_file_mode_t::APPEND ? "a" : "w" );
+        g_log_runtime_state_t.file_handle = std::fopen( g_log_runtime_state_t.config.file_path, open_mode );
+        
+        if ( g_log_runtime_state_t.file_handle == nullptr ) {
+            g_log_runtime_state_t.initialized = false;
+            return false;
+        }        
+    }
+    
     g_log_runtime_state_t.initialized = true;
+    
+    return true;
 }
 
 /**
  * @brief Resets the logging subsystem back to its uninitialized state.
  */
 void log_shutdown( ) {
+    if ( g_log_runtime_state_t.file_handle != nullptr ) {
+        std::fflush( g_log_runtime_state_t.file_handle );
+        std::fclose( g_log_runtime_state_t.file_handle );
+        g_log_runtime_state_t.initialized = false;
+    }
+    
     g_log_runtime_state_t = {};
 }
 
@@ -66,7 +95,7 @@ void log_shutdown( ) {
  *
  * @return Read-only reference to the active logging configuration.
  */
-const init_t &log_get_config( ) {
+const log_config_t &log_get_config( ) {
     return g_log_runtime_state_t.config;   
 }
 
@@ -75,28 +104,60 @@ const init_t &log_get_config( ) {
  *
  * @param[in] config New logging configuration to install.
  */
-void log_set_config( const init_t &config ) {
+bool log_set_config( const log_config_t &config ) {
+    if ( !g_log_runtime_state_t.initialized ) {
+        return false;
+    }
+    
+    std::FILE *new_file_handle = g_log_runtime_state_t.file_handle;
+    
+    const bool file_sink_changed = ( g_log_runtime_state_t.config.file_enabled != config.file_enabled ) || ( g_log_runtime_state_t.config.file_mode != config.file_mode ) || ( std::strncmp( g_log_runtime_state_t.config.file_path, config.file_path, REAP_LOG_FILE_PATH_MAX ) != 0 );
+    
+    if ( file_sink_changed ) {
+        
+        new_file_handle = nullptr;
+        
+        if ( config.file_enabled ) {
+            const char *open_mode = ( config.file_mode == log_file_mode_t::APPEND ) ? "a" : "w";
+            
+            new_file_handle = std::fopen( config.file_path, open_mode );
+            
+            if ( new_file_handle == nullptr ) {
+                return false;
+            }
+        }
+    }   
+    
+    if ( file_sink_changed && g_log_runtime_state_t.file_handle != nullptr ) {
+        std::fflush( g_log_runtime_state_t.file_handle );
+        std::fclose( g_log_runtime_state_t.file_handle );
+    }
+    
     g_log_runtime_state_t.config = config;
+    g_log_runtime_state_t.file_handle = new_file_handle;
+    g_log_runtime_state_t.file_error_reported = false;
+    
+    return true;
 }
 
 /**
  * @brief Tests whether a log event should be emitted under current policy.
  *
- * @param[in] log_level Severity level to test.
+ * @param[in] level Severity level to test.
  * @param[in] channel Logging channel to test.
  *
  * @return True if the log event is enabled.
  */
-bool log_level_enabled( const log_level_t log_level, const channel_t channel ) {
+bool log_level_enabled( const log_level_t level, const log_channel_t channel ) {
     if ( !g_log_runtime_state_t.initialized ) {
         return false;
     }   
     
-    if ( channel == channel_t::NONE || channel == channel_t::COUNT ) {
+    if ( channel == log_channel_t::NONE || channel == log_channel_t::COUNT ) {
         return false;
     }
     
-    const auto level_as_int = static_cast<rcommon::com_u32>( log_level );
+    const auto level_as_int = static_cast<rcommon::com_u32>( level );
     const auto min_level_as_int = static_cast<rcommon::com_u32>( g_log_runtime_state_t.config.min_level );
     
     if ( level_as_int < min_level_as_int ) {
@@ -113,9 +174,10 @@ bool log_level_enabled( const log_level_t log_level, const channel_t channel ) {
  * @param[in] channel Channel to test.
  *
  * @return True if the supplied channel bit is enabled.
+ * 
  */
-bool log_channel_enabled( const rcommon::com_u32 channel_mask, const channel_t channel ) {
-    if ( channel == channel_t::NONE || channel == channel_t::COUNT ) {
+bool log_channel_enabled( const rcommon::com_u32 channel_mask, const log_channel_t channel ) { 
+    if ( channel == log_channel_t::NONE || channel == log_channel_t::COUNT ) {
         return false;
     }
     
@@ -128,53 +190,111 @@ bool log_channel_enabled( const rcommon::com_u32 channel_mask, const channel_t c
     return ( channel_mask & ( 1u << channel_as_int ) ) != 0u;
 }
 
+/************
+ *
+ * Helper function
+ * 
+ * for flushing
+ * 
+ ***********/
+bool log_should_flush( const reap::rengine::log::log_flush_policy_t flush_policy, const reap::rengine::log::log_level_t level ) {
+    
+    switch ( flush_policy ) {
+        case reap::rengine::log::log_flush_policy_t::NEVER: 
+            return false;
+        case reap::rengine::log::log_flush_policy_t::ERRORS_AND_ABOVE:
+            return static_cast<reap::rengine::rcommon::u32>( level ) >= static_cast<reap::rengine::rcommon::u32>( log_level_t::ERROR );
+        case reap::rengine::log::log_flush_policy_t::EVERY_MESSAGE:
+            return true;
+        default:
+            return false;
+    }
+}
+
 /**
  * @brief Emits a fully built log record to the current output sink.
  *
  * @param[in] record Fully constructed log record to emit.
  */
-void log_emit( const record_t &record ) {
+void log_emit( const log_record_t &record ) {
     if ( record.message[0] == '\0' ) {
         return;   
     }
     
-    if ( !log_level_enabled( record.log_level, record.channel ) ) {
+    if ( !log_level_enabled( record.level, record.channel ) ) {
         return ;
     }
     
     const auto &cfg = log_get_config();
     
     // @TODO: For now we will not be touching this, because this will need to be addressed later only
-    if ( !cfg.use_console_stdout ) {
+    if ( !cfg.console_enabled && !( cfg.file_enabled && g_log_runtime_state_t.file_handle != nullptr ) ) {
         return ;
     }
     
-    if ( cfg.include_timestamps ) {
-        std::time_t now_time = std::time( nullptr );
-        std::tm tm_value{};
-        
-        if ( sys::sys_local_time( now_time, tm_value ) ) {
-            
-            char timestamp[32]{};
-            
-            std::strftime( timestamp, sizeof( timestamp ), "%H:%M:%S", &tm_value );
-            std::printf( "[%s] ", timestamp );
-        }
+    const char *source_file = record.file ? record.file : "<unknown_file>";
+    
+    if ( cfg.source_path_mode == log_source_path_mode_t::BASENAME ) {
+        source_file = sys::sys_path_basename( source_file );
     }
     
-    const char *file_name = reap::rengine::sys::sys_path_basename( record.file );
+    char timestamp_buffer[32]{};
     
-    std::printf( 
-                "[%s][%s] %s:%d (%s) %s\n",
-                 log_level_name( record.log_level ),
-                 log_channel_name( record.channel ),
-                 file_name,
-                 record.line,
-                 record.function,
-                 record.message
-                  );
-    // @NOTE: So first we will be pushing it to the stdout but later this will have to be adopted to whatever we will be either in game or this and that right...
-    std::fflush( stdout );
+    if ( cfg.include_timestamps && record.timestamp != std::time_t{} ) {
+        std::tm tm_value{};
+        
+        if ( sys::sys_local_time( record.timestamp, tm_value ) ) {
+            std::strftime( timestamp_buffer, sizeof( timestamp_buffer ), "%H:%M:%S", &tm_value );
+        } 
+    }
+    
+    char line_buffer[REAP_LOG_MESSAGE_MAX + 256]{};
+    
+    if ( timestamp_buffer[0] != '\0' ) {
+        std::snprintf( 
+                      line_buffer, 
+                      sizeof( line_buffer ),
+                      "[%s][%s][%s] %s:%d (%s) %s\n",
+                      timestamp_buffer,
+                      log_level_name( record.level ),
+                      log_channel_name( record.channel ),
+                      source_file,
+                      record.line,
+                      record.function ? record.function : "<unknown_function>",
+                      record.message
+                      );
+    } else {
+        std::snprintf(
+                    line_buffer,
+                    sizeof( line_buffer ),
+                    "[%s][%s] %s:%d (%s) %s\n",
+                    log_level_name( record.level ),
+                    log_channel_name( record.channel ),
+                    source_file,
+                    record.line,
+                    record.function ? record.function : "<unknown_function>",
+                    record.message
+                    );
+    } 
+    
+    if ( cfg.console_enabled ) {
+        std::fputs( line_buffer, stdout );
+    }
+    
+    if ( cfg.file_enabled && g_log_runtime_state_t.file_handle != nullptr ) {
+        std::fputs( line_buffer, g_log_runtime_state_t.file_handle );
+    }
+    
+    if ( log_should_flush( cfg.flush_policy, record.level ) ) {
+        
+        if ( cfg.console_enabled ) {
+            std::fflush( stdout );
+        }
+        
+        if ( cfg.file_enabled && g_log_runtime_state_t.file_handle != nullptr ) {
+            std::fflush( g_log_runtime_state_t.file_handle );
+        }
+    }   
 }
 
 /**
@@ -183,29 +303,29 @@ void log_emit( const record_t &record ) {
  * This is the convenience wrapper used by logging macros. The actual
  * formatting work is forwarded into `log_emitfv`.
  *
- * @param[in] log_level Severity level of the log event.
+ * @param[in] level Severity level of the log event.
  * @param[in] channel Logging channel associated with the event.
  * @param[in] file Source file where the event originated.
  * @param[in] function Source function where the event originated.
  * @param[in] line Source line where the event originated.
  * @param[in] format Printf-style message format string.
  */
-void log_emitf( const log_level_t log_level, const channel_t channel,
+void log_emitf( const log_level_t level, const log_channel_t channel,
                 const char *file, const char *function, const rcommon::com_i32 line,
                 const char *format, ... ) {
-    if ( !log_level_enabled( log_level, channel ) ) {
+    if ( !log_level_enabled( level, channel ) ) {
         return ;
     }
     va_list args;
     va_start( args, format );
-    log_emitfv( log_level, channel, file, function, line, format, args );
+    log_emitfv( level, channel, file, function, line, format, args );
     va_end( args );
 }
 
 /**
  * @brief Formats and emits a log event from an existing `va_list`.
  *
- * @param[in] log_level Severity level of the log event.
+ * @param[in] level Severity level of the log event.
  * @param[in] channel Logging channel associated with the event.
  * @param[in] file Source file where the event originated.
  * @param[in] function Source function where the event originated.
@@ -213,20 +333,21 @@ void log_emitf( const log_level_t log_level, const channel_t channel,
  * @param[in] format Printf-style message format string.
  * @param[in] args Existing variadic argument list used for formatting.
  */
-void log_emitfv( const log_level_t log_level, const channel_t channel,
+void log_emitfv( const log_level_t level, const log_channel_t channel,
                  const char *file, const char *function, const rcommon::com_i32 line,
                  const char *format, va_list args ) {
     
-    if ( !log_level_enabled( log_level, channel ) ) {
+    if ( !log_level_enabled( level, channel ) ) {
         return ;
     }   
     
-    record_t record{};
-    record.log_level = log_level;
+    log_record_t record{};
+    record.level = level;
     record.channel = channel;
     record.file = file ? file : "<unknown_file>";
     record.function = function ? function : "<unknown_function>";
     record.line = line;
+    record.timestamp = std::time( nullptr );
     
     const char *safe_format = format ? format : "<null format>";
     std::vsnprintf( record.message, sizeof ( record.message ), safe_format, args );

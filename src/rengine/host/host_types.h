@@ -2,16 +2,16 @@
 
 #include "rengine/rcommon/com_foundation.h"
 
-namespace reap::rengine::app
+namespace reap::rengine::host
 {
     
 /**
- * @brief Represents the high-level runtime stage of the application.
+ * @brief Represents the high-level runtime stage of the host layer.
  *
- * This enum describes where the app currently is in its lifecycle, from
+ * This enum describes where the host currently is in its lifecycle, from
  * startup through normal execution to shutdown.
  */
-enum class app_stage_t : rcommon::u8 {
+enum class host_stage_t : rcommon::u8 {
     UNINITIALIZED,
     INITIALIZING,
     RUNNING,
@@ -21,7 +21,7 @@ enum class app_stage_t : rcommon::u8 {
 };
 
 /**
- * @brief Identifies the build configuration the application is running under.
+ * @brief Identifies the build configuration the host is running under.
  *
  * This is intended for runtime diagnostics, feature toggles, and startup
  * visibility when distinguishing debug and shipping-oriented builds.
@@ -45,7 +45,7 @@ struct viewport_t {
 };
  
 /**
- * @brief Describes the initial window configuration for the application.
+ * @brief Describes the initial window configuration for the host.
  *
  * This groups the basic startup-facing properties needed to create and
  * configure the primary runtime window.
@@ -59,7 +59,7 @@ struct window_config_t {
 };
 
 /**
- * @brief Stores per-frame runtime timing data for the application.
+ * @brief Stores per-frame runtime timing data for the host.
  *
  * This structure keeps both real elapsed time and simulation time so the
  * engine can distinguish total runtime from simulation-controlled time.
@@ -72,27 +72,27 @@ struct frame_t {
 };
 
 /**
- * @brief Groups the startup configuration for the application runtime.
+ * @brief Groups the startup configuration for the host runtime.
  *
- * This is the top-level config passed into `app_init` and expanded as the
+ * This is the top-level config passed into `host_init` and expanded as the
  * engine gains more startup-configurable systems.
  */
-struct app_config_t {
+struct host_config_t {
     build_config_t build_config{ build_config_t::UNKNOWN };
     window_config_t window_config{};
 };
 
 /**
- * @brief Owns the mutable high-level runtime state of the application.
+ * @brief Owns the mutable high-level runtime state of the host layer.
  *
- * This is the main state object advanced through the app lifecycle and used
+ * This is the main state object advanced through the host lifecycle and used
  * by the executable entry point to drive the frame loop.
  */
-struct app_state_t {
-    app_stage_t stage{ app_stage_t::UNINITIALIZED };
+struct host_state_t {
+    host_stage_t stage{ host_stage_t::UNINITIALIZED };
     bool running{ false };
     bool has_focus{ false };
     frame_t frame{};
 };
  
-}       // namespace reap::rengine
+}       // namespace reap::rengine::host
