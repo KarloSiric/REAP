@@ -30,6 +30,7 @@ constexpr inline const char *cvar_error_name( const cvar_error_code_t error ) {
         case cvar_error_code_t::ERR_CVAR_ALREADY_EXISTS:  return "ERR_CVAR_ALREADY_EXISTS";
         case cvar_error_code_t::ERR_CVAR_NOT_FOUND:       return "ERR_CVAR_NOT_FOUND";
         case cvar_error_code_t::ERR_REGISTRY_FULL:        return "ERR_REGISTRY_FULL";
+        case cvar_error_code_t::ERR_INVALID_DEFAULT_VALUE: return "ERR_INVALID_DEFAULT_VALUE";
         case cvar_error_code_t::ERR_READONLY:             return "ERR_READONLY";
         case cvar_error_code_t::ERR_CHEAT_PROTECTED:      return "ERR_CHEAT_PROTECTED";
         case cvar_error_code_t::ERR_INVALID_FLAG:         return "ERR_INVALID_FLAG";
@@ -46,6 +47,7 @@ constexpr inline const char *cvar_error_desc( const cvar_error_code_t error ) {
         case cvar_error_code_t::ERR_CVAR_ALREADY_EXISTS:  return "cvar is already registered";
         case cvar_error_code_t::ERR_CVAR_NOT_FOUND:       return "cvar was not found";
         case cvar_error_code_t::ERR_REGISTRY_FULL:        return "cvar registry is full";
+        case cvar_error_code_t::ERR_INVALID_DEFAULT_VALUE: return "invalid default cvar value";
         case cvar_error_code_t::ERR_READONLY:             return "cvar is read-only";
         case cvar_error_code_t::ERR_CHEAT_PROTECTED:      return "cvar is cheat-protected";
         case cvar_error_code_t::ERR_INVALID_FLAG:         return "invalid cvar flags were provided";
