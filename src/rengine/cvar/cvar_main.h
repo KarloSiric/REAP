@@ -7,7 +7,7 @@
 
 namespace reap::rengine::cvar
 {
-    
+
 enum cvar_flags_t : rcommon::u32 {
     CVAR_NONE       = 0,
     CVAR_ARCHIVE    = 1 << 0,           // values archived, save to cfg on exit
@@ -33,6 +33,8 @@ struct cvar_registry_t {
     bool            initialized;
 };
 
+constexpr rcommon::u32 
+
 cvar_error_code_t cvar_init();
 
 cvar_error_code_t cvar_register( const char *name, const char *default_value, cvar_flags_t flags );
@@ -50,5 +52,5 @@ rcommon::u32 cvar_get_int( const char *name );
 rcommon::f32 cvar_get_float( const char *name );
 
 bool cvar_get_bool( const char *name );
-    
+
 }       // namespace reap::rengine::cvar
