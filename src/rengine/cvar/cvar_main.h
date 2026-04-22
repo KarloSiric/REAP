@@ -33,7 +33,8 @@ struct cvar_registry_t {
     bool            initialized;
 };
 
-constexpr rcommon::u32 
+constexpr rcommon::u32 CVAR_REGISTER_ALLOWED_FLAGS = 
+                       CVAR_ARCHIVE | CVAR_READONLY | CVAR_CHEAT | CVAR_DEV;
 
 cvar_error_code_t cvar_init();
 

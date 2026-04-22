@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-22 21:04:15
    Last Modified by: ksiric
-   Last Modified: 2026-04-23 00:30:03
+   Last Modified: 2026-04-23 00:54:32
    ---------------------------------------------------------------------
    Description:
 
@@ -14,10 +14,10 @@
    Version: 0.1.0
  ======================================================================
 																	   */
-
 #include "rengine/cvar/cvar_main.h"
 #include "rengine/cvar/cvar_error.h"
 #include "rengine/rcommon/com_print.h"
+#include <cctype>
 #include <cstdlib>
 #include <cstring>
 
@@ -34,6 +34,36 @@ cvar_error_code_t cvar_init() {
 	g_cvar_registry = {};
 	g_cvar_registry.initialized = true;
 	return cvar_error_code_t::OK;
+}
+
+// @NOTE(karlo): helper func for parsing the proper bool value
+bool cvar_parse_bool( const char *value ) {
+    // @NOTE(karlo) -> for design wise choice I went for nullptr, 0, false, "", "false", "off", "no" to be a bool false value.
+    if ( value == nullptr || value[0] == '\0' ) {
+        return false;
+    }
+    
+    char lower[32]{};
+    
+    for ( int i = 0; i < 31 && lower[i] != '\0'; i++ ) {
+        lower[i] = static_cast<char>( tolower( static_cast<unsigned char>( value[i] ) ) );
+    }
+    
+    if ( std::strcmp( value, "0"     )     == 0 || 
+         std::strcmp( value, "false" )     == 0 ||
+         std::strcmp( value, "off"   )     == 0 ||
+         std::strcmp( value, "no"    )     == 0    ) {
+        return false;
+    }
+    
+    if ( std::strcmp( value, "1" ) == 0 ||
+         std::strcmp( value, "true" ) == 0 ||
+         std::strcmp( value, "on" ) == 0 ||
+         std::strcmp( value, "yes" ) == 0 ) {
+        return true;
+    }
+    
+    return ( std::atoi( value ) != 0 );
 }
 
 cvar_error_code_t cvar_register( const char *name, const char *default_value, cvar_flags_t flags ) {
@@ -65,6 +95,12 @@ cvar_error_code_t cvar_register( const char *name, const char *default_value, cv
         return cvar_error_code_t::ERR_INVALID_FLAG;
     }
     
+    // @NOTE(karlo): Additional safety checking for the masking part.
+    if ( ( flags & ~CVAR_REGISTER_ALLOWED_FLAGS ) != 0 ) {
+        rcommon::com_printf( "cvar_register: %s: %s\n", cvar_error_name( cvar_error_code_t::ERR_INVALID_FLAG ), cvar_error_desc( cvar_error_code_t::ERR_INVALID_FLAG ) );
+        return cvar_error_code_t::ERR_INVALID_FLAG;
+    } 
+        
     // @NOTE(karlo): checking if we have that cvar already
     const cvar_t *cvar = cvar_find( name );
     
@@ -75,7 +111,7 @@ cvar_error_code_t cvar_register( const char *name, const char *default_value, cv
     }
     
     if ( g_cvar_registry.cvar_count >= CVAR_MAX_CVARS ) {
-        rcommon::com_printf( "cvar_register: %s: %S\n", cvar_error_name( cvar_error_code_t::ERR_REGISTRY_FULL ), cvar_error_desc( cvar_error_code_t::ERR_REGISTRY_FULL ) );
+        rcommon::com_printf( "cvar_register: %s: %s\n", cvar_error_name( cvar_error_code_t::ERR_REGISTRY_FULL ), cvar_error_desc( cvar_error_code_t::ERR_REGISTRY_FULL ) );
         return cvar_error_code_t::ERR_REGISTRY_FULL;
     }
     
@@ -85,8 +121,12 @@ cvar_error_code_t cvar_register( const char *name, const char *default_value, cv
     g_cvar_registry.cvars[g_cvar_registry.cvar_count].value_int = std::atoi( default_value );
     g_cvar_registry.cvars[g_cvar_registry.cvar_count].value_float = std::atof( default_value );
     g_cvar_registry.cvars[g_cvar_registry.cvar_count].value_bool = ( std::atoi( default_value ) != 0 );
+    g_cvar_registry.cvars[g_cvar_registry.cvar_count].flags = flags;
+    g_cvar_registry.cvar_count++;
     
     return cvar_error_code_t::OK;   
 }
+
+
 
 } // namespace reap::rengine::cvar
