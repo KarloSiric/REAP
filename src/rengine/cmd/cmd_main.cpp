@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-21 22:26:01
    Last Modified by: ksiric
-   Last Modified: 2026-04-22 01:59:00
+   Last Modified: 2026-04-22 02:31:03
    ---------------------------------------------------------------------
    Description:
 
@@ -177,13 +177,16 @@ cmd_error_code_t cmd_execute( const char *command_line ) {
         rcommon::com_errorf( cmd_error_code( err ), "cmd_execute: cmd_parse: invalid parsing command line." );
     }
     
-    if ( cmd_find( cmd_argv[0] ) ) {
+    const cmd_t *command = cmd_find( cmd_argv[0] );
+    
+    if ( command == nullptr ) {
         rcommon::com_printf( "cmd_execute: cmd_find: cmd not found." );
         return cmd_error_code_t::ERR_COMMAND_NOT_FOUND;    
-    }   
+    }
     
+    command->callback_fn( cmd_argc, cmd_argv );
     
-    
+    return cmd_error_code_t::OK;
 }
     
 }
