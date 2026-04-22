@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-21 22:26:01
    Last Modified by: ksiric
-   Last Modified: 2026-04-22 02:31:03
+   Last Modified: 2026-04-22 21:24:30
    ---------------------------------------------------------------------
    Description:
 
@@ -23,7 +23,7 @@
 namespace reap::rengine::cmd
 {
 
-cmd_registery_t g_cmd_registery{};
+cmd_registry_t g_cmd_registery{};
 
 cmd_error_code_t cmd_init( ) {
     if ( g_cmd_registery.initialized ) {
@@ -78,19 +78,15 @@ cmd_error_code_t cmd_register( const char *cmd_name, cmd_fn_t callback_fn, const
         return cmd::cmd_error_code_t::ERR_INVALID_CALLBACK;
     }
 
-    rcommon::u32 count = g_cmd_registery.cmd_count;
-
     if ( g_cmd_registery.cmd_count >= CMD_MAX_COMMANDS ) {
         rcommon::com_printf( "cmd_register: cannot register new cmd, registery is full." );
         return cmd::cmd_error_code_t::ERR_REGISTRY_FULL;
     }
 
-    g_cmd_registery.cmd_commands[count].name = cmd_name;
-    g_cmd_registery.cmd_commands[count].callback_fn = callback_fn;
-    g_cmd_registery.cmd_commands[count].description = cmd_description;
-    count++;
-
-    g_cmd_registery.cmd_count = count;
+    g_cmd_registery.cmd_commands[g_cmd_registery.cmd_count].name = cmd_name;
+    g_cmd_registery.cmd_commands[g_cmd_registery.cmd_count].callback_fn = callback_fn;
+    g_cmd_registery.cmd_commands[g_cmd_registery.cmd_count].description = cmd_description;
+    g_cmd_registery.cmd_count++;
 
     return cmd::cmd_error_code_t::OK;
 }
@@ -175,6 +171,8 @@ cmd_error_code_t cmd_execute( const char *command_line ) {
 
     if ( err != cmd::cmd_error_code_t::OK ) {
         rcommon::com_errorf( cmd_error_code( err ), "cmd_execute: cmd_parse: invalid parsing command line." );
+        // @TODO: We return err here which is internally already error_code_t format
+        return err;
     }
     
     const cmd_t *command = cmd_find( cmd_argv[0] );

@@ -17,7 +17,7 @@ struct cmd_t {
     const char *description;
 };
 
-struct cmd_registery_t {
+struct cmd_registry_t {
     cmd_t cmd_commands[CMD_MAX_COMMANDS];
     rcommon::u32 cmd_count;
     bool initialized;
