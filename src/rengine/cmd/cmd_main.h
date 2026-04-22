@@ -7,6 +7,7 @@ namespace reap::rengine::cmd
 {
  
 #define CMD_MAX_COMMANDS        256u
+#define CMD_MAX_ARGUMENTS       16u
 
 using cmd_fn_t = void (*)( int argc, const char **argv );   
 
@@ -30,7 +31,7 @@ cmd_error_code_t cmd_register( const char *cmd_name, cmd_fn_t callback_fn, const
 
 const cmd_t *cmd_find( const char *cmd_name );
 
-cmd_error_code_t cmd_parse( char *command_line, rcommon::u32 &argc, char **argv );
+cmd_error_code_t cmd_parse( const char *command_line, rcommon::u32 &argc, char **argv );
 
 cmd_error_code_t cmd_execute( const char *command_line );
 

@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-20 21:01:21
    Last Modified by: ksiric
-   Last Modified: 2026-04-21 21:54:55
+   Last Modified: 2026-04-22 02:13:39
    ---------------------------------------------------------------------
    Description:
        
@@ -30,7 +30,7 @@ render_runtime_state_t g_render_runtime_state{};
 
 namespace reap::rengine::render 
 {
-
+    
 r_error_code_t r_init( const host::window_config_t &window_config ) {
     if ( r_is_initialized() ) {
         REAP_LOG_WARNING( log::log_channel_t::RENDER, "renderer already initialized." );
