@@ -1,5 +1,6 @@
 #pragma once
 
+#include "rengine/cvar/cvar_error.h"
 #include "rengine/rcommon/com_foundation.h"
 
 #define CVAR_MAX_CVARS              256u
@@ -34,8 +35,20 @@ struct cvar_registry_t {
 
 cvar_error_code_t cvar_init();
 
+cvar_error_code_t cvar_register( const char *name, const char *default_value, cvar_flags_t flags );
 
+cvar_error_code_t cvar_set( const char *name, const char *value );
 
+void cvar_shutdown();
 
+const cvar_t *cvar_find( const char *name );
+
+const char *cvar_get_string( const char *name );
+
+rcommon::u32 cvar_get_int( const char *name );
+
+rcommon::f32 cvar_get_float( const char *name );
+
+bool cvar_get_bool( const char *name );
     
 }       // namespace reap::rengine::cvar

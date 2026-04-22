@@ -11,7 +11,8 @@ enum class host_error_code_t : rcommon::u8 {
     
     ERR_NOT_INIT,                          // host not initialized.
     ERR_IS_INIT,                           // host already initialized.
-    ERR_INITIALIZING,                      // host was initializing another system.
+    ERR_INITIALIZING,                      // host was initializing other system
+    
 };    
 
 constexpr inline rcommon::com_error_t host_error_code( host_error_code_t error ) {

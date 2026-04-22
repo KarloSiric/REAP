@@ -123,6 +123,8 @@ constexpr inline const char *com_domain_name( const com_domain_t domain ) {
         case com_domain_t::COM_DOMAIN_RENDER:             return "RENDER";
         case com_domain_t::COM_DOMAIN_FS:                 return "FS";
         case com_domain_t::COM_DOMAIN_NET:                return "NET";
+        case com_domain_t::COM_DOMAIN_CMD:                return "CMD";
+        case com_domain_t::COM_DOMAIN_CVAR:               return "CVAR";
         default:                                          return "UNKNOWN";
     }
 }
