@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-22 21:04:15
    Last Modified by: ksiric
-   Last Modified: 2026-04-23 01:29:32
+   Last Modified: 2026-04-24 13:57:39
    ---------------------------------------------------------------------
    Description:
 
@@ -27,7 +27,7 @@ cvar_registry_t g_cvar_registry;
 
 cvar_error_code_t cvar_init() {
 	if ( g_cvar_registry.initialized ) {
-		rcommon::com_printf( "cvar_init: %s: %s\n", cvar_error_name( cvar_error_code_t::ERR_IS_INIT), cvar_error_desc( cvar_error_code_t::ERR_IS_INIT ) );
+		rcommon::com_printf( "cvar_init: %s: %s\n", cvar_error_name( cvar_error_code_t::ERR_IS_INIT ), cvar_error_desc( cvar_error_code_t::ERR_IS_INIT ) );
 		return cvar_error_code_t::ERR_IS_INIT;
 	}
 
@@ -36,37 +36,30 @@ cvar_error_code_t cvar_init() {
 	return cvar_error_code_t::OK;
 }
 
-
 // @NOTE(karlo): helper func for parsing the proper bool lower
 bool cvar_parse_bool( const char *value ) {
-    // @NOTE(karlo) -> for design wise choice I went for nullptr, 0, false, "", "false", "off", "no" to be a bool false value.
-    if ( value == nullptr || value[0] == '\0' ) {
-        return false;
-    }
-    
-    char lower[32]{};
-    rcommon::u32 i;
-    
-    for ( i = 0; i < 31 && value[i] != '\0'; i++ ) {
-        lower[i] = static_cast<char>( tolower( static_cast<unsigned char>( value[i] ) ) );
-    }
-    lower[i] = '\0';
-    
-    if ( std::strcmp( lower, "0"     )     == 0 || 
-         std::strcmp( lower, "false" )     == 0 ||
-         std::strcmp( lower, "off"   )     == 0 ||
-         std::strcmp( lower, "no"    )     == 0    ) {
-        return false;
-    }
-    
-    if ( std::strcmp( lower, "1" ) == 0 ||
-         std::strcmp( lower, "true" ) == 0 ||
-         std::strcmp( lower, "on" ) == 0 ||
-         std::strcmp( lower, "yes" ) == 0 ) {
-        return true;
-    }
-    
-    return ( std::atoi( lower ) != 0 );
+	// @NOTE(karlo) -> for design wise choice I went for nullptr, 0, false, "", "false", "off", "no" to be a bool false value.
+	if ( value == nullptr || value[0] == '\0' ) {
+		return false;
+	}
+
+	char lower[32]{};
+	rcommon::u32 i;
+
+	for ( i = 0; i < 31 && value[i] != '\0'; i++ ) {
+		lower[i] = static_cast<char>( tolower( static_cast<unsigned char>( value[i] ) ) );
+	}
+	lower[i] = '\0';
+
+	if ( std::strcmp( lower, "0" ) == 0 || std::strcmp( lower, "false" ) == 0 || std::strcmp( lower, "off" ) == 0 || std::strcmp( lower, "no" ) == 0 ) {
+		return false;
+	}
+
+	if ( std::strcmp( lower, "1" ) == 0 || std::strcmp( lower, "true" ) == 0 || std::strcmp( lower, "on" ) == 0 || std::strcmp( lower, "yes" ) == 0 ) {
+		return true;
+	}
+
+	return ( std::atoi( lower ) != 0 );
 }
 
 cvar_error_code_t cvar_register( const char *name, const char *default_value, cvar_flags_t flags ) {
@@ -79,62 +72,118 @@ cvar_error_code_t cvar_register( const char *name, const char *default_value, cv
 		rcommon::com_printf( "cvar_register: %s: %s\n", cvar_error_name( cvar_error_code_t::ERR_INVALID_CVAR ), cvar_error_desc( cvar_error_code_t::ERR_INVALID_CVAR ) );
 		return cvar_error_code_t::ERR_INVALID_CVAR;
 	}
-    
-    if ( default_value == nullptr || default_value[0] == '\0' ) {
-        rcommon::com_printf( "cvar_register: %s: %s\n", cvar_error_name( cvar_error_code_t::ERR_INVALID_DEFAULT_VALUE ), cvar_error_desc( cvar_error_code_t::ERR_INVALID_DEFAULT_VALUE ) );
-        return cvar_error_code_t::ERR_INVALID_DEFAULT_VALUE;
-    }
-    
-    /*
-     * @NOTE(Karlo): importnat here to make a flags bits mask and check like that.
-     * 
-     * More professional structure then, and we ensure that we do not miss any masks.
-     * 
-     */
-    rcommon::u32 flags_bits = static_cast<rcommon::u32>( flags );
-    
-    if ( ( flags_bits & CVAR_MODIFIED ) != 0u ) {
-        rcommon::com_printf( "cvar_register: %s: %s\n", cvar_error_name( cvar_error_code_t::ERR_INVALID_FLAG ), cvar_error_desc( cvar_error_code_t::ERR_INVALID_FLAG ) );
-        return cvar_error_code_t::ERR_INVALID_FLAG;
-    }
-    
-    // @NOTE(karlo): Additional safety checking for the masking part.
-    if ( ( flags_bits & ~CVAR_REGISTER_ALLOWED_FLAGS ) != 0 ) {
-        rcommon::com_printf( "cvar_register: %s: %s\n", cvar_error_name( cvar_error_code_t::ERR_INVALID_FLAG ), cvar_error_desc( cvar_error_code_t::ERR_INVALID_FLAG ) );
-        return cvar_error_code_t::ERR_INVALID_FLAG;
-    } 
-        
-    // @NOTE(karlo): checking if we have that cvar already
-    const cvar_t *cvar = cvar_find( name );
-    
-    // @NOTE(karlo): checking not by strcmp but by checking pointer dangling
-    if ( cvar != nullptr ) {
-        rcommon::com_printf( "cvar_register: %s: %s\n", cvar_error_name( cvar_error_code_t::ERR_CVAR_ALREADY_EXISTS ), cvar_error_desc( cvar_error_code_t::ERR_CVAR_ALREADY_EXISTS ) );
-        return cvar_error_code_t::ERR_CVAR_ALREADY_EXISTS;
-    }
-    
-    if ( g_cvar_registry.cvar_count >= CVAR_MAX_CVARS ) {
-        rcommon::com_printf( "cvar_register: %s: %s\n", cvar_error_name( cvar_error_code_t::ERR_REGISTRY_FULL ), cvar_error_desc( cvar_error_code_t::ERR_REGISTRY_FULL ) );
-        return cvar_error_code_t::ERR_REGISTRY_FULL;
-    }
-    
-    g_cvar_registry.cvars[g_cvar_registry.cvar_count].name = name;
-    strncpy( g_cvar_registry.cvars[g_cvar_registry.cvar_count].value_string, default_value, sizeof ( g_cvar_registry.cvars[g_cvar_registry.cvar_count].value_string ) - 1 );
-    strncpy( g_cvar_registry.cvars[g_cvar_registry.cvar_count].default_string, default_value, sizeof ( g_cvar_registry.cvars[g_cvar_registry.cvar_count].default_string ) - 1 );
-    g_cvar_registry.cvars[g_cvar_registry.cvar_count].value_int = std::atoi( default_value );
-    g_cvar_registry.cvars[g_cvar_registry.cvar_count].value_float = std::atof( default_value );
-    g_cvar_registry.cvars[g_cvar_registry.cvar_count].flags = flags;
-    cvar_parse_bool( g_cvar_registry.cvars[g_cvar_registry.cvar_count].value_string );
-    g_cvar_registry.cvar_count++;
-    
-    return cvar_error_code_t::OK;   
+
+	if ( default_value == nullptr || default_value[0] == '\0' ) {
+		rcommon::com_printf( "cvar_register: %s: %s\n", cvar_error_name( cvar_error_code_t::ERR_INVALID_DEFAULT_VALUE ), cvar_error_desc( cvar_error_code_t::ERR_INVALID_DEFAULT_VALUE ) );
+		return cvar_error_code_t::ERR_INVALID_DEFAULT_VALUE;
+	}
+
+	/*
+	 * @NOTE(Karlo): importnat here to make a flags bits mask and check like that.
+	 *
+	 * More professional structure then, and we ensure that we do not miss any masks.
+	 *
+	 */
+	rcommon::u32 flags_bits = static_cast<rcommon::u32>( flags );
+
+	if ( ( flags_bits & CVAR_MODIFIED ) != 0u ) {
+		rcommon::com_printf( "cvar_register: %s: %s\n", cvar_error_name( cvar_error_code_t::ERR_INVALID_FLAG ), cvar_error_desc( cvar_error_code_t::ERR_INVALID_FLAG ) );
+		return cvar_error_code_t::ERR_INVALID_FLAG;
+	}
+
+	// @NOTE(karlo): Additional safety checking for the masking part.
+	if ( ( flags_bits & ~CVAR_REGISTER_ALLOWED_FLAGS ) != 0 ) {
+		rcommon::com_printf( "cvar_register: %s: %s\n", cvar_error_name( cvar_error_code_t::ERR_INVALID_FLAG ), cvar_error_desc( cvar_error_code_t::ERR_INVALID_FLAG ) );
+		return cvar_error_code_t::ERR_INVALID_FLAG;
+	}
+
+	// @NOTE(karlo): checking if we have that cvar already
+	const cvar_t *cvar = cvar_find( name );
+
+	// @NOTE(karlo): checking not by strcmp but by checking pointer dangling
+	if ( cvar != nullptr ) {
+		rcommon::com_printf( "cvar_register: %s: %s\n", cvar_error_name( cvar_error_code_t::ERR_CVAR_ALREADY_EXISTS ), cvar_error_desc( cvar_error_code_t::ERR_CVAR_ALREADY_EXISTS ) );
+		return cvar_error_code_t::ERR_CVAR_ALREADY_EXISTS;
+	}
+
+	if ( g_cvar_registry.cvar_count >= CVAR_MAX_CVARS ) {
+		rcommon::com_printf( "cvar_register: %s: %s\n", cvar_error_name( cvar_error_code_t::ERR_REGISTRY_FULL ), cvar_error_desc( cvar_error_code_t::ERR_REGISTRY_FULL ) );
+		return cvar_error_code_t::ERR_REGISTRY_FULL;
+	}
+
+	g_cvar_registry.cvars[g_cvar_registry.cvar_count].name = name;
+	strncpy( g_cvar_registry.cvars[g_cvar_registry.cvar_count].value_string, default_value, sizeof( g_cvar_registry.cvars[g_cvar_registry.cvar_count].value_string ) - 1 );
+	strncpy( g_cvar_registry.cvars[g_cvar_registry.cvar_count].default_string, default_value, sizeof( g_cvar_registry.cvars[g_cvar_registry.cvar_count].default_string ) - 1 );
+	g_cvar_registry.cvars[g_cvar_registry.cvar_count].value_int = std::atoi( default_value );
+	g_cvar_registry.cvars[g_cvar_registry.cvar_count].value_float = std::atof( default_value );
+	g_cvar_registry.cvars[g_cvar_registry.cvar_count].flags = flags;
+	cvar_parse_bool( g_cvar_registry.cvars[g_cvar_registry.cvar_count].value_string );
+	g_cvar_registry.cvar_count++;
+
+	return cvar_error_code_t::OK;
 }
 
 // @TODO(karlo): adding other functions tommorow
 
+cvar_error_code_t cvar_set( const char *name, const char *value ) {
+	if ( !g_cvar_registry.initialized ) {
+		rcommon::com_printf( "cvar_set: %s: %s\n", cvar_error_name( cvar_error_code_t::ERR_NOT_INIT ), cvar_error_desc( cvar_error_code_t::ERR_NOT_INIT ) );
+		return cvar_error_code_t::ERR_NOT_INIT;
+	}
 
-
-
+	if ( name == nullptr || name[0] == '\0' ) {
+        rcommon::com_printf( "cvar_set: %s: %s\n",
+                             cvar_error_name( cvar_error_code_t::ERR_INVALID_CVAR ),
+                             cvar_error_desc( cvar_error_code_t::ERR_INVALID_CVAR ) );
+        return cvar_error_code_t::ERR_INVALID_CVAR;
+	}
+    
+    if ( value == nullptr ) {
+        rcommon::com_printf( "cvar_set: %s: %s\n",
+                             cvar_error_name( cvar_error_code_t::ERR_INVALID_CVAR ),
+                             cvar_error_desc( cvar_error_code_t::ERR_INVALID_CVAR ) );
+        return cvar_error_code_t::ERR_INVALID_CVAR;
+        
+    }
+    
+    cvar_t *target = nullptr;
+    // @NOTE: O(n) because we do not know, we need to check everything basically.
+    for ( rcommon::u32 i = 0; i < g_cvar_registry.cvar_count; ++i ) {
+        if ( std::strcmp( g_cvar_registry.cvars[i].name, name ) == 0 ) {
+            target = &g_cvar_registry.cvars[i];
+            break;
+        }
+    }
+    if ( target == nullptr ) {
+                 cvar_error_name( cvar_error_code_t::ERR_CVAR_NOT_FOUND ),
+                 cvar_error_desc( cvar_error_code_t::ERR_CVAR_NOT_FOUND );
+        return cvar_error_code_t::ERR_CVAR_NOT_FOUND;
+    }   
+    if ( ( static_cast<rcommon::u32>( target->flags ) & CVAR_READONLY ) != 0 ) {
+                 cvar_error_name( cvar_error_code_t::ERR_READONLY ),
+                 cvar_error_desc( cvar_error_code_t::ERR_READONLY );
+        return cvar_error_code_t::ERR_READONLY;
+    }
+    
+    // @TODO(karlo): later this will need to be replaced with real cheats if we enable these and stuff 
+    const bool cheats = true;
+    if ( ( static_cast<rcommon::u32>( target->flags ) & CVAR_CHEAT ) != 0 ) {
+                 cvar_error_name( cvar_error_code_t::ERR_CHEAT_PROTECTED ),
+                 cvar_error_desc( cvar_error_code_t::ERR_CHEAT_PROTECTED );
+        return cvar_error_code_t::ERR_CHEAT_PROTECTED;
+    }
+    
+    std::strncpy( target->value_string, value, sizeof( target->value_string ) - 1 );
+    target->value_string[sizeof( target->value_string ) - 1u] = '\0';
+    
+    target->value_int = static_cast<rcommon::u32>( std::atoi( target->value_string ) );
+    target->value_float = static_cast<rcommon::f32>( std::atof( target->value_string ) );
+    target->value_bool = cvar_parse_bool( target->value_string );
+    
+    target->flags = static_cast<cvar_flags_t>( static_cast<rcommon::u32>( target->flags ) | CVAR_MODIFIED );
+    
+    return cvar_error_code_t::OK;
+}
 
 
 
