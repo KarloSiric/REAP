@@ -24,7 +24,6 @@ namespace reap::rengine::rcommon {
  */
 using com_error_t = com_u32;
 
-
 // @TODO: Simple domain name which can be extended to each and every single 
 //        subsystem as we keep expanding the engine and adding new things.
 enum class com_domain_t : u16 {
@@ -38,10 +37,9 @@ enum class com_domain_t : u16 {
     COM_DOMAIN_NET,
     COM_DOMAIN_GAME,
     COM_DOMAIN_CMD,
-    COM_DOMAIN_CVAR
-    
+    COM_DOMAIN_CVAR,
+    COM_DOMAIN_CFG
 };
-
 
 /**
  * @brief Canonical result code used across the engine.
