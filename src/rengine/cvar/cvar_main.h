@@ -42,7 +42,7 @@ cvar_error_code_t cvar_register( const char *name, const char *default_value, cv
 
 cvar_error_code_t cvar_set( const char *name, const char *value );
 
-void cvar_shutdown();
+cvar_error_code_t cvar_shutdown();
 
 const cvar_t *cvar_find( const char *name );
 

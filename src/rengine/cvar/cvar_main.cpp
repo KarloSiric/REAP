@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-22 21:04:15
    Last Modified by: ksiric
-   Last Modified: 2026-04-24 13:57:39
+   Last Modified: 2026-04-24 14:29:52
    ---------------------------------------------------------------------
    Description:
 
@@ -47,7 +47,7 @@ bool cvar_parse_bool( const char *value ) {
 	rcommon::u32 i;
 
 	for ( i = 0; i < 31 && value[i] != '\0'; i++ ) {
-		lower[i] = static_cast<char>( tolower( static_cast<unsigned char>( value[i] ) ) );
+    lower[i] = static_cast<char>( std::tolower( static_cast<unsigned char>( value[i] ) ) );
 	}
 	lower[i] = '\0';
 
@@ -111,13 +111,17 @@ cvar_error_code_t cvar_register( const char *name, const char *default_value, cv
 		return cvar_error_code_t::ERR_REGISTRY_FULL;
 	}
 
-	g_cvar_registry.cvars[g_cvar_registry.cvar_count].name = name;
-	strncpy( g_cvar_registry.cvars[g_cvar_registry.cvar_count].value_string, default_value, sizeof( g_cvar_registry.cvars[g_cvar_registry.cvar_count].value_string ) - 1 );
-	strncpy( g_cvar_registry.cvars[g_cvar_registry.cvar_count].default_string, default_value, sizeof( g_cvar_registry.cvars[g_cvar_registry.cvar_count].default_string ) - 1 );
-	g_cvar_registry.cvars[g_cvar_registry.cvar_count].value_int = std::atoi( default_value );
-	g_cvar_registry.cvars[g_cvar_registry.cvar_count].value_float = std::atof( default_value );
-	g_cvar_registry.cvars[g_cvar_registry.cvar_count].flags = flags;
-	cvar_parse_bool( g_cvar_registry.cvars[g_cvar_registry.cvar_count].value_string );
+	cvar_t &entry = g_cvar_registry.cvars[g_cvar_registry.cvar_count];
+
+	entry.name = name;
+	std::strncpy( entry.value_string, default_value, sizeof( entry.value_string ) - 1 );
+	std::strncpy( entry.default_string, default_value, sizeof( entry.default_string ) - 1 );
+	entry.value_string[sizeof( entry.value_string ) - 1] = '\0';
+	entry.default_string[sizeof( entry.default_string ) - 1] = '\0';
+	entry.value_int = std::atoi( default_value );
+	entry.value_float = std::atof( default_value );
+	entry.flags = flags;
+	entry.value_bool = cvar_parse_bool( entry.value_string );
 	g_cvar_registry.cvar_count++;
 
 	return cvar_error_code_t::OK;
@@ -155,21 +159,22 @@ cvar_error_code_t cvar_set( const char *name, const char *value ) {
         }
     }
     if ( target == nullptr ) {
-                 cvar_error_name( cvar_error_code_t::ERR_CVAR_NOT_FOUND ),
-                 cvar_error_desc( cvar_error_code_t::ERR_CVAR_NOT_FOUND );
+        rcommon::com_printf( "cvar_set: %s: %s\n",
+                             cvar_error_name( cvar_error_code_t::ERR_CVAR_NOT_FOUND ),
+                             cvar_error_desc( cvar_error_code_t::ERR_CVAR_NOT_FOUND ) );
         return cvar_error_code_t::ERR_CVAR_NOT_FOUND;
-    }   
+    } 
     if ( ( static_cast<rcommon::u32>( target->flags ) & CVAR_READONLY ) != 0 ) {
-                 cvar_error_name( cvar_error_code_t::ERR_READONLY ),
-                 cvar_error_desc( cvar_error_code_t::ERR_READONLY );
+        rcommon::com_printf( "cvar_set: %s: %s\n", cvar_error_name( cvar_error_code_t::ERR_READONLY ), cvar_error_desc( cvar_error_code_t::ERR_READONLY ) );
         return cvar_error_code_t::ERR_READONLY;
     }
     
     // @TODO(karlo): later this will need to be replaced with real cheats if we enable these and stuff 
-    const bool cheats = true;
-    if ( ( static_cast<rcommon::u32>( target->flags ) & CVAR_CHEAT ) != 0 ) {
-                 cvar_error_name( cvar_error_code_t::ERR_CHEAT_PROTECTED ),
-                 cvar_error_desc( cvar_error_code_t::ERR_CHEAT_PROTECTED );
+    const bool cheats_enabled = false;
+    if ( ( static_cast<rcommon::u32>( target->flags ) & CVAR_CHEAT ) != 0 && !cheats_enabled ) {
+        rcommon::com_printf( "cvar_set: %s: %s\n",
+                             cvar_error_name( cvar_error_code_t::ERR_CHEAT_PROTECTED ),
+                             cvar_error_desc( cvar_error_code_t::ERR_CHEAT_PROTECTED ) );
         return cvar_error_code_t::ERR_CHEAT_PROTECTED;
     }
     
@@ -185,6 +190,108 @@ cvar_error_code_t cvar_set( const char *name, const char *value ) {
     return cvar_error_code_t::OK;
 }
 
+cvar_error_code_t cvar_shutdown() {
+    if ( !g_cvar_registry.initialized ) {
+        rcommon::com_printf( "cvar_shutdown: %s: %s\n", cvar_error_name( cvar_error_code_t::ERR_NOT_INIT ), cvar_error_desc( cvar_error_code_t::ERR_NOT_INIT ) );
+        return cvar_error_code_t::ERR_NOT_INIT;
+    }
+    g_cvar_registry = {};
+    
+    return cvar_error_code_t::OK;
+}
 
+const cvar_t *cvar_find( const char *name ) {
+    if ( !g_cvar_registry.initialized ) {
+        return nullptr;
+    }
+    
+    if ( name == nullptr || name[0] == '\0' ) {
+        return nullptr;
+    }
+    
+    const cvar_t *cvar = nullptr;
+    
+    for ( rcommon::u32 i = 0; i < g_cvar_registry.cvar_count; ++i ) {
+        if ( std::strcmp( g_cvar_registry.cvars[i].name, name ) == 0 ) {
+            cvar = &g_cvar_registry.cvars[i];
+            return cvar;
+        } 
+    }
+    
+    return cvar;
+}
+
+const char *cvar_get_string( const char *name ) {
+    if ( !g_cvar_registry.initialized ) {
+        return nullptr;
+    }
+    
+    if ( name == nullptr || name[0] == '\0' ) {
+        return nullptr;
+    }
+    
+    const cvar_t *cvar = cvar_find( name );
+    
+    if ( cvar == nullptr ) {
+        // @TODO: we just return an empty string
+        return "";
+    } 
+    
+    return cvar->value_string;
+}
+
+rcommon::u32 cvar_get_int( const char *name ) {
+    if ( !g_cvar_registry.initialized ) {
+        return (rcommon::u32)0u;
+    }
+    
+    if ( name == nullptr || name[0] == '\0' ) {
+        return (rcommon::u32)0u;
+    }
+    
+    const cvar_t *cvar = cvar_find( name );
+    
+    if ( cvar == nullptr ) {
+        return (rcommon::u32)0u;
+    }
+    
+    return cvar->value_int;
+}
+
+rcommon::f32 cvar_get_float( const char *name ) {
+    if ( !g_cvar_registry.initialized ) {
+        return (rcommon::f32)0.0f;
+    }
+    
+    if ( name == nullptr || name[0] == '\0' ) {
+        return (rcommon::f32)0.0f;
+    }
+    
+    const cvar_t *cvar = cvar_find( name );
+    
+    if ( cvar == nullptr ) {
+        return (rcommon::f32)0.0f;
+    }
+    
+    return cvar->value_float;
+}
+
+bool cvar_get_bool( const char *name ) {
+    if ( !g_cvar_registry.initialized ) {
+        return false;
+    }
+    
+    if ( name == nullptr || name[0] == '\0' ) {
+        return false;
+    }
+    
+    const cvar_t *cvar = cvar_find( name );
+    
+    if ( cvar == nullptr ) {
+        return false;
+    }
+    
+    return cvar->value_bool;
+}
 
 } // namespace reap::rengine::cvar

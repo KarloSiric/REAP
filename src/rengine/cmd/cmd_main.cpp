@@ -108,7 +108,7 @@ const cmd_t *cmd_find( const char *cmd_name ) {
     }
 
     for ( rcommon::u32 i = 0; i < g_cmd_registery.cmd_count; i++ ) {
-        if ( strcmp( cmd_name, g_cmd_registery.cmd_commands[i].name ) == 0 ) {
+        if ( std::strcmp( cmd_name, g_cmd_registery.cmd_commands[i].name ) == 0 ) {
             return &g_cmd_registery.cmd_commands[i];
         }
     }
@@ -181,3 +181,5 @@ cmd_error_code_t cmd_execute( const char *command_line ) {
     return cmd_error_code_t::OK;
 
 }
+
+} // namespace reap::rengine::cmd
