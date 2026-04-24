@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-21 22:26:01
    Last Modified by: ksiric
-   Last Modified: 2026-04-22 01:30:06
+   Last Modified: 2026-04-24 14:37:35
    ---------------------------------------------------------------------
    Description:
 
@@ -173,11 +173,28 @@ cmd_error_code_t cmd_execute( const char *command_line ) {
 
     // @TODO: Parsing the command line in the first place.
     cmd_error_code_t err = cmd_parse( buffer, cmd_argc, cmd_argv );
-
+    
     if ( err != cmd::cmd_error_code_t::OK ) {
         rcommon::com_errorf( cmd_error_code( err ), "cmd_execute: cmd_parse: invalid parsing command line." );
     }
-
+    
+    if ( cmd_argc == 0u || cmd_argv[0] == nullptr || cmd_argv[0][0] == '\0' ) {
+        rcommon::com_printf( "cmd_execute: parsed command line is empty." );
+        return cmd::cmd_error_code_t::ERR_INVALID_COMMAND;
+    }
+    
+    const cmd_t *cmd = cmd_find( cmd_argv[0] );
+    if ( cmd == nullptr ) {
+       rcommon::com_printf( "cmd_execute: command '%s' not found.", cmd_argv[0] );
+        return cmd::cmd_error_code_t::ERR_COMMAND_NOT_FOUND; 
+    }
+    
+    if ( cmd->callback_fn == nullptr ) {
+        rcommon::com_printf( "cmd_execute: command '%s' has invalid callback.", cmd_argv[0] );
+        return cmd::cmd_error_code_t::ERR_INVALID_CALLBACK;
+    }
+    
+    cmd->callback_fn( cmd_argc, cmd_argv );
     return cmd_error_code_t::OK;
 
 }
