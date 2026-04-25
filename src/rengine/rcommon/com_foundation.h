@@ -85,28 +85,28 @@ constexpr entity_id_t INVALID_ENTITY_ID = COM_INVALID_ENTITY_ID;
 /**
  * @brief Common numeric constants shared by runtime systems.
  */
-constexpr com_f32 COM_PI_F = 3.14159265358979323846f;
-constexpr com_f32 COM_TAU_F = 6.28318530717958647692f;
-constexpr com_f32 COM_DEG2RAD_F = COM_PI_F / 180.0f;
-constexpr com_f32 COM_RAD2DEG_F = 180.0f / COM_PI_F;
-constexpr com_f32 COM_EPSILON_F = 1.0e-6f;
-constexpr com_f32 COM_INFINITY_F = std::numeric_limits<com_f32>::infinity();
+constexpr com_f32 COM_PI_F          = 3.14159265358979323846f;
+constexpr com_f32 COM_TAU_F         = 6.28318530717958647692f;
+constexpr com_f32 COM_DEG2RAD_F     = COM_PI_F / 180.0f;
+constexpr com_f32 COM_RAD2DEG_F     = 180.0f / COM_PI_F;
+constexpr com_f32 COM_EPSILON_F     = 1.0e-6f;
+constexpr com_f32 COM_INFINITY_F    = std::numeric_limits<com_f32>::infinity();
 
-constexpr f32 PI_F = COM_PI_F;
-constexpr f32 TAU_F = COM_TAU_F;
-constexpr f32 DEG2RAD_F = COM_DEG2RAD_F;
-constexpr f32 RAD2DEG_F = COM_RAD2DEG_F;
-constexpr f32 EPSILON_F = COM_EPSILON_F;
-constexpr f32 INFINITY_F = COM_INFINITY_F;
+constexpr f32 PI_F                  = COM_PI_F;
+constexpr f32 TAU_F                 = COM_TAU_F;
+constexpr f32 DEG2RAD_F             = COM_DEG2RAD_F;
+constexpr f32 RAD2DEG_F             = COM_RAD2DEG_F;
+constexpr f32 EPSILON_F             = COM_EPSILON_F;
+constexpr f32 INFINITY_F            = COM_INFINITY_F;
 
-static_assert( sizeof( com_i8 ) == 1, "com_i8 must be 1 byte" );
-static_assert( sizeof( com_i16 ) == 2, "com_i16 must be 2 bytes" );
-static_assert( sizeof( com_i32 ) == 4, "com_i32 must be 4 bytes" );
-static_assert( sizeof( com_i64 ) == 8, "com_i64 must be 8 bytes" );
+static_assert( sizeof( com_i8 )     == 1, "com_i8 must be 1 byte" );
+static_assert( sizeof( com_i16 )    == 2, "com_i16 must be 2 bytes" );
+static_assert( sizeof( com_i32 )    == 4, "com_i32 must be 4 bytes" );
+static_assert( sizeof( com_i64 )    == 8, "com_i64 must be 8 bytes" );
 
-static_assert( sizeof( com_u8 ) == 1, "com_u8 must be 1 byte" );
-static_assert( sizeof( com_u16 ) == 2, "com_u16 must be 2 bytes" );
-static_assert( sizeof( com_u32 ) == 4, "com_u32 must be 4 bytes" );
-static_assert( sizeof( com_u64 ) == 8, "com_u64 must be 8 bytes" );
+static_assert( sizeof( com_u8 )     == 1, "com_u8 must be 1 byte" );
+static_assert( sizeof( com_u16 )    == 2, "com_u16 must be 2 bytes" );
+static_assert( sizeof( com_u32 )    == 4, "com_u32 must be 4 bytes" );
+static_assert( sizeof( com_u64 )    == 8, "com_u64 must be 8 bytes" );
 
 } // namespace reap::rengine

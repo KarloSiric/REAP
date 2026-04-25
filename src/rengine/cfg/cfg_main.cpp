@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-24 15:56:36
    Last Modified by: ksiric
-   Last Modified: 2026-04-26 01:01:16
+   Last Modified: 2026-04-26 01:23:05
    ---------------------------------------------------------------------
    Description:
 
@@ -198,7 +198,7 @@ cfg_error_code_t cfg_load_file( const char *path, const bool required ) {
 			continue;
 		}
 
-		if ( cmd::cmd_execute( cursor ) != cmd::cmd_error_code_t::OK ) {
+		if ( cmd::cmd_execute( line ) != cmd::cmd_error_code_t::OK ) {
 			result = cfg_error_code_t::ERR_COMMAND_FAILED;
 		}
 	}
@@ -312,15 +312,67 @@ cfg_error_code_t cfg_execute_line( const char *command_line ) {
 			}
 		}
 		exec_path[i] = '\0';
-		return cfg_load_file( exec_path, true );
+		return cfg_load_file( exec_path, false );
 	}
 
 	if ( std::strcmp( command, "set" ) == 0 || std::strcmp( command, "seta" ) == 0 ) {
 		while ( std::isspace( static_cast<unsigned char>( *cursor ) ) ) {
             ++cursor;
 		}
+        
+        if ( *cursor == '\0' ) {
+            return cfg_error_code_t::ERR_PARSE_FAILED;
+        }       
+        
+        char cvar_name[256]{};
+        i = 0;
+        while ( *cursor != '\0' && !std::isspace( static_cast<unsigned char>( *cursor ) ) && ( i + 1u ) < sizeof( cvar_name ) ) {
+            cvar_name[i++] = *cursor++;
+        }
+        cvar_name[i] = '\0';
+        
+        if ( cvar_name[0] == '\0' ) {
+            return cfg_error_code_t::ERR_PARSE_FAILED;
+        }
+        while( std::isspace( static_cast<unsigned char>( *cursor ) ) ) {
+            ++cursor;    
+        }
+        if ( *cursor == '\0' ) {
+            return cfg_error_code_t::ERR_PARSE_FAILED;
+        }
+        
+        char cvar_value[CFG_MAX_LINE_LENGTH]{};
+        i = 0;
+        
+        if ( *cursor == '"' ) {
+            ++cursor;
+            while( cursor[i] != '\0' && cursor[i] != '"' && ( i + 1u ) < sizeof( cvar_value ) ) {
+                cvar_value[i] = cursor[i];
+                ++i;
+            }
+            if ( cursor[i] != '"' ) {
+                return cfg_error_code_t::ERR_PARSE_FAILED;
+            }
+        } else {
+            while( cursor[i] != '\0' && !std::isspace( static_cast<unsigned char>( cursor[i] ) ) && ( i + 1u ) < sizeof( cvar_value ) ) {
+                cvar_value[i] = cursor[i];
+                ++i;
+            }
+        }
+        cvar_value[i] = '\0';
+        
+        if ( cvar_value[0] == '\0' ) {
+            return cfg_error_code_t::ERR_PARSE_FAILED;
+        }
+        if ( cvar::cvar_set( cvar_name, cvar_value ) != cvar::cvar_error_code_t::OK ) {
+            return cfg_error_code_t::ERR_PARSE_FAILED;
+        }
+        return cfg_error_code_t::OK;
 	}
-    
+    if ( cmd::cmd_execute( line ) != cmd::cmd_error_code_t::OK ) {
+        return cfg_error_code_t::ERR_COMMAND_FAILED;
+    }
+    return cfg_error_code_t::OK;
 }
 
 } // namespace reap::rengine::cfg
