@@ -4,8 +4,7 @@
 #include "rengine/cfg/cfg_error.h"
 #include "rengine/rcommon/com_foundation.h"
 
-namespace reap::rengine::cfg
-{
+namespace reap::rengine::cfg {
 
 constexpr rcommon::u32 CFG_MAX_LINE_LENGTH = 1024u;
 constexpr rcommon::u32 CFG_MAX_PATH_LENGTH = 260u;

@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-24 15:56:36
    Last Modified by: ksiric
-   Last Modified: 2026-04-25 21:17:16
+   Last Modified: 2026-04-26 01:01:16
    ---------------------------------------------------------------------
    Description:
 
@@ -211,43 +211,116 @@ cfg_error_code_t cfg_load_file( const char *path, const bool required ) {
 }
 
 cfg_error_code_t cfg_load_default() {
-    if ( !g_cfg_runtime_state.initialized ) {
-        return cfg_error_code_t::ERR_NOT_INIT;
-    }
-    
-    return cfg_load_file( CFG_DEFAULT_PATH, true );
+	if ( !g_cfg_runtime_state.initialized ) {
+		return cfg_error_code_t::ERR_NOT_INIT;
+	}
+
+	return cfg_load_file( CFG_DEFAULT_PATH, true );
 }
 
 cfg_error_code_t cfg_load_autoexec() {
-    if ( !g_cfg_runtime_state.initialized ) {
-        return cfg_error_code_t::ERR_NOT_INIT;
-    }
-    
-    return cfg_load_file( CFG_AUTOEXEC_PATH, false );
+	if ( !g_cfg_runtime_state.initialized ) {
+		return cfg_error_code_t::ERR_NOT_INIT;
+	}
+
+	return cfg_load_file( CFG_AUTOEXEC_PATH, false );
 }
 
 cfg_error_code_t cfg_execute_line( const char *command_line ) {
-    if ( !g_cfg_runtime_state.initialized ) {
-        return cfg_error_code_t::ERR_NOT_INIT;
-    }
+	if ( !g_cfg_runtime_state.initialized ) {
+		return cfg_error_code_t::ERR_NOT_INIT;
+	}
+
+	if ( command_line == nullptr || command_line[0] == '\0' ) {
+		return cfg_error_code_t::ERR_INVALID_LINE;
+	}
+
+	char line[CFG_MAX_LINE_LENGTH]{};
+	std::strncpy( line, command_line, sizeof( line ) - 1 );
+
+	// @NOTE: now we continue working, so we first trim whitespaces
+	//  - exec <file>    -> cfg_load_file
+	//  - set / seta     -> cvar::cvar_set
+	//  - otherwise      -> cmd::cmd_execute
+	// return cfg_error_code_t codes consistently
+
+	char *cursor = line;
+	while ( std::isspace( static_cast<unsigned char>( *cursor ) ) ) {
+		++cursor;
+	}
+
+	if ( *cursor == '\0' || *cursor == '\n' || *cursor == '\r' ) {
+		return cfg_error_code_t::OK;
+	}
+
+	bool in_quotes = false;
+	for ( char *it = cursor; *it != '\0'; ++it ) {
+		// @NOTE: we skipping these comments here, usual procedure like in the cfg_load_file func
+		if ( *it == '"' ) {
+			in_quotes = !in_quotes;
+		}
+		if ( !in_quotes && it[0] == '/' && it[1] == '/' ) {
+			*it = '\0';
+			break;
+		}
+		if ( !in_quotes && *it == '#' ) {
+			*it = '\0';
+			break;
+		}
+	}
+	char *end = cursor + std::strlen( cursor );
+	while ( end > cursor && std::isspace( static_cast<unsigned char>( end[-1] ) ) ) {
+		--end;
+	}
+	*end = '\0';
+	if ( *cursor == '\0' ) {
+		return cfg_error_code_t::OK;
+	}
+	char command[32]{};
+	rcommon::u32 i = 0;
+	while ( *cursor != '\0' && !std::isspace( static_cast<unsigned char>( *cursor ) ) && ( i + 1u ) < sizeof( command ) ) {
+		command[i++] = *cursor++;
+	}
+
+	command[i] = '\0';
+
+	if ( std::strcmp( command, "exec" ) == 0 ) {
+		while ( std::isspace( static_cast<unsigned char>( *cursor ) ) ) {
+			++cursor;
+		}
+
+		if ( *cursor == '\0' ) {
+			return cfg_error_code_t::ERR_PARSE_FAILED;
+		}
+
+		char exec_path[CFG_MAX_PATH_LENGTH]{};
+		i = 0;
+
+		if ( *cursor == '"' ) {
+			++cursor;
+			while ( cursor[i] != '\0' && cursor[i] != '"' && ( i + 1u ) < sizeof( exec_path ) ) {
+				exec_path[i] = cursor[i];
+				++i;
+			}
+			if ( *cursor != '"' ) {
+				return cfg_error_code_t::ERR_PARSE_FAILED;
+			}
+		} else {
+			while ( cursor[i] != '\0' && !std::isspace( static_cast<unsigned char>( cursor[i] ) ) && ( i + 1u ) < sizeof( exec_path ) ) {
+				exec_path[i] = cursor[i];
+				++i;
+			}
+		}
+		exec_path[i] = '\0';
+		return cfg_load_file( exec_path, true );
+	}
+
+	if ( std::strcmp( command, "set" ) == 0 || std::strcmp( command, "seta" ) == 0 ) {
+		while ( std::isspace( static_cast<unsigned char>( *cursor ) ) ) {
+            ++cursor;
+		}
+	}
     
-    if ( command_line == nullptr || command_line[0] == '\0' ) {
-        return cfg_error_code_t::ERR_INVALID_LINE;
-    }
-    
-    char line[CFG_MAX_LINE_LENGTH]{};
-    std::strncpy( line, command_line, sizeof( line ) - 1 );
-    
-    // @NOTE: now we continue working, so we first trim whitespaces
-    //  - exec <file>    -> cfg_load_file
-    //  - set / seta     -> cvar::cvar_set
-    //  - otherwise      -> cmd::cmd_execute
-    // return cfg_error_code_t codes consistently
-    
-    char *cursor = line;
-    
-    
-           
 }
 
-}       // namespace reap::rengine::cfg
+} // namespace reap::rengine::cfg
