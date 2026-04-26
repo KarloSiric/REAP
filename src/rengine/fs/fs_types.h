@@ -38,6 +38,12 @@ enum class fs_file_backend_t : rcommon::u8 {
     MAPPED_FILE
 };
 
+enum class fs_seek_origin_t : rcommon::u8 {
+    FS_SEEK_START = 0,
+    FS_SEEK_CURRENT,
+    FS_SEEK_END
+};
+
 struct fs_mount_t {
     fs_mount_type_t type{ fs_mount_type_t::FS_DIRECTORY };
     char virtual_root[FS_MAX_VIRTUAL_ROOT_LENGTH]{};
