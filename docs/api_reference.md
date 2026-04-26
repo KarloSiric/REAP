@@ -1,282 +1,450 @@
-# Fuse API Reference
+# Fuse Engine - API Reference
 
-This document describes the current public API surface of the Fuse engine runtime inside the REAP project.
+Complete reference for the current public headers, types, constants, and functions exposed by the Fuse engine runtime inside the REAP project.
 
-Scope rules:
+**Version:** 0.1.0  
+**Last Updated:** April 2026
 
-- this file documents public contracts
-- it follows headers first
-- it is allowed to lag implementation detail slightly, but not the declared interface
-- deeper internal notes belong in [api_implementation.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/api_implementation.md)
+---
 
-## Naming
+## Table of Contents
+
+- [1. Introduction](#1-introduction)
+- [2. Core Foundation Headers](#2-core-foundation-headers)
+  - [com_foundation.h - Engine Foundation Types](#com_foundationh---engine-foundation-types)
+  - [com_error.h - Common Error Surface](#com_errorh---common-error-surface)
+  - [com_print.h - Common Print and Error Output](#com_printh---common-print-and-error-output)
+- [3. Logging System](#3-logging-system)
+  - [log_types.h - Log Types and Configuration](#log_typesh---log-types-and-configuration)
+  - [log_main.h - Logger Runtime API](#log_mainh---logger-runtime-api)
+- [4. Platform System](#4-platform-system)
+  - [sys_platform.h - Platform and Timing API](#sys_platformh---platform-and-timing-api)
+- [5. Host Runtime](#5-host-runtime)
+  - [host_types.h - Runtime State and Configuration](#host_typesh---runtime-state-and-configuration)
+  - [host_main.h - Host Lifecycle API](#host_mainh---host-lifecycle-api)
+- [6. Renderer Contract](#6-renderer-contract)
+  - [r_main.h - Renderer Lifecycle API](#r_mainh---renderer-lifecycle-api)
+- [7. Command System](#7-command-system)
+  - [cmd_main.h - Command Registry and Dispatch](#cmd_mainh---command-registry-and-dispatch)
+- [8. Cvar System](#8-cvar-system)
+  - [cvar_main.h - Console Variable Runtime](#cvar_mainh---console-variable-runtime)
+- [9. Config System](#9-config-system)
+  - [cfg_main.h - Config Loading and Execution](#cfg_mainh---config-loading-and-execution)
+- [10. Error Headers](#10-error-headers)
+- [11. Next Planned Public API](#11-next-planned-public-api)
+
+---
+
+## 1. Introduction
+
+This document serves as the public API reference for Fuse.
+
+Scope:
+
+- documents public headers first
+- describes types, constants, and function contracts
+- stays focused on the visible API surface
+- leaves deeper internal design and behavior to [API_IMPLEMENTATION.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/API_IMPLEMENTATION.md)
+
+Naming:
 
 - `REAP` is the overall project/game
 - `Fuse` is the engine runtime
 - source currently lives under `src/rengine/`
 
-## `rcommon`
+---
 
-Source:
+## 2. Core Foundation Headers
 
-- [com_foundation.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/rcommon/com_foundation.h)
-- [com_error.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/rcommon/com_error.h)
-- [com_print.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/rcommon/com_print.h)
+### com_foundation.h - Engine Foundation Types
 
-Purpose:
+**Location:** [src/rengine/rcommon/com_foundation.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/rcommon/com_foundation.h)
 
-- fixed-width types
-- shared numeric/runtime constants
-- packed common error representation
-- formatted print/error helpers
+Shared engine-owned foundational types and constants.
 
-Important API:
+#### Type Aliases
 
-- integer and floating aliases such as `u32`, `i32`, `f32`, `f64`
-- `com_error_t`
-  - packed cross-subsystem surfaced error value
-- `com_error_make( domain, local_code )`
-  - packs a subsystem domain and local code into one surfaced error
-- `com_error_domain( error )`
-  - extracts the subsystem domain
-- `com_error_code( error )`
-  - extracts the local subsystem code
-- `com_printf( ... )`
-  - general formatted output helper
-- `com_dprintf( ... )`
-  - debug-oriented formatted output helper
-- `com_errorf( error, ... )`
-  - formatted surfaced-error output helper
+| Alias Group | Examples | Description |
+|-------------|----------|-------------|
+| Signed integers | `i8`, `i16`, `i32`, `i64` | Fixed-width signed types |
+| Unsigned integers | `u8`, `u16`, `u32`, `u64` | Fixed-width unsigned types |
+| Floating point | `f32`, `f64` | Engine floating-point aliases |
+| Size types | `usize` | Memory and container sizes |
+| Runtime IDs | `frame_index_t`, `entity_id_t` | Engine runtime identifiers |
 
-## `log`
+#### Constants
 
-Source:
+| Constant | Description |
+|----------|-------------|
+| `COM_INVALID_FRAME_INDEX` | Sentinel invalid frame index |
+| `COM_INVALID_ENTITY_ID` | Sentinel invalid entity id |
+| `COM_PI_F` | Pi as `f32` |
+| `COM_TAU_F` | Tau as `f32` |
+| `COM_DEG2RAD_F` | Degrees-to-radians multiplier |
+| `COM_RAD2DEG_F` | Radians-to-degrees multiplier |
+| `COM_EPSILON_F` | Small floating epsilon |
+| `COM_INFINITY_F` | Floating infinity |
 
-- [log_types.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/log/log_types.h)
-- [log_main.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/log/log_main.h)
+---
 
-Purpose:
+### com_error.h - Common Error Surface
 
-- severity/channel-aware runtime logging
-- console/file output policy
+**Location:** [src/rengine/rcommon/com_error.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/rcommon/com_error.h)
 
-Important types:
+Packed surfaced-error API used when subsystem-local typed errors need to cross subsystem boundaries.
 
-- `log_level_t`
-- `log_channel_t`
-- `log_record_t`
-- `log_config_t`
+#### Types
 
-Important API:
+| Type | Description |
+|------|-------------|
+| `com_error_t` | Packed 32-bit surfaced error |
+| `com_domain_t` | Subsystem/domain identifier |
+| `com_error_code_t` | Canonical common error enum |
 
-- `log_init( const log_config_t &config = {} )`
-- `log_shutdown()`
-- `log_get_config()`
-- `log_set_config( const log_config_t &config )`
-- `log_level_enabled( level, channel )`
-- `log_channel_enabled( mask, channel )`
-- `log_emit( const log_record_t &record )`
-- `log_emitf( ... )`
-- `log_emitfv( ... )`
+#### Important Functions
 
-Macro layer:
+| Function | Description |
+|----------|-------------|
+| `com_error_ok( code )` | True when code equals `OK` |
+| `com_error_failed( code )` | True when code is not `OK` |
+| `com_error_name( code )` | String name of common error code |
+| `com_domain_name( domain )` | String name of domain |
+| `com_error_make( domain, local_error_code )` | Pack domain and local code |
+| `com_error_domain( error )` | Extract packed domain |
+| `com_error_code( error )` | Extract packed local code |
 
-- `REAP_LOG_TRACE`
-- `REAP_LOG_DEBUG`
-- `REAP_LOG_INFO`
-- `REAP_LOG_WARNING`
-- `REAP_LOG_ERROR`
-- `REAP_LOG_FATAL`
+---
 
-## `platform`
+### com_print.h - Common Print and Error Output
 
-Source:
+**Location:** [src/rengine/rcommon/com_print.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/rcommon/com_print.h)
 
-- [sys_platform.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/platform/sys_platform.h)
+Formatted output helpers shared by subsystems.
 
-Purpose:
+#### Constants
 
-- engine-owned platform/compiler queries
-- path helpers
-- time helpers
+| Constant | Description |
+|----------|-------------|
+| `COM_MSG_MAX` | Maximum formatted message size |
 
-Important types:
+#### Functions
 
-- `platform_t`
-- `compiler_t`
+| Function | Description |
+|----------|-------------|
+| `com_printf( const char *message, ... )` | General formatted output |
+| `com_dprintf( const char *message, ... )` | Debug-oriented formatted output |
+| `com_vprintf( const char *message, va_list args )` | `va_list` print variant |
+| `com_errorf( com_error_t error, const char *message, ... )` | Formatted surfaced error output |
+| `com_verrorf( com_error_t error, const char *message, va_list args )` | `va_list` error variant |
 
-Important API:
+---
 
-- `sys_platform_type()`
-- `sys_compiler_type()`
-- `sys_platform_name( type )`
-- `sys_compiler_name( type )`
-- `sys_path_basename( path )`
-- `sys_time_now_seconds()`
-- `sys_local_time( time_value, time_out )`
+## 3. Logging System
 
-## `host`
+### log_types.h - Log Types and Configuration
 
-Source:
+**Location:** [src/rengine/log/log_types.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/log/log_types.h)
 
-- [host_types.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/host/host_types.h)
-- [host_main.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/host/host_main.h)
+Defines log severities, channels, records, and runtime configuration.
 
-Purpose:
+#### Important Types
 
-- top-level runtime ownership
-- frame lifecycle sequencing
+| Type | Description |
+|------|-------------|
+| `log_level_t` | Trace-to-fatal severity enum |
+| `log_file_mode_t` | File open mode policy |
+| `log_flush_policy_t` | Flush behavior policy |
+| `log_source_path_mode_t` | Basename vs full source path mode |
+| `log_channel_t` | Subsystem channel enum |
+| `log_record_t` | Built log event payload |
+| `log_config_t` | Runtime logger configuration |
 
-Important types:
+#### Important Helpers
 
-- `host_stage_t`
-- `build_config_t`
-- `viewport_t`
-- `window_config_t`
-- `frame_t`
-- `host_config_t`
-- `host_state_t`
+| Function | Description |
+|----------|-------------|
+| `log_level_name( level )` | String name of log level |
+| `log_channel_name( channel )` | String name of log channel |
+| `log_channel_bit( channel )` | Bitmask for channel |
 
-Important API:
+---
 
-- `host_init( host_state_t &, const host_config_t & )`
-- `host_shutdown( host_state_t & )`
-- `host_begin_frame( host_state_t &, f32 delta_time_seconds )`
-- `host_update( host_state_t & )`
-- `host_render( host_state_t & )`
-- `host_end_frame( host_state_t & )`
-- `host_is_running( host_state_t & )`
+### log_main.h - Logger Runtime API
 
-## `render`
+**Location:** [src/rengine/log/log_main.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/log/log_main.h)
 
-Source:
+Public logger lifecycle, configuration, and emission API.
 
-- [r_main.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/render/r_main.h)
+#### Functions
 
-Purpose:
+| Function | Description |
+|----------|-------------|
+| `log_init( const log_config_t &config = {} )` | Initialize logging subsystem |
+| `log_shutdown()` | Shutdown logger |
+| `log_get_config()` | Get active config |
+| `log_set_config( const log_config_t &config )` | Replace runtime config |
+| `log_level_enabled( level, channel )` | Check if event would be accepted |
+| `log_channel_enabled( channel_mask, channel )` | Check a channel bit in a mask |
+| `log_emit( const log_record_t &record )` | Emit fully-built record |
+| `log_emitf( ... )` | Build and emit formatted record |
+| `log_emitfv( ... )` | `va_list` formatted emit |
 
-- renderer lifecycle contract
-- explicit init/frame-state validation
+#### Macro Layer
 
-Important API:
+| Macro | Description |
+|-------|-------------|
+| `REAP_LOG_TRACE` | Trace severity log |
+| `REAP_LOG_DEBUG` | Debug severity log |
+| `REAP_LOG_INFO` | Info severity log |
+| `REAP_LOG_WARNING` | Warning severity log |
+| `REAP_LOG_ERROR` | Error severity log |
+| `REAP_LOG_FATAL` | Fatal severity log |
+| `REAP_LOG_CHECK` | Condition-check logging helper |
 
-- `r_init( const host::window_config_t &window_config )`
-- `r_shutdown()`
-- `r_begin_frame( f32 delta_time_seconds )`
-- `r_render_frame()`
-- `r_render_end()`
-- `r_is_initialized()`
+---
 
-## `cmd`
+## 4. Platform System
 
-Source:
+### sys_platform.h - Platform and Timing API
 
-- [cmd_main.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/cmd/cmd_main.h)
+**Location:** [src/rengine/platform/sys_platform.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/platform/sys_platform.h)
 
-Purpose:
+Platform/compiler detection and timing/path utility API.
 
-- fixed command registry
-- command lookup
-- command-line parsing
-- callback execution
+#### Types
 
-Important types and constants:
+| Type | Description |
+|------|-------------|
+| `platform_t` | Operating-system family enum |
+| `compiler_t` | Compiler family enum |
 
-- `CMD_MAX_COMMANDS`
-- `CMD_MAX_ARGUMENTS`
-- `cmd_fn_t`
-- `cmd_t`
-- `cmd_registry_t`
+#### Functions
 
-Important API:
+| Function | Description |
+|----------|-------------|
+| `sys_platform_type()` | Return build platform |
+| `sys_compiler_type()` | Return build compiler |
+| `sys_platform_name( type )` | String name of platform |
+| `sys_compiler_name( type )` | String name of compiler |
+| `sys_path_basename( const char *path )` | Basename view into path |
+| `sys_time_now_seconds()` | Monotonic time in seconds |
+| `sys_local_time( std::time_t time_value, std::tm &time_out )` | Local-time conversion helper |
 
-- `cmd_init()`
-- `cmd_shutdown()`
-- `cmd_register( const char *cmd_name, cmd_fn_t callback_fn, const char *cmd_description )`
-- `cmd_find( const char *cmd_name )`
-- `cmd_parse( char *command_line, u32 &argc, char **argv )`
-- `cmd_execute( const char *command_line )`
+---
 
-## `cvar`
+## 5. Host Runtime
 
-Source:
+### host_types.h - Runtime State and Configuration
 
-- [cvar_main.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/cvar/cvar_main.h)
+**Location:** [src/rengine/host/host_types.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/host/host_types.h)
 
-Purpose:
+Defines top-level runtime state and startup configuration types.
 
-- fixed cvar registry
-- cached string/int/float/bool values
-- flag-based mutation policy
+#### Important Types
 
-Important types and constants:
+| Type | Description |
+|------|-------------|
+| `host_stage_t` | High-level runtime lifecycle stage |
+| `build_config_t` | Debug/release/distribution build mode |
+| `viewport_t` | Width/height pair |
+| `window_config_t` | Window startup configuration |
+| `frame_t` | Per-frame timing state |
+| `host_config_t` | Top-level host startup config |
+| `host_state_t` | Mutable runtime host state |
 
-- `CVAR_MAX_CVARS`
-- `cvar_flags_t`
-- `cvar_t`
-- `cvar_registry_t`
-- `CVAR_REGISTER_ALLOWED_FLAGS`
+---
 
-Important API:
+### host_main.h - Host Lifecycle API
 
-- `cvar_init()`
-- `cvar_register( const char *name, const char *default_value, cvar_flags_t flags )`
-- `cvar_set( const char *name, const char *value )`
-- `cvar_shutdown()`
-- `cvar_find( const char *name )`
-- `cvar_get_string( const char *name )`
-- `cvar_get_int( const char *name )`
-- `cvar_get_float( const char *name )`
-- `cvar_get_bool( const char *name )`
+**Location:** [src/rengine/host/host_main.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/host/host_main.h)
 
-## `cfg`
+Top-level runtime lifecycle API used by the executable entry point.
 
-Source:
+#### Functions
 
-- [cfg_main.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/cfg/cfg_main.h)
+| Function | Description |
+|----------|-------------|
+| `host_init( host_state_t &host_state, const host_config_t &host_config )` | Initialize host runtime |
+| `host_shutdown( host_state_t &host_state )` | Shutdown host runtime |
+| `host_begin_frame( host_state_t &host_state, f32 delta_time_seconds )` | Begin current frame |
+| `host_update( host_state_t &host_state )` | Update host simulation |
+| `host_render( host_state_t &host_state )` | Render current frame |
+| `host_end_frame( host_state_t &host_state )` | Finalize current frame |
+| `host_is_running( host_state_t &host_state )` | Main-loop continuation query |
 
-Purpose:
+---
 
-- startup/runtime config loading
-- single-line cfg execution
-- bridge between textual config and `cmd`/`cvar`
+## 6. Renderer Contract
 
-Important constants:
+### r_main.h - Renderer Lifecycle API
 
-- `CFG_MAX_LINE_LENGTH`
-- `CFG_MAX_PATH_LENGTH`
+**Location:** [src/rengine/render/r_main.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/render/r_main.h)
 
-Important API:
+Defines the current renderer lifecycle contract.
 
-- `cfg_init()`
-- `cfg_shutdown()`
-- `cfg_load_file( const char *path, bool required = false )`
-- `cfg_load_default()`
-- `cfg_load_autoexec()`
-- `cfg_execute_line( const char *command_line )`
+#### Functions
 
-## Error enums
+| Function | Description |
+|----------|-------------|
+| `r_init( const host::window_config_t &window_config )` | Initialize renderer |
+| `r_shutdown()` | Shutdown renderer |
+| `r_begin_frame( f32 delta_time_seconds )` | Begin a render frame |
+| `r_render_frame()` | Submit/render current frame |
+| `r_render_end()` | End current frame |
+| `r_is_initialized()` | Query init state |
 
-Each major subsystem currently exposes its own local error enum in a dedicated header:
+---
 
-- `log_error.h`
-- `host_error.h`
-- `r_error.h`
-- `cmd_error.h`
-- `cvar_error.h`
-- `cfg_error.h`
-- `sys_error.h`
+## 7. Command System
 
-The current pattern is:
+### cmd_main.h - Command Registry and Dispatch
 
-- use subsystem-local typed enums internally
-- surface cross-subsystem failures through `rcommon::com_error_t` when needed
+**Location:** [src/rengine/cmd/cmd_main.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/cmd/cmd_main.h)
 
-## Next API expected to appear
+Fixed-registry command backend for textual command dispatch.
 
-The next major public API addition should be the filesystem layer, likely in a new `fs` subsystem with contracts for:
+#### Constants
 
-- init/shutdown
-- mount/search path setup
-- file open/read queries
-- later archive integration
+| Constant | Description |
+|----------|-------------|
+| `CMD_MAX_COMMANDS` | Maximum registered commands |
+| `CMD_MAX_ARGUMENTS` | Maximum parsed command arguments |
+
+#### Types
+
+| Type | Description |
+|------|-------------|
+| `cmd_fn_t` | Command callback signature |
+| `cmd_t` | Registered command entry |
+| `cmd_registry_t` | Command registry state |
+
+#### Functions
+
+| Function | Description |
+|----------|-------------|
+| `cmd_init()` | Initialize command system |
+| `cmd_shutdown()` | Shutdown command system |
+| `cmd_register( const char *cmd_name, cmd_fn_t callback_fn, const char *cmd_description )` | Register command |
+| `cmd_find( const char *cmd_name )` | Find command by name |
+| `cmd_parse( char *command_line, u32 &argc, char **argv )` | Tokenize command line |
+| `cmd_execute( const char *command_line )` | Parse and dispatch command |
+
+---
+
+## 8. Cvar System
+
+### cvar_main.h - Console Variable Runtime
+
+**Location:** [src/rengine/cvar/cvar_main.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/cvar/cvar_main.h)
+
+Fixed-registry console variable system with cached typed views.
+
+#### Constants
+
+| Constant | Description |
+|----------|-------------|
+| `CVAR_MAX_CVARS` | Maximum registered cvars |
+| `CVAR_REGISTER_ALLOWED_FLAGS` | Flags permitted during registration |
+
+#### Types
+
+| Type | Description |
+|------|-------------|
+| `cvar_flags_t` | Cvar policy/state flags |
+| `cvar_t` | Cvar entry |
+| `cvar_registry_t` | Cvar registry state |
+
+#### Flags
+
+| Flag | Description |
+|------|-------------|
+| `CVAR_NONE` | No flags |
+| `CVAR_ARCHIVE` | Persist/save candidate |
+| `CVAR_READONLY` | Cannot be changed normally |
+| `CVAR_CHEAT` | Cheat-protected cvar |
+| `CVAR_DEV` | Development-oriented cvar |
+| `CVAR_MODIFIED` | Changed during current session |
+
+#### Functions
+
+| Function | Description |
+|----------|-------------|
+| `cvar_init()` | Initialize cvar system |
+| `cvar_register( const char *name, const char *default_value, cvar_flags_t flags )` | Register cvar |
+| `cvar_set( const char *name, const char *value )` | Change cvar value |
+| `cvar_shutdown()` | Shutdown cvar system |
+| `cvar_find( const char *name )` | Find cvar by name |
+| `cvar_get_string( const char *name )` | Get string value |
+| `cvar_get_int( const char *name )` | Get cached integer value |
+| `cvar_get_float( const char *name )` | Get cached float value |
+| `cvar_get_bool( const char *name )` | Get cached boolean value |
+
+---
+
+## 9. Config System
+
+### cfg_main.h - Config Loading and Execution
+
+**Location:** [src/rengine/cfg/cfg_main.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/cfg/cfg_main.h)
+
+Config runtime used for loading startup/runtime config files and executing config-style lines.
+
+#### Constants
+
+| Constant | Description |
+|----------|-------------|
+| `CFG_MAX_LINE_LENGTH` | Maximum cfg line length |
+| `CFG_MAX_PATH_LENGTH` | Maximum cfg path length |
+
+#### Functions
+
+| Function | Description |
+|----------|-------------|
+| `cfg_init()` | Initialize cfg subsystem |
+| `cfg_shutdown()` | Shutdown cfg subsystem |
+| `cfg_load_file( const char *path, bool required = false )` | Load cfg file from path |
+| `cfg_load_default()` | Load default startup cfg |
+| `cfg_load_autoexec()` | Load optional autoexec cfg |
+| `cfg_execute_line( const char *command_line )` | Execute a single cfg-style command line |
+
+#### Supported Line Forms
+
+| Form | Behavior |
+|------|----------|
+| `exec <path>` | Load another cfg file |
+| `set <name> <value>` | Set cvar value |
+| `seta <name> <value>` | Set archive-oriented cvar value |
+| `<command ...>` | Fallback to command execution |
+
+---
+
+## 10. Error Headers
+
+Each major subsystem currently exposes a typed local error enum in its own header:
+
+- [src/rengine/log/log_error.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/log/log_error.h)
+- [src/rengine/host/host_error.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/host/host_error.h)
+- [src/rengine/platform/sys_error.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/platform/sys_error.h)
+- [src/rengine/render/r_error.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/render/r_error.h)
+- [src/rengine/cmd/cmd_error.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/cmd/cmd_error.h)
+- [src/rengine/cvar/cvar_error.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/cvar/cvar_error.h)
+- [src/rengine/cfg/cfg_error.h](/Users/karlosiric/Documents/MyProjects/REAP/src/rengine/cfg/cfg_error.h)
+
+Current design rule:
+
+- use typed local error enums inside a subsystem
+- convert to `rcommon::com_error_t` when surfacing failures across subsystem boundaries
+
+---
+
+## 11. Next Planned Public API
+
+The next major public API expected to be added is the filesystem layer.
+
+Planned direction:
+
+- `fs_init()`
+- `fs_shutdown()`
+- mount/search path registration
+- engine-owned file open/read helpers
+- later archive integration for `rpk` or another package format

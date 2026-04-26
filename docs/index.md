@@ -16,8 +16,8 @@ Read these in order when resuming work:
 
 API docs:
 
-- [api_reference.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/api_reference.md)
-- [api_implementation.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/api_implementation.md)
+- [API_REFERENCE.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/API_REFERENCE.md)
+- [API_IMPLEMENTATION.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/API_IMPLEMENTATION.md)
 
 Reference docs:
 
@@ -51,7 +51,7 @@ Project memory:
   - what each module is responsible for
 - `toolchain_plan`
   - how maps, models, archives, scripts, and tools should be introduced
-- `api_reference`
+- `API_REFERENCE`
   - the public engine-facing API surface that currently exists
-- `api_implementation`
+- `API_IMPLEMENTATION`
   - how the current API is backed internally and where it still needs work

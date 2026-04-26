@@ -35,8 +35,8 @@ All notable changes to REAP are tracked here.
   - `seta`
   - fallback command dispatch
 - New documentation anchors:
-  - [docs/api_reference.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/api_reference.md)
-  - [docs/api_implementation.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/api_implementation.md)
+  - [docs/API_REFERENCE.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/API_REFERENCE.md)
+  - [docs/API_IMPLEMENTATION.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/API_IMPLEMENTATION.md)
 
 ### Changed
 - Documentation now reflects the current project split more accurately:
