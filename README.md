@@ -84,8 +84,8 @@ Start here:
 - [docs/architecture.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/architecture.md)
 - [docs/subsystems.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/subsystems.md)
 - [docs/toolchain_plan.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/toolchain_plan.md)
-- [docs/API_REFERENCE.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/API_REFERENCE.md)
-- [docs/API_IMPLEMENTATION.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/API_IMPLEMENTATION.md)
+- [docs/FUSE_API_REFERENCE.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/FUSE_API_REFERENCE.md)
+- [docs/FUSE_API_IMPLEMENTATION.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/FUSE_API_IMPLEMENTATION.md)
 
 Long-lived project memory:
 

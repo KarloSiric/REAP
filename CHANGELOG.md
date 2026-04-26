@@ -35,8 +35,8 @@ All notable changes to REAP are tracked here.
   - `seta`
   - fallback command dispatch
 - New documentation anchors:
-  - [docs/API_REFERENCE.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/API_REFERENCE.md)
-  - [docs/API_IMPLEMENTATION.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/API_IMPLEMENTATION.md)
+  - [docs/FUSE_API_REFERENCE.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/FUSE_API_REFERENCE.md)
+  - [docs/FUSE_API_IMPLEMENTATION.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/FUSE_API_IMPLEMENTATION.md)
 
 ### Changed
 - Documentation now reflects the current project split more accurately:
@@ -53,6 +53,7 @@ All notable changes to REAP are tracked here.
 ### Fixed
 - Project status docs now match the actual codebase more closely.
 - Documentation navigation now includes API-oriented references instead of only architecture/process notes.
+- `cfg_load_file()` now delegates per-line execution through `cfg_execute_line()` instead of carrying a second parser path.
 
 ## [0.1.0] - 2026-04-20
 

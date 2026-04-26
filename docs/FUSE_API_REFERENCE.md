@@ -44,7 +44,7 @@ Scope:
 - documents public headers first
 - describes types, constants, and function contracts
 - stays focused on the visible API surface
-- leaves deeper internal design and behavior to [API_IMPLEMENTATION.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/API_IMPLEMENTATION.md)
+- leaves deeper internal design and behavior to [FUSE_API_IMPLEMENTATION.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/FUSE_API_IMPLEMENTATION.md)
 
 Naming:
 

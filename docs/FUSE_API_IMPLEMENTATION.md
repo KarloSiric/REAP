@@ -98,7 +98,7 @@ It exists to answer:
 - which parts are solid already
 - which parts are still placeholders or early scaffolding
 
-This is the implementation-oriented companion to [API_REFERENCE.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/API_REFERENCE.md).
+This is the implementation-oriented companion to [FUSE_API_REFERENCE.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/FUSE_API_REFERENCE.md).
 
 ### 1.2 Target Audience
 
@@ -508,7 +508,7 @@ Current config runtime:
 
 - opens config files directly
 - reads line by line
-- strips comments with quote awareness
+- routes each line through `cfg_execute_line()`
 - supports nested `exec`
 
 ### 12.2 Single-Line Execution
@@ -524,8 +524,7 @@ That makes it useful later for:
 ### 12.3 Current Limitations
 
 - still uses direct `std::fopen`
-- still duplicates logic between file execution and single-line execution
-- should ultimately let line execution live in one place while file loading only handles I/O
+- still needs a filesystem seam before VFS work can land cleanly
 
 ---
 
@@ -533,7 +532,6 @@ That makes it useful later for:
 
 Current notable debt:
 
-- config parsing logic is duplicated
 - no filesystem seam exists yet
 - startup wiring still does not fully route through cfg/cmd/cvar
 - renderer contract exists without real backend implementation
