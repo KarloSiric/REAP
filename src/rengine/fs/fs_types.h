@@ -46,18 +46,21 @@ struct fs_mount_t {
     rcommon::u32 priority{ 0u };
 };
 
+struct fs_file_t {
+    fs_file_backend_t backend{ fs_file_backend_t::INVALID };
+    void *native_handle{ nullptr };
+    rcommon::u64 size{ 0u };
+    rcommon::u64 cursor{ 0u };
+    bool readable{ false };
+    bool writable{ false };   
+};
 
-
-
-
-
-
-
-
-
-
-
-
-
+struct fs_file_info_t {
+    bool exists{ false };
+    bool is_directory{ false };
+    rcommon::u64 file_size{ 0u };
+    std::time_t modified_time{};
+    char resolved_path[FS_MAX_PATH_LENGTH]{};  
+};
 
 }       // namespace reap::rengine::fs
