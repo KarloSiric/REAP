@@ -5,34 +5,54 @@ All notable changes to REAP are tracked here.
 ## [Unreleased]
 
 ### Added
-- Documentation overhaul aligned to the original Quake-style REAP structure PDF.
+- Packed common error surface in `rcommon` for cross-subsystem error reporting.
+- Common formatted print/error helpers:
+  - `com_printf`
+  - `com_dprintf`
+  - `com_errorf`
+- Logging runtime with:
+  - level filtering
+  - channel masking
+  - console output
+  - optional file sink
+- Host/runtime lifecycle scaffolding with explicit frame stages.
+- Renderer lifecycle contract with error-coded init, begin-frame, render, and end-frame entry points.
+- Command subsystem with:
+  - fixed registry
+  - command lookup
+  - argument parsing
+  - callback execution
+- Cvar subsystem with:
+  - fixed registry
+  - typed cached values
+  - mutation flags
+  - readonly/cheat protection hooks
+- Cfg subsystem with:
+  - file loading
+  - single-line execution
+  - `exec`
+  - `set`
+  - `seta`
+  - fallback command dispatch
 - New documentation anchors:
-  - `docs/project_structure.md`
-  - `docs/development_phases.md`
-- Expanded project memory/docs navigation for long-horizon solo development.
+  - [docs/api_reference.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/api_reference.md)
+  - [docs/api_implementation.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/api_implementation.md)
 
 ### Changed
-- README and docs now follow the intended long-term engine/game/tools layout:
-  - `src/common`
-  - `src/renderer`
-  - `src/server`
-  - `src/client`
-  - `src/network`
-  - `src/bsp`
-  - `src/physics`
-  - `src/audio`
-  - `src/ecs`
-  - `src/vm`
-  - `src/platform`
-  - `rvm`
-  - `game`
-  - `tools`
-  - `data`
-  - `config`
-- Documentation direction shifted from generic engine bootstrap notes to the specific intended REAP architecture.
+- Documentation now reflects the current project split more accurately:
+  - `REAP` is the project/game
+  - `Fuse` is the native engine runtime being built inside it
+- Runtime direction is now explicitly documented as:
+  - `VFS`
+  - `SDL3`
+  - `OpenGL`
+  - `Quake III BSP`
+  - later `rmdl` / `rpk` / small engine-owned editor tooling
+- Active roadmap and phase docs no longer describe a `Raylib` bootstrap path.
 
 ### Fixed
-- Public runtime documentation now better matches the intended subsystem boundaries and build order.
+- Project status docs now match the actual codebase more closely.
+- Documentation navigation now includes API-oriented references instead of only architecture/process notes.
 
 ## [0.1.0] - 2026-04-20
 

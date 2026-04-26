@@ -7,11 +7,12 @@ This file defines what the major REAP modules are supposed to do.
 Shared engine foundation used by both client and server style code.
 
 Expected contents:
-- engine bootstrap
+
+- engine bootstrap helpers
 - memory helpers
 - command system
 - cvar system
-- console backend
+- cfg/console backend
 - filesystem
 - pak/archive reading
 - logging
@@ -24,6 +25,7 @@ This is the layer everything else stands on.
 ## `renderer`
 
 Owns:
+
 - frame begin/end
 - world rendering
 - BSP rendering
@@ -36,11 +38,14 @@ Owns:
 - debug draw
 
 Rule:
-- the rest of the engine should not call Raylib directly
+
+- the rest of the engine should not call `OpenGL` directly
+- the renderer should use platform-created contexts, not leak platform APIs outward
 
 ## `server`
 
 Owns:
+
 - authoritative simulation
 - client connection management
 - snapshot generation
@@ -51,6 +56,7 @@ Owns:
 ## `client`
 
 Owns:
+
 - local input
 - prediction
 - interpolation
@@ -64,6 +70,7 @@ Owns:
 ## `network`
 
 Owns:
+
 - socket-level communication
 - packet framing
 - reliable/unreliable channel logic
@@ -74,7 +81,8 @@ Both client and server depend on this layer.
 ## `bsp`
 
 Owns:
-- BSP loading
+
+- `Quake III BSP` loading
 - BSP format definitions
 - traceline / tracebox
 - PVS lookup
@@ -84,6 +92,7 @@ Owns:
 ## `physics`
 
 Owns:
+
 - player movement
 - slide movement
 - step movement
@@ -93,6 +102,7 @@ Owns:
 ## `audio`
 
 Owns:
+
 - audio runtime startup/shutdown
 - loading sounds
 - mixing
@@ -102,6 +112,7 @@ Owns:
 ## `ecs`
 
 Owns:
+
 - entity/component definitions
 - system registration
 - prefab setup
@@ -112,6 +123,7 @@ This is the replacement for a monolithic entity array.
 ## `vm`
 
 Owns:
+
 - loading the gameplay VM in the engine runtime
 - trap bridge between VM and native engine code
 - engine-side debugging of VM state
@@ -119,8 +131,10 @@ Owns:
 ## `platform`
 
 Owns:
+
 - OS entry point details
 - timing
+- `SDL3` bootstrap and event pump seam
 - file/path wrappers where needed
 - OS socket differences where needed
 - crash/error/platform-specific behavior
@@ -132,6 +146,7 @@ This is the engine/OS seam.
 Standalone virtual machine project.
 
 Owns:
+
 - VM runtime
 - memory model
 - stack
@@ -145,6 +160,7 @@ Owns:
 ## `game`
 
 Owns gameplay logic intended to run on the VM:
+
 - players
 - weapons
 - projectiles
@@ -160,7 +176,9 @@ Owns gameplay logic intended to run on the VM:
 ## `tools`
 
 Owns offline content pipeline:
-- model compiler/decompiler
+
+- `rmdl` compiler/decompiler
 - texture processing
-- pak/archive creation and extraction
+- `rpk` package creation and extraction
+- small purpose-built editor tools
 - asset build orchestration

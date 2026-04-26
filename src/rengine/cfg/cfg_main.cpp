@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-24 15:56:36
    Last Modified by: ksiric
-   Last Modified: 2026-04-26 01:23:05
+   Last Modified: 2026-04-26 02:41:16
    ---------------------------------------------------------------------
    Description:
 
@@ -302,7 +302,8 @@ cfg_error_code_t cfg_execute_line( const char *command_line ) {
 				exec_path[i] = cursor[i];
 				++i;
 			}
-			if ( *cursor != '"' ) {
+            // @NOTE!!!!!!
+			if ( cursor[i] != '"' ) {
 				return cfg_error_code_t::ERR_PARSE_FAILED;
 			}
 		} else {
@@ -372,6 +373,7 @@ cfg_error_code_t cfg_execute_line( const char *command_line ) {
     if ( cmd::cmd_execute( line ) != cmd::cmd_error_code_t::OK ) {
         return cfg_error_code_t::ERR_COMMAND_FAILED;
     }
+    
     return cfg_error_code_t::OK;
 }
 

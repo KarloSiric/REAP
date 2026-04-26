@@ -2,21 +2,28 @@
 
 This is the navigation root for REAP.
 
+`REAP` is the overall project. `Fuse` is the engine runtime being built inside it.
+
 Read these in order when resuming work:
 
 1. [current_status.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/current_status.md)
 2. [development_phases.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/development_phases.md)
-3. [project_structure.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/project_structure.md)
-4. [architecture.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/architecture.md)
-5. [subsystems.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/subsystems.md)
-6. [toolchain_plan.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/toolchain_plan.md)
+3. [roadmap.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/roadmap.md)
+4. [project_structure.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/project_structure.md)
+5. [architecture.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/architecture.md)
+6. [subsystems.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/subsystems.md)
+7. [toolchain_plan.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/toolchain_plan.md)
+
+API docs:
+
+- [api_reference.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/api_reference.md)
+- [api_implementation.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/api_implementation.md)
 
 Reference docs:
 
 - [build_guide.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/build_guide.md)
 - [coding_style.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/coding_style.md)
 - [reference_policy.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/reference_policy.md)
-- [roadmap.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/roadmap.md)
 
 Project memory:
 
@@ -31,13 +38,20 @@ Project memory:
   - what is done-for-now
   - what is intentionally deferred
 - `development_phases`
-  - the actual implementation order
-  - what must be built first, second, and later
+  - the current build order
+  - what should be implemented next and why
+- `roadmap`
+  - compact version of the larger build sequence
 - `project_structure`
-  - the intended full repo layout based on the original REAP structure
+  - the intended full repo layout
 - `architecture`
-  - subsystem boundaries and ownership rules
+  - top-level boundaries
+  - ownership rules
 - `subsystems`
   - what each module is responsible for
 - `toolchain_plan`
   - how maps, models, archives, scripts, and tools should be introduced
+- `api_reference`
+  - the public engine-facing API surface that currently exists
+- `api_implementation`
+  - how the current API is backed internally and where it still needs work

@@ -1,6 +1,8 @@
 # REAP Project Structure
 
-This is the intended long-term REAP repository structure, based on the original project structure reference and adapted to the current project.
+This is the intended long-term REAP repository structure.
+
+`REAP` is the project/game. `Fuse` is the engine runtime inside it.
 
 ## Target layout
 
@@ -32,7 +34,7 @@ reap/
 ## Meaning of each top-level directory
 
 - `src`
-  - native engine runtime
+  - native Fuse engine runtime
 - `rvm`
   - standalone REAP Virtual Machine project
 - `game`
@@ -50,7 +52,7 @@ reap/
 
 ## Important note about the current repo
 
-The current source still lives under `src/rengine/` because the project is in early foundation stage.
+The current source still lives under `src/rengine/` because the project is still in early foundation stage.
 
 From this point forward, the docs and long-term structure should assume the target shape above, and future migrations should move code toward it instead of inventing a different architecture each time.
 

@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-18 23:12:08
    Last Modified by: ksiric
-   Last Modified: 2026-04-21 21:34:25
+   Last Modified: 2026-04-26 02:38:02
    ---------------------------------------------------------------------
    Description:
        
@@ -18,13 +18,11 @@
 #include "rengine/log/log_main.h"
 #include "rengine/platform/sys_platform.h"
 #include "rengine/rcommon/com_print.h"
-#include "rengine/render/r_error.h"
 
 namespace rr = reap::rengine;
 namespace host = rr::host;
 namespace log = rr::log;
 namespace rc = rr::rcommon;
-namespace render = rr::render;
 namespace sys = rr::sys;
 
 /**

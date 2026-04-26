@@ -1,19 +1,21 @@
 # REAP Architecture
 
-REAP is a large, layered project made of three connected bodies of work:
+REAP is a layered project made of three connected bodies of work:
 
-- `engine runtime`
-- `game logic`
-- `tools and offline pipeline`
+- `Fuse` engine runtime
+- game logic
+- tools and offline pipeline
 
 The long-term structure follows Quake-style separation, adapted to REAP and modern C++.
 
 ## Top-level architecture
 
 ### `src/`
+
 The native engine runtime.
 
 Target modules:
+
 - `common`
 - `renderer`
 - `server`
@@ -27,18 +29,22 @@ Target modules:
 - `platform`
 
 ### `rvm/`
+
 Standalone REAP Virtual Machine project.
 
 Owns:
+
 - VM runtime
 - assembler
 - disassembler
 - later the REAP Script compiler
 
 ### `game/`
+
 Gameplay scripts intended to run on the VM.
 
 This is where high-level REAP gameplay should live once the VM path is real:
+
 - players
 - waves
 - enemies
@@ -47,36 +53,40 @@ This is where high-level REAP gameplay should live once the VM path is real:
 - rules
 
 ### `tools/`
+
 Offline pipeline executables.
 
 Owns:
+
 - model compiler/decompiler
 - texture pipeline
-- pak/archive tooling
-- asset build scripts
+- archive tooling
+- small engine-owned editor tools when justified
 
 ## Boundary rules
 
 - `common` is shared foundation
-- `renderer` owns drawing and GPU-facing code
+- `renderer` owns GPU-facing code
 - `server` owns authoritative simulation
 - `client` owns local input/prediction/presentation bridge
 - `network` owns transport and serialization primitives
-- `bsp` owns map loading and collision queries
+- `bsp` owns map loading and collision/visibility queries
 - `physics` owns movement and shared simulation code
 - `audio` owns sound runtime
 - `ecs` owns entity/component integration layer
 - `vm` is the bridge between engine runtime and `rvm`
-- `platform` owns OS-specific behavior
+- `platform` owns OS-facing behavior and the SDL seam
 
 ## Current implementation reality
 
-The current repository is earlier than the target structure.
+The current repository is much earlier than the target structure.
 
 Today:
+
 - code is still concentrated in `src/rengine/`
-- the project is still in runtime bootstrap
-- many target modules are planned but not yet created
+- the project is still in bootstrap/foundation phase
+- command/cvar/cfg subsystems already exist before the visible runtime backend does
+- the next major missing seam is the filesystem layer
 
 That is acceptable for now, as long as new work follows the documented target structure from this point forward.
 
@@ -85,5 +95,5 @@ That is acceptable for now, as long as new work follows the documented target st
 - engine-owned interfaces at subsystem boundaries
 - explicit data flow
 - no heavy abstraction without runtime pressure
-- original implementations inspired by Quake/DOOM lineage, not copied
+- learn from Quake/DOOM lineage without copying blindly
 - long-term maintainability for a solo developer

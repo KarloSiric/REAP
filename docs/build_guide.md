@@ -4,6 +4,8 @@
 
 The repository currently builds through CMake.
 
+`Fuse` currently builds as part of the `reap` executable target.
+
 ```bash
 cmake -S . -B build
 cmake --build build
