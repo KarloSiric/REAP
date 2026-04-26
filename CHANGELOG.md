@@ -2,7 +2,7 @@
 
 All notable changes to REAP are tracked here.
 
-## [Unreleased]
+## [0.1.0] - 2026-04-25
 
 ### Added
 - Packed common error surface in `rcommon` for cross-subsystem error reporting.
