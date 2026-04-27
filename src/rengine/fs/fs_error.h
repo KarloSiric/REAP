@@ -8,26 +8,26 @@ namespace reap::rengine::fs
 
 enum class fs_error_code_t : rcommon::u8 {
     OK = 0,
-    
+
     ERR_NOT_INIT,
     ERR_IS_INIT,
-    
+
     ERR_INVALID_PATH,
     ERR_INVALID_MODE,
     ERR_INVALID_HANDLE,
     ERR_INVALID_ARGUMENT,
-    
+
     ERR_TOO_MANY_MOUNTS,
     ERR_MOUNT_NOT_FOUND,
     ERR_PATH_NOT_FOUND,
-    
+
     ERR_FILE_OPEN_FAILED,
     ERR_FILE_CLOSE_FAILED,
     ERR_FILE_READ_FAILED,
     ERR_FILE_WRITE_FAILED,
     ERR_FILE_SEEK_FAILED,
     ERR_FILE_TELL_FAILED,
-    
+
     ERR_BUFFER_TOO_SMALL,
     ERR_UNSUPPORTED_BACKEND,
     ERR_PERMISSION_DENIED,
@@ -130,6 +130,6 @@ constexpr inline const char *fs_error_desc( const fs_error_code_t error ) {
 
 constexpr inline rcommon::com_error_t fs_error_code( fs_error_code_t  error ) {
     return rcommon::com_error_make( rcommon::com_domain_t::COM_DOMAIN_FS, static_cast<rcommon::com_u16>( error ) );
-}   
-    
-}       // namespace reap::rengine::fs
+}
+
+}

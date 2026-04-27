@@ -5,10 +5,10 @@
 
 namespace reap::rengine::cmd
 {
-    
+
 enum class cmd_error_code_t : rcommon::u8 {
     OK,
-    
+
     ERR_NOT_INIT,
     ERR_IS_INIT,
     ERR_INVALID_COMMAND,
@@ -22,5 +22,5 @@ enum class cmd_error_code_t : rcommon::u8 {
 constexpr inline rcommon::com_error_t cmd_error_code( cmd_error_code_t error ) {
     return rcommon::com_error_make( rcommon::com_domain_t::COM_DOMAIN_CMD , static_cast<rcommon::com_u16>( error ) );
 }
-    
-}       // namespace reap::rengine::cmd
+
+}

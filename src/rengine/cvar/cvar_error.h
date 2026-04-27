@@ -82,4 +82,4 @@ constexpr inline rcommon::com_error_t cvar_error_make( cvar_error_code_t error )
 	return rcommon::com_error_make( rcommon::com_domain_t::COM_DOMAIN_CVAR, static_cast<rcommon::com_u16>( error ) );
 }
 
-} // namespace reap::rengine::cvar
+}

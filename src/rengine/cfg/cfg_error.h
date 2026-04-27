@@ -1,4 +1,4 @@
-// src/rengine/cfg/cfg_error.h
+
 #pragma once
 
 #include "rengine/rcommon/com_foundation.h"
@@ -72,4 +72,4 @@ constexpr inline rcommon::com_error_t cfg_error_code( const cfg_error_code_t err
 	return rcommon::com_error_make( rcommon::com_domain_t::COM_DOMAIN_CFG, static_cast<rcommon::u16>( error ) );
 }
 
-} // namespace reap::rengine::cfg
+}

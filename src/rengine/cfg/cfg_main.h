@@ -1,4 +1,4 @@
-// src/rengine/cfg/cfg_main.h
+
 #pragma once
 
 #include "rengine/cfg/cfg_error.h"
@@ -18,4 +18,4 @@ cfg_error_code_t cfg_load_autoexec();
 
 cfg_error_code_t cfg_execute_line( const char *command_line );
 
-} // namespace reap::rengine::cfg
+}

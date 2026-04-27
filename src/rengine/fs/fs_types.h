@@ -5,21 +5,21 @@
 
 namespace reap::rengine::fs
 {
-    
+
 constexpr rcommon::u32 FS_MAX_MOUNTS                    = 32u;
 constexpr rcommon::u32 FS_MAX_PATH_LENGTH               = 260u;
 constexpr rcommon::u32 FS_MAX_VIRTUAL_ROOT_LENGTH       = 64u;
- 
+
 enum class fs_mount_type_t : rcommon::u8 {
     FS_DIRECTORY    = 0,
     FS_PACKAGE
 };
 
-enum fs_mount_flags_t : rcommon::u32 { 
+enum fs_mount_flags_t : rcommon::u32 {
     FS_MOUNT_NONE       = 0u,
     FS_MOUNT_READ_ONLY  = 1u << 0u,
     FS_MOUNT_WRITABLE   = 1u << 1u
-    
+
 };
 
 enum class fs_open_mode_t : rcommon::u8 {
@@ -58,7 +58,7 @@ struct fs_file_t {
     rcommon::u64 size{ 0u };
     rcommon::u64 cursor{ 0u };
     bool readable{ false };
-    bool writable{ false };   
+    bool writable{ false };
 };
 
 struct fs_file_info_t {
@@ -66,7 +66,7 @@ struct fs_file_info_t {
     bool is_directory{ false };
     rcommon::u64 file_size{ 0u };
     std::time_t modified_time{};
-    char resolved_path[FS_MAX_PATH_LENGTH]{};  
+    char resolved_path[FS_MAX_PATH_LENGTH]{};
 };
 
-}       // namespace reap::rengine::fs
+}

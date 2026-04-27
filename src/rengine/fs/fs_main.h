@@ -5,10 +5,10 @@
 
 namespace reap::rengine::fs
 {
-    
+
 fs_error_code_t fs_init();
 
-fs_error_code_t fs_shutdown();    
+fs_error_code_t fs_shutdown();
 
 fs_error_code_t fs_mount_directory(
     const char *virtual_root,
@@ -18,7 +18,6 @@ fs_error_code_t fs_mount_directory(
 
 fs_error_code_t fs_unmount_directory( const char *virtual_root );
 
-// for debugging the dev build.
 rcommon::u32 fs_mount_count();
 
 fs_error_code_t fs_set_write_path( const char *physical_path );
@@ -71,5 +70,5 @@ fs_error_code_t fs_resolve_path(
 bool fs_exists( const char *virtual_path );
 
 bool fs_is_initialized();
-    
-}       // namespace reap::rengine::fs
+
+}

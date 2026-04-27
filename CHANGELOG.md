@@ -1,67 +1,137 @@
 # REAP Changelog
 
-All notable changes to REAP are tracked here.
+All notable changes to REAP and the Fuse Engine runtime are tracked here.
+
+## [Unreleased] - 2026-04-27
+
+### Added
+- Added game/engine identity direction for `REAP`, `Fuse Engine`, internal `rEngine`, and `Spark Software`.
+- Started shaping the proper `sys_` platform layer around startup descriptors, platform/compiler identity, paths, time, sleep, and local-time services.
+
+### Changed
+- Removed bulky comments from public engine headers so API surfaces are easier to read while the engine architecture is still forming.
+- Cleaned `sys_platform.h` into a compact platform API surface.
+- Hid VFS runtime state inside `fs_main.cpp` instead of exposing it through public headers.
+
+### Fixed
+- Fixed cfg comment stripping so `//` comments stop parsing at the correct point instead of breaking the scan too early.
+- Kept the project building cleanly after the header cleanup and VFS implementation work.
+
+## [0.1.0] - 2026-04-26
+
+### Added
+- Added the first `fs` virtual filesystem subsystem:
+  - mount table
+  - virtual-to-physical path resolution
+  - write path storage
+  - file open/close
+  - read/write
+  - seek/tell
+  - read-entire-file helper
+- Added VFS error/type/API headers for the initial OS-file backend.
+- Added docs describing the project direction:
+  - `REAP` as the game/project
+  - `Fuse` as the native engine runtime
+  - `SDL3`, `OpenGL`, `Quake III BSP`, `rmdl`, and `rpk` as the long-term technical path.
+- Added API documentation anchors:
+  - `docs/FUSE_API_REFERENCE.md`
+  - `docs/FUSE_API_IMPLEMENTATION.md`
+
+### Changed
+- Completed the cfg system enough to load files and dispatch parsed lines through `cfg_execute_line`.
+- Updated docs and roadmap away from the earlier Raylib direction and toward the current custom runtime path.
 
 ## [0.1.0] - 2026-04-25
 
 ### Added
-- Packed common error surface in `rcommon` for cross-subsystem error reporting.
-- Common formatted print/error helpers:
-  - `com_printf`
-  - `com_dprintf`
-  - `com_errorf`
-- Logging runtime with:
-  - level filtering
-  - channel masking
-  - console output
-  - optional file sink
-- Host/runtime lifecycle scaffolding with explicit frame stages.
-- Renderer lifecycle contract with error-coded init, begin-frame, render, and end-frame entry points.
-- Command subsystem with:
-  - fixed registry
-  - command lookup
-  - argument parsing
-  - callback execution
-- Cvar subsystem with:
-  - fixed registry
-  - typed cached values
-  - mutation flags
-  - readonly/cheat protection hooks
-- Cfg subsystem with:
-  - file loading
-  - single-line execution
+- Continued cfg system implementation.
+- Added cfg single-line execution support for:
   - `exec`
   - `set`
   - `seta`
-  - fallback command dispatch
-- New documentation anchors:
-  - [docs/FUSE_API_REFERENCE.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/FUSE_API_REFERENCE.md)
-  - [docs/FUSE_API_IMPLEMENTATION.md](/Users/karlosiric/Documents/MyProjects/REAP/docs/FUSE_API_IMPLEMENTATION.md)
+  - command fallback through `cmd_execute`
 
 ### Changed
-- Documentation now reflects the current project split more accurately:
-  - `REAP` is the project/game
-  - `Fuse` is the native engine runtime being built inside it
-- Runtime direction is now explicitly documented as:
-  - `VFS`
-  - `SDL3`
-  - `OpenGL`
-  - `Quake III BSP`
-  - later `rmdl` / `rpk` / small engine-owned editor tooling
-- Active roadmap and phase docs no longer describe a `Raylib` bootstrap path.
+- Consolidated cfg parsing so file loading delegates per-line behavior through the same execution path.
 
-### Fixed
-- Project status docs now match the actual codebase more closely.
-- Documentation navigation now includes API-oriented references instead of only architecture/process notes.
-- `cfg_load_file()` now delegates per-line execution through `cfg_execute_line()` instead of carrying a second parser path.
+## [0.1.0] - 2026-04-24
+
+### Added
+- Added cvar mutation support through `cvar_set`.
+- Started the cfg subsystem for engine/game configuration loading.
+- Added early cfg file parsing and command-line interpretation work.
+
+### Changed
+- Treated cfg as the next bridge between cvars, commands, and future filesystem-backed startup config.
+
+## [0.1.0] - 2026-04-23
+
+### Added
+- Expanded the cvar subsystem with bool parsing and typed cached values.
+- Finalized the first version of `cvar_register`.
+
+### Changed
+- Improved cvar default value handling and flag validation.
+
+## [0.1.0] - 2026-04-22
+
+### Added
+- Added the command subsystem with:
+  - fixed command registry
+  - command registration
+  - command lookup
+  - argument parsing
+  - callback execution
+- Added the cvar subsystem API/error foundation.
+- Started cvar implementation with registry, flags, and typed storage.
+
+### Changed
+- Cleaned the command path enough for cfg/cvar integration work to build on it.
+
+## [0.1.0] - 2026-04-21
+
+### Added
+- Added subsystem-local error enums and packed common error conversion helpers.
+- Added `com_printf`, `com_dprintf`, and `com_errorf` for common output and surfaced error printing.
+- Added nicer domain/error formatted output for common error reporting.
+- Started command-system design and early parsing work.
+
+### Changed
+- Improved logging and error printing flow so hard surfaced errors can show subsystem domains and packed hex codes.
 
 ## [0.1.0] - 2026-04-20
 
 ### Added
-- Initial CMake-based project scaffold and runtime module layout.
-- Core runtime scaffolding:
-  - foundational types
-  - app lifecycle
-  - logging
-  - early platform helpers
-- Baseline documentation and project process files.
+- Added early `sys_` platform helpers:
+  - platform detection
+  - compiler detection
+  - basename helper
+  - monotonic time helper
+  - local time helper
+- Added renderer lifecycle scaffolding and then simplified it back toward a cleaner runtime contract.
+- Added `sys_` and `com_` naming alignment across early engine APIs.
+- Added the first changelog/documentation pass.
+
+### Changed
+- Moved foundation code into the `rcommon` / `com_` naming path.
+- Continued aligning the project around a subsystem-first architecture.
+
+## [0.1.0] - 2026-04-19
+
+### Added
+- Added early `rEngine` runtime fundamentals.
+- Added host/app lifecycle scaffolding.
+- Started the logging subsystem:
+  - log types
+  - log API declarations
+  - first implementation path
+- Added early top-level runtime conductor work.
+
+## [0.1.0] - 2026-04-18
+
+### Added
+- Created the REAP repository foundation.
+- Added initial CMake-based project scaffold.
+- Added `src` and `thirdparty` layout.
+- Added initial engine foundation header and baseline docs/process files.
+

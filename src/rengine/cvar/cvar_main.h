@@ -9,11 +9,11 @@ namespace reap::rengine::cvar {
 
 enum cvar_flags_t : rcommon::u32 {
 	CVAR_NONE = 0,
-	CVAR_ARCHIVE = 1 << 0, // values archived, save to cfg on exit
-	CVAR_READONLY = 1 << 1, // nobody can change it, it is read only
-	CVAR_CHEAT = 1 << 2, // only changeable if cheats enabled
-	CVAR_DEV = 1 << 3, // for development and debug builds
-	CVAR_MODIFIED = 1 << 4 // value was changed this session
+	CVAR_ARCHIVE = 1 << 0,
+	CVAR_READONLY = 1 << 1,
+	CVAR_CHEAT = 1 << 2,
+	CVAR_DEV = 1 << 3,
+	CVAR_MODIFIED = 1 << 4
 };
 
 struct cvar_t {
@@ -53,4 +53,4 @@ rcommon::f32 cvar_get_float( const char *name );
 
 bool cvar_get_bool( const char *name );
 
-} // namespace reap::rengine::cvar
+}
