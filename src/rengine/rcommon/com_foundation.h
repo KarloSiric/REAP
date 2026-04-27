@@ -109,4 +109,47 @@ static_assert( sizeof( com_u16 )    == 2, "com_u16 must be 2 bytes" );
 static_assert( sizeof( com_u32 )    == 4, "com_u32 must be 4 bytes" );
 static_assert( sizeof( com_u64 )    == 8, "com_u64 must be 8 bytes" );
 
+struct com_version_t {
+    rcommon::u32 major{ 0u };
+    rcommon::u32 minor{ 1u };
+    rcommon::u32 patch{ 0u };
+    rcommon::u32 build{ 0u };
+};
+
+struct com_product_info_t {
+    const char *name{ nullptr };
+    const char *internal_name{ nullptr };
+    const char *description{ nullptr };
+    
+    com_version_t version{};
+    
+    const char *organization_name{ "Spark Software" };
+    const char *copyright_owner{ "Spark Software" };
+    
+    const char *license_name{ "GNU General Public License, Version 2, June 1991" };
+    const char *license_spdx{ "GPL-2.0-only" };
+};
+
+constexpr com_product_info_t COM_GAME_INFO {
+    .name = "REAP",
+    .internal_name = "reap",
+    .description = "A from scratch 3D arena survival wave first person shooter inspired by Quake, powered by custom internal Fuse Engine",
+    .version = { 0u, 1u, 0u, 0u },
+    .organization_name = "Spark Software",
+    .copyright_owner = "Spark Software",
+    .license_name = "GNU General Public License, Version 2, June 1991",
+    .license_spdx = "GPL-2.0-only"
+};
+
+constexpr com_product_info_t COM_ENGINE_INFO {
+    .name = "Fuse Engine",
+    .internal_name = "rEngine",
+    .description = "A custom native 3D engine runtime used for powering REAP.",
+    .version = { 0u, 1u, 0u, 0u },
+    .organization_name = "Spark Software",
+    .copyright_owner = "Spark Software",
+    .license_name = "GNU General Public License, Version 2, June 1991",
+    .license_spdx = "GPL-2.0-only"
+};
+
 } // namespace reap::rengine

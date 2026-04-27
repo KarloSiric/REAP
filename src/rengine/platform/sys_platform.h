@@ -5,6 +5,8 @@
 
 namespace reap::rengine::sys
 {
+    
+constexpr rcommon::u32 SYS_MAX_PATH_LENGTH = 1024u;
 
 enum class platform_t : rcommon::com_u8 {
     UNKNOWN = 0,
@@ -19,6 +21,31 @@ enum class compiler_t : rcommon::com_u8 {
     GCC,
     MSVC
 };    
+
+struct sys_init_desc_t {
+    int argc{ 0 };
+    const char *const argv{ nullptr };
+    
+    const char *app_name{ "Fuse" }; 
+    const char *organization_name{ "Spark Software" };
+};
+
+struct sys_paths_t {
+    char executable_path[SYS_MAX_PATH_LENGTH]{};
+    char executable_dir[SYS_MAX_PATH_LENGTH]{};
+    char working_dir[SYS_MAX_PATH_LENGTH]{};
+    
+    char base_path[SYS_MAX_PATH_LENGTH]{};
+    char user_path[SYS_MAX_PATH_LENGTH]{};
+};
+
+
+
+
+
+
+
+
 
 /**
  * @brief Returns the platform the engine was built for.

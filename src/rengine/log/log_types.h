@@ -85,6 +85,10 @@ enum class log_channel_t : rcommon::u8 {
 	PHYSICS,
 	NET,
 	ECS,
+    CFG,
+    CMD,
+    CVAR,
+    FS,
 	GAME,
 	TOOLS,
 	AUDIO,
@@ -161,6 +165,10 @@ constexpr inline const char *log_channel_name( const log_channel_t channel ) {
         case log_channel_t::PHYSICS:   return "PHYSICS";
         case log_channel_t::NET:       return "NET";
         case log_channel_t::ECS:       return "ECS";
+        case log_channel_t::CFG:       return "CFG";
+        case log_channel_t::CMD:       return "CMD";
+        case log_channel_t::CVAR:      return "CVAR";
+        case log_channel_t::FS:        return "FS";
         case log_channel_t::GAME:      return "GAME";
         case log_channel_t::TOOLS:     return "TOOLS";
         case log_channel_t::AUDIO:     return "AUDIO";

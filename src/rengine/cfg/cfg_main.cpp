@@ -117,8 +117,8 @@ cfg_error_code_t cfg_execute_line( const char *command_line ) {
 		}
 		if ( !in_quotes && it[0] == '/' && it[1] == '/' ) {
 			*it = '\0';
-		}
 			break;
+		}
 		if ( !in_quotes && *it == '#' ) {
 			*it = '\0';
 			break;
