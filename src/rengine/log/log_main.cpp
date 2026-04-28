@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-19 22:31:16
    Last Modified by: ksiric
-   Last Modified: 2026-04-21 21:53:13
+   Last Modified: 2026-04-27 17:37:02
    ---------------------------------------------------------------------
    Description:
        
@@ -14,12 +14,12 @@
    Version: 0.1.0
  ======================================================================
                                                                        */
+#include "rengine/log/log_main.h"
+#include "rengine/sys/sys_platform.h"
+
 #include <cstdio>
 #include <cstring>
 #include <ctime>
-
-#include "rengine/log/log_main.h"
-#include "rengine/platform/sys_platform.h"
 
 namespace reap::rengine::log
 {

@@ -1,9 +1,9 @@
 #pragma once
 
-#include <cstdarg>
-
 #include "rengine/log/log_error.h"
 #include "rengine/log/log_types.h"
+
+#include <cstdarg>
 
 namespace reap::rengine::log
 {

@@ -2,6 +2,7 @@
 
 #include "rengine/rcommon/com_error.h"
 #include "rengine/rcommon/com_foundation.h"
+
 namespace reap::rengine::log
 {
 

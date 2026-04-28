@@ -104,6 +104,8 @@ constexpr inline const char *com_domain_name( const com_domain_t domain ) {
 	}
 }
 
+
+
 constexpr inline com_error_t com_error_make( const com_domain_t domain, const com_u16 local_error_code ) {
 	return ( static_cast<com_error_t>( domain ) << 16u ) | static_cast<com_error_t>( local_error_code );
 }

@@ -1,13 +1,15 @@
 #pragma once
 
-#include "rengine/platform/sys_error.h"
+#include "rengine/sys/sys_error.h"
 #include "rengine/rcommon/com_foundation.h"
+
 #include <ctime>
 
 namespace reap::rengine::sys
 {
 
 constexpr rcommon::u32 SYS_MAX_PATH_LENGTH = 1024u;
+constexpr rcommon::u32 SYS_MAX_NAME_LENGTH = 256;
 
 enum class platform_t : rcommon::com_u8 {
     UNKNOWN = 0,
@@ -23,7 +25,7 @@ enum class compiler_t : rcommon::com_u8 {
     MSVC
 };
 
-struct sys_init_desc_t {
+struct sys_init_info_t {
     int argc{ 0 };
     const char *const *argv{ nullptr };
 
@@ -31,7 +33,6 @@ struct sys_init_desc_t {
     const char *organization_name{ nullptr };
 };
 
-extern sys_init_desc_t g_sys_init_desc;
 
 struct sys_paths_t {
     char executable_path[SYS_MAX_PATH_LENGTH]{};
@@ -42,9 +43,23 @@ struct sys_paths_t {
     char user_path[SYS_MAX_PATH_LENGTH]{};
 };
 
-extern sys_paths_t g_sys_paths;
+struct sys_runtime_state_t {
+    bool initialized{ false };
+    
+    char app_name[SYS_MAX_NAME_LENGTH]{};
+    char organization_name[SYS_MAX_NAME_LENGTH]{};
+    
+    int argc{ 0u };
+    const char *const *argv{ nullptr };
+    sys_paths_t sys_paths{};
+    
+};
 
-sys_error_code_t sys_init( const sys_init_desc_t &desc );
+extern sys_runtime_state_t g_sys_runtime_state;
+
+sys_error_code_t sys_platform_build_paths( const sys_init_info_t &info_init, sys_paths_t &out_paths );
+
+sys_error_code_t sys_init( const sys_init_info_t &init_info );
 void sys_shutdown();
 
 bool sys_is_initialized();

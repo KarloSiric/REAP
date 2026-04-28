@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-20 17:42:16
    Last Modified by: ksiric
-   Last Modified: 2026-04-27 16:00:57
+   Last Modified: 2026-04-27 19:01:57
    ---------------------------------------------------------------------
    Description:
        
@@ -14,14 +14,17 @@
    Version: 0.1.0
  ======================================================================
                                                                        */
-#include "rengine/platform/sys_platform.h"
+#include "rengine/sys/sys_platform.h"
+
+#include <cstring>
 #include <chrono>
+#include <filesystem>
+#include <mach-o/dyld.h>
 
 namespace reap::rengine::sys
 {
-    
-sys_init_desc_t g_sys_init_desc = {};
-sys_paths_t g_sys_paths = {};
+
+sys_runtime_state_t g_sys_runtime_state;
 
 platform_t sys_platform_type() {
 #   if      REAP_PLATFORM_WINDOWS
@@ -45,6 +48,72 @@ compiler_t sys_compiler_type() {
 #   else
                 return compiler_t::UNKNOWN;
 #   endif
+}
+
+static bool sys_path_copy( char *out_path, const rcommon::u32 out_path_size, const std::filesystem::path &path )
+{
+    if ( out_path == nullptr || out_path_size == 0u ) {
+        return false;
+    }
+    const std::string path_string = path.lexically_normal().string();
+    
+    if ( path_string.size() >= out_path_size ) {
+        out_path[0] = '\0';
+        return false;
+    }
+    std::strncpy( out_path, path_string.c_str(), out_path_size - 1u );
+    out_path[out_path_size - 1u] = '\0';
+    
+    return true;
+}
+
+sys_error_code_t sys_init( const sys_init_info_t &info_init ) {
+    if ( g_sys_runtime_state.initialized ) {
+        return sys_error_code_t::ERR_IS_INIT;
+    }
+    if ( info_init.app_name == nullptr || info_init.app_name[0] == '\0' ) {
+        return sys_error_code_t::ERR_INVALID_ARGUMENT;
+    }
+    if ( info_init.organization_name == nullptr || info_init.organization_name[0] == '\0' ) {
+        return sys_error_code_t::ERR_INVALID_ARGUMENT;
+    }
+    g_sys_runtime_state = {};
+    
+    std::strncpy(
+                 g_sys_runtime_state.app_name,
+                 info_init.app_name,
+                 sizeof( g_sys_runtime_state.app_name ) - 1u 
+    );
+    
+    std::strncpy(
+                 g_sys_runtime_state.organization_name,
+                 info_init.organization_name,
+                 sizeof( g_sys_runtime_state.organization_name ) - 1u 
+    );
+    
+    g_sys_runtime_state.argc = info_init.argc;
+    g_sys_runtime_state.argv = info_init.argv;
+    
+    sys_error_code_t paths_result = sys_platform_build_paths( info_init, g_sys_runtime_state.sys_paths );
+    
+    if ( paths_result != sys_error_code_t::OK ) {
+        g_sys_runtime_state = {};
+        return paths_result;
+    }
+    
+    g_sys_runtime_state.initialized = true;
+    
+    return sys_error_code_t::OK;
+}
+
+void sys_shutdown() {
+    if ( !g_sys_runtime_state.initialized ) {
+        
+    }
+}
+
+bool sys_is_initialized() {
+    return g_sys_runtime_state.initialized;
 }
 
 const char *sys_platform_name( platform_t type ) {
@@ -89,10 +158,10 @@ rcommon::com_f64 sys_time_now_seconds() {
 
 bool sys_local_time( std::time_t time_value, std::tm &time_out ) {
 
-#   if  REAP_PLATFORM_WINDOWS 
-            return localtime_s( &time_out, &time_value ) == 0;
+#   if      REAP_PLATFORM_WINDOWS 
+                return localtime_s( &time_out, &time_value ) == 0;
 #   else 
-            return localtime_r( &time_value, &time_out ) != nullptr;
+                return localtime_r( &time_value, &time_out ) != nullptr;
 #   endif
         
 }
