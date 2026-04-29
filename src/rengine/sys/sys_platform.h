@@ -57,10 +57,8 @@ struct sys_runtime_state_t {
 
 extern sys_runtime_state_t g_sys_runtime_state;
 
-sys_error_code_t sys_platform_build_paths( const sys_init_info_t &info_init, sys_paths_t &out_paths );
-
 sys_error_code_t sys_init( const sys_init_info_t &init_info );
-void sys_shutdown();
+sys_error_code_t sys_shutdown();
 
 bool sys_is_initialized();
 
@@ -76,7 +74,7 @@ sys_error_code_t sys_get_paths( sys_paths_t &out_paths );
 const char *sys_path_basename( const char *path );
 
 rcommon::com_f64 sys_time_now_seconds();
-void sys_sleep_milliseconds( rcommon::u32 milliseconds );
+void sys_sleep_milliseconds( rcommon::u64 milliseconds );
 
 bool sys_local_time( std::time_t time_value, std::tm &time_out );
 

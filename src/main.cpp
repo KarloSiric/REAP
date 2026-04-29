@@ -16,7 +16,7 @@
                                                                        */
 #include "rengine/host/host_main.h"
 #include "rengine/log/log_main.h"
-#include "rengine/platform/sys_platform.h"
+#include "rengine/sys/sys_platform.h"
 #include "rengine/rcommon/com_print.h"
 
 namespace rr = reap::rengine;

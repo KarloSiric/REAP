@@ -54,6 +54,20 @@ file(GLOB_RECURSE REAP_GAME_SOURCES CONFIGURE_DEPENDS
     "${REAP_SRC_DIR}/*.cc"
 )
 
+# Adding cross platform compatibility for platform independence.
+list(FILTER REAP_GAME_SOURCES EXCLUDE REGEX ".*/rengine/sys/sys_platform_(macos|linux|win32)\\.cpp$")
+
+if(APPLE)
+    list(APPEND REAP_GAME_SOURCES "${REAP_SRC_DIR}/rengine/sys/sys_platform_macos.cpp")
+elseif(WIN32)
+    list(APPEND REAP_GAME_SOURCES "${REAP_SRC_DIR}/rengine/sys/sys_platform_win32.cpp")
+elseif(UNIX)
+    list(APPEND REAP_GAME_SOURCES "${REAP_SRC_DIR}/rengine/sys/sys_platform_linux.cpp")
+else()
+    message(FATAL_ERROR "Unsupported platform for REAP sys platform backend")
+endif()
+
+
 if (REAP_GAME_SOURCES)
     add_executable(reap ${REAP_GAME_SOURCES})
     target_include_directories(reap PRIVATE "${REAP_SRC_DIR}")

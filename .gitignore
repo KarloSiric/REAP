@@ -1,5 +1,6 @@
 # Build directories
 /build/
+/build-clangd/
 /bin/
 /out/
 /dist/
@@ -72,4 +73,3 @@ __pycache__/
 /.cache/
 /tools/**/build/
 /tools/**/out/
-

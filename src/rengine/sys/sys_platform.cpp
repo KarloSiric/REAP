@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-20 17:42:16
    Last Modified by: ksiric
-   Last Modified: 2026-04-27 19:01:57
+   Last Modified: 2026-04-30 00:05:40
    ---------------------------------------------------------------------
    Description:
        
@@ -15,10 +15,10 @@
  ======================================================================
                                                                        */
 #include "rengine/sys/sys_platform.h"
+#include "rengine/sys/sys_platform_internal.h"
 
 #include <cstring>
 #include <chrono>
-#include <filesystem>
 #include <mach-o/dyld.h>
 
 namespace reap::rengine::sys
@@ -48,23 +48,6 @@ compiler_t sys_compiler_type() {
 #   else
                 return compiler_t::UNKNOWN;
 #   endif
-}
-
-static bool sys_path_copy( char *out_path, const rcommon::u32 out_path_size, const std::filesystem::path &path )
-{
-    if ( out_path == nullptr || out_path_size == 0u ) {
-        return false;
-    }
-    const std::string path_string = path.lexically_normal().string();
-    
-    if ( path_string.size() >= out_path_size ) {
-        out_path[0] = '\0';
-        return false;
-    }
-    std::strncpy( out_path, path_string.c_str(), out_path_size - 1u );
-    out_path[out_path_size - 1u] = '\0';
-    
-    return true;
 }
 
 sys_error_code_t sys_init( const sys_init_info_t &info_init ) {
@@ -106,10 +89,16 @@ sys_error_code_t sys_init( const sys_init_info_t &info_init ) {
     return sys_error_code_t::OK;
 }
 
-void sys_shutdown() {
+sys_error_code_t sys_shutdown() {
     if ( !g_sys_runtime_state.initialized ) {
-        
+        return sys_error_code_t::ERR_NOT_INIT;
     }
+    
+    g_sys_runtime_state = {};
+    
+    g_sys_runtime_state.initialized = false;
+    
+    return sys_error_code_t::OK;
 }
 
 bool sys_is_initialized() {
@@ -165,5 +154,27 @@ bool sys_local_time( std::time_t time_value, std::tm &time_out ) {
 #   endif
         
 }
+
+const sys_paths_t &sys_paths() {
+    return g_sys_runtime_state.sys_paths;
+}
+
+sys_error_code_t sys_get_paths( sys_paths_t &out_paths ) {
+    if ( !g_sys_runtime_state.initialized ) {
+        return sys_error_code_t::ERR_NOT_INIT;
+    }   
+    
+    out_paths = g_sys_runtime_state.sys_paths;
+    
+    return sys_error_code_t::OK;
+}
+ 
+void sys_sleep_milliseconds( rcommon::u64 milliseconds ) {
+    sys_platform_sleep_milliseconds( milliseconds );
+    return ;
+}   
+    
+    
+    
     
 }       // namespace reap::rengine::sys
