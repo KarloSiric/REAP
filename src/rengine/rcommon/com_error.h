@@ -23,6 +23,7 @@ enum class com_domain_t : u16 {
 
 enum class com_error_code_t : com_u8 {
 	OK = 0,
+    
 	ERR_FAILED,
 	ERR_INVALID_ARGUMENT,
 	ERR_INVALID_STATE,
@@ -103,8 +104,6 @@ constexpr inline const char *com_domain_name( const com_domain_t domain ) {
 		return "UNKNOWN";
 	}
 }
-
-
 
 constexpr inline com_error_t com_error_make( const com_domain_t domain, const com_u16 local_error_code ) {
 	return ( static_cast<com_error_t>( domain ) << 16u ) | static_cast<com_error_t>( local_error_code );

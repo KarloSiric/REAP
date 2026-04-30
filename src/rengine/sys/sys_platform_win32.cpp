@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-27 17:32:49
    Last Modified by: ksiric
-   Last Modified: 2026-04-28 23:38:04
+   Last Modified: 2026-04-30 17:22:07
    ---------------------------------------------------------------------
    Description:
 
@@ -16,15 +16,53 @@
 																	   */
 #include "rengine/sys/sys_platform_internal.h"
 
-#include <system_error>
-#include <filesystem>
-
 #if REAP_PLATFORM_WINDOWS
 
 #define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
 #include <windows.h>
 
+#include <cstdlib>
+#include <cstring>
+#include <filesystem>
+#include <string>
+#include <system_error>
+
 namespace reap::rengine::sys {
+    
+namespace {
+
+bool sys_copy_path( char *out_path, const rcommon::u32 out_path_size, const std::filesystem::path &path ) {
+    if ( out_path == nullptr || out_path_size == 0u ) {
+        return false;
+    }
+    
+    std::string path_string = path.lexically_normal().string();
+    
+    if ( path_string.size() >= out_path_size ) {
+        out_path[0] = '\0';
+        return false;
+    }
+    
+    std::strncpy( out_path, path_string.c_str(), out_path_size - 1u );
+    out_path[out_path_size - 1u] = '\0';
+    
+    return true;   
+}
+
+const char *sys_find_argv_value( const sys_init_info_t &info, const char *argv_name );
+    if ( info.argv == nullptr || argv_name == nullptr ) {
+        return nullptr;
+    }
+    
+    for ( int i = 1; i + 1 < info.argc; ++i ) {
+        if ( std::strcmp( info.argv[i], argv_name ) == 0 ) {
+            return info.argv[i + 1];
+        }
+    }
+    
+    return nullptr;
+}    
 
 sys_error_code_t sys_platform_build_paths( const sys_init_info_t &info_init, sys_paths_t &out_paths ) {
 	out_paths = {};
@@ -35,8 +73,92 @@ sys_error_code_t sys_platform_build_paths( const sys_init_info_t &info_init, sys
 	if ( ec ) {
 		return sys_error_code_t::ERR_PATH_QUERY_FAILED;
 	}
-}
+    
+    char executable_buffer[SYS_MAX_PATH_LENGTH]{};
+    
+    const DWORD executable_length = GetModuleFileNameA( 
+        nullptr,
+        executable_buffer,
+        static_cast<DWORD>( sizeof( executable_buffer ) ) 
+    );
+    
+    if ( executable_length == 0u ) {
+        return sys_error_code_t::ERR_PATH_QUERY_FAILED;
+    }
+    
+    if ( executable_length >= sizeof( executable_buffer ) ) {
+        return sys_error_code_t::ERR_PATH_TOO_LONG;
+    }
+    
+    executable_buffer[executable_length] = '\0';
+    
+    std::filesystem::path executable_path = 
+        std::filesystem::weakly_canonical( executable_buffer, ec );
+        
+    if ( ec ) {
+        ec.clear();
+        executable_path = executable_buffer;
+    }
+    
+    const std::filesystem::path executable_dir = executable_path.parent_path();
+    const char *base_path_override = sys_find_argv_value( info_init, "-basedir" );
+    
+    const std::filesystem::path base_path =
+        ( base_path_override != nullptr && base_path_override[0] != '\0' ) ? std::filesystem::path( base_path_override ) : working_dir;
+    
+    const char *user_path_override = sys_find_argv_value( info_init, "-userpath" );
+    std::filesystem::path user_path{};
+    if ( user_path_override != nullptr && user_path_override[0] != '\0' ) {
+        user_path = user_path_override;
+    } else {
+        char appdata_buffer[SYS_MAX_PATH_LENGTH]{};
+        
+        const DWORD appdata_length = GetEnvironmentVariableA( 
+            "APPDATA",
+            appdata_buffer,
+            static_cast<DWORD>( sizeof( appdata_buffer ) )
+            );
+        if ( appdata_length == 0u ) {
+            return sys_error_code_t::ERR_PATH_QUERY_FAILED;
+        }
+        
+        if ( appdata_length >= sizeof( appdata_buffer ) ) {
+            return sys_error_code_t::ERR_PATH_TOO_LONG;
+        }
+        
+        appdata_buffer[appdata_length] = '\0';
+        
+        user_path = std::filesystem::path( appdata_buffer ) / info_init.app_name;
+    }
+    
+    std::filesystem::create_directories( user_path, ec );
+    if ( ec ) {
+        return sys_error_code_t::ERR_DIRECTORY_CREATE_FAILED;
+    }
 
+    if ( !sys_copy_path( out_paths.executable_path, sizeof( out_paths.executable_path ), executable_path ) ) {
+        return sys_error_code_t::ERR_PATH_TOO_LONG;
+    }
+
+    if ( !sys_copy_path( out_paths.executable_dir, sizeof( out_paths.executable_dir ), executable_dir ) ) {
+        return sys_error_code_t::ERR_PATH_TOO_LONG;
+    }
+
+    if ( !sys_copy_path( out_paths.working_dir, sizeof( out_paths.working_dir ), working_dir ) ) {
+        return sys_error_code_t::ERR_PATH_TOO_LONG;
+    }
+
+    if ( !sys_copy_path( out_paths.base_path, sizeof( out_paths.base_path ), base_path ) ) {
+        return sys_error_code_t::ERR_PATH_TOO_LONG;
+    }
+
+    if ( !sys_copy_path( out_paths.user_path, sizeof( out_paths.user_path ), user_path ) ) {
+        return sys_error_code_t::ERR_PATH_TOO_LONG;
+    }
+    
+    return sys_error_code_t::OK;   
+}
+    
 void sys_platform_sleep_milliseconds( const rcommon::u64 milliseconds ) {
 	Sleep( milliseconds );
 }
