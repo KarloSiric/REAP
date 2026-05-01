@@ -6,11 +6,11 @@
 namespace reap::rengine::host
 {
 
-host_error_code_t host_init( host_state_t &host_state, const host_config_t &host_config );
+host_error_code_t host_init( host_state_t &host_state );
 
 void host_shutdown( host_state_t &host_state );
 
-void host_begin_frame( host_state_t &host_state, rcommon::com_f32 delta_time_seconds );
+void host_begin_frame( host_state_t &host_state );
 
 void host_update( host_state_t &host_state );
 

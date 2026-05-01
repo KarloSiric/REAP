@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-27 17:32:49
    Last Modified by: ksiric
-   Last Modified: 2026-04-30 18:00:16
+   Last Modified: 2026-05-01 12:34:48
    ---------------------------------------------------------------------
    Description:
 
@@ -110,7 +110,7 @@ sys_error_code_t sys_platform_build_paths( const sys_init_info_t &info_init, sys
 
     const std::filesystem::path executable_dir = executable_path.parent_path();
     const char *base_path_override = sys_find_argv_value( info_init, "-basedir" );
-
+    
     const std::filesystem::path base_path =
         ( base_path_override != nullptr && base_path_override[0] != '\0' ) ? std::filesystem::path( base_path_override ) : working_dir;
 

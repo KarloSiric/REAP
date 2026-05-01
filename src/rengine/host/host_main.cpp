@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-19 01:23:58
    Last Modified by: ksiric
-   Last Modified: 2026-04-21 21:40:58
+   Last Modified: 2026-05-02 00:32:46
    ---------------------------------------------------------------------
    Description:
        
@@ -15,32 +15,83 @@
  ======================================================================
                                                                        */
 #include "rengine/host/host_main.h"
+#include "rengine/fs/fs_main.h"
+#include "rengine/log/log_main.h"
 #include "rengine/rcommon/com_print.h"
 #include "rengine/render/r_main.h"
+#include "rengine/sys/sys_platform.h"
 
 namespace rc = reap::rengine::rcommon;
 
 namespace reap::rengine::host
 {
 
-/**
- * @brief Initializes the host runtime state for the first frame.
- *
- * The initial implementation is intentionally small and only prepares the
- * lifecycle state needed for the frame loop to begin.
- *
- * @param[in,out] host_state Mutable host runtime state.
- * @param[in] host_config Startup configuration for the host.
- *
- * @return Host initialization result code.
- */
-host_error_code_t host_init( host_state_t &host_state, const host_config_t &host_config ) {
+host_error_code_t host_init( host_state_t &host_state ) {
     host_state.stage = host_stage_t::INITIALIZING;
-    host_state.running = true;
+    host_state.running = false;
     host_state.has_focus = true;
     host_state.frame = {};
-
-    const auto render_result = render::r_init( host_config.window_config );
+    
+    const rcommon::com_f64 now = sys::sys_time_now_seconds(); 
+    
+    host_state.frame.current_time_seconds = now;
+    host_state.frame.previous_time_seconds = now;
+    
+    sys::sys_init_info_t sys_info{
+        .argc = host_state.config.argc,
+        .argv = host_state.config.argv,
+        .app_name = rcommon::COM_GAME_INFO.internal_name,
+        .organization_name = rcommon::COM_GAME_INFO.organization_name
+    };
+    
+    // @NOTE: SYS SYSTEM INIT
+    const auto sys_result = sys::sys_init( sys_info );
+    
+    if ( sys_result != sys::sys_error_code_t::OK ) {
+        rc::com_errorf( sys::sys_error_code( sys_result ) , "host_init: sys_init failed: %s", sys::sys_error_desc( sys_result ) );
+        
+        host_state.running = false;
+        host_state.stage = host_stage_t::SHUTDOWN;       
+        return host_error_code_t::ERR_INITIALIZING;
+    }
+    
+    // @NOTE: LOG SYSTEM INIT
+    const auto log_result = log::log_init();
+    
+    if ( log_result != log::log_error_code_t::OK ) {
+        rcommon::com_errorf( log::log_error_code( log_result ), "host_init: log_init failed: %s", log::log_error_desc( log_result ) );
+        
+        sys::sys_shutdown();
+        
+        host_state.running = false;
+        host_state.stage = host_stage_t::SHUTDOWN;       
+        return host_error_code_t::ERR_INITIALIZING;
+    }
+    
+    // @NOTE: FS SYSTEM INIT
+    const auto fs_result = fs::fs_init();
+    
+    if ( fs_result != fs::fs_error_code_t::OK ) {
+        rcommon::com_errorf( fs::fs_error_code( fs_result ), "host_init: fs_init failed: %s", fs::fs_error_desc( fs_result ) );
+        
+        log::log_shutdown();
+        sys::sys_shutdown();
+        
+        host_state.running = false;
+        host_state.stage = host_stage_t::SHUTDOWN;       
+        return host_error_code_t::ERR_INITIALIZING;
+    }
+       
+    const auto 
+    
+    
+    
+    
+    
+    
+    
+    // @NOTE: RENDER SYSTEM INIT
+    const auto render_result = render::r_init( host_state.config.window_config );
 
     if ( render_result != render::r_error_code_t::OK ) {
         rc::com_errorf(
@@ -51,18 +102,14 @@ host_error_code_t host_init( host_state_t &host_state, const host_config_t &host
         host_state.running = false;
         host_state.stage = host_stage_t::SHUTDOWN;
         return host_error_code_t::ERR_INITIALIZING;
-    }
-
+    } 
+    
+    host_state.running = true;
     host_state.stage = host_stage_t::RUNNING;
-
+    
     return host_error_code_t::OK;
 }
 
-/**
- * @brief Shuts down the host runtime state.
- *
- * @param[in,out] host_state Mutable host runtime state.
- */
 void host_shutdown( host_state_t &host_state ) {
     host_state.running = false;
     host_state.stage = host_stage_t::SHUTDOWN;
@@ -71,51 +118,48 @@ void host_shutdown( host_state_t &host_state ) {
     //        the host has to be able to orchestrate things and
     //        deal with the proper shutdown and cleaning of everything
     //        else.
-
+    
+    
+    
+    
+    
     render::r_shutdown();
 }
 
-/**
- * @brief Advances per-frame timing and counters at the start of a frame.
- *
- * @param[in,out] host_state Mutable host runtime state.
- * @param[in] delta_time_seconds Time elapsed since the previous frame.
- */
-void host_begin_frame( host_state_t &host_state, rcommon::com_f32 delta_time_seconds ) {
+void host_begin_frame( host_state_t &host_state ) {
     if ( host_state.stage == host_stage_t::SHUTDOWN ) {
         return;
     }
-
-    const auto render_result = render::r_begin_frame( delta_time_seconds );
+    
+    frame_t &frame = host_state.frame;
+    
+    frame.previous_time_seconds = frame.current_time_seconds;
+    frame.current_time_seconds  = sys::sys_time_now_seconds();
+    
+    frame.delta_time_seconds = static_cast<rcommon::f32>( frame.current_time_seconds - frame.previous_time_seconds );
+    
+    frame.real_time_seconds += frame.delta_time_seconds; 
+    
+    if ( host_state.stage == host_stage_t::RUNNING ) {
+        frame.simulation_time_seconds += frame.delta_time_seconds;
+    }
+    
+    frame.index++;
+    
+    const auto render_result = render::r_begin_frame( frame.delta_time_seconds );
 
     if ( render_result != render::r_error_code_t::OK ) {
         rc::com_errorf(
             render::r_error_code( render_result ),
             "host_begin_frame: renderer begin-frame failed."
         );
-
+        
         host_state.running = false;
         host_state.stage = host_stage_t::SHUTTINGDOWN;
         return;
     }
-
-    host_state.frame.index++;
-    host_state.frame.delta_time_seconds = delta_time_seconds;
-    host_state.frame.real_time_seconds += delta_time_seconds;
-
-    if ( host_state.stage == host_stage_t::RUNNING ) {
-        host_state.frame.simulation_time_seconds += delta_time_seconds;
-    }
 }
 
-/**
- * @brief Runs the host update stage for the current frame.
- *
- * This function is currently a lifecycle placeholder and will later become
- * the place where engine and gameplay simulation work is coordinated.
- *
- * @param[in,out] host_state Mutable host runtime state.
- */
 void host_update( host_state_t &host_state ) {
     if ( host_state.stage != host_stage_t::RUNNING ) {
         return;
@@ -128,14 +172,6 @@ void host_update( host_state_t &host_state ) {
     // @TODO: Update the host stage, and handle input, AI, gameplay etc.
 }
 
-/**
- * @brief Runs the render stage for the current host frame.
- *
- * This function is currently a placeholder until the render subsystem is
- * wired into the host frame loop.
- *
- * @param[in,out] host_state Runtime state owned by the host layer.
- */
 void host_render( host_state_t &host_state ) {
     if ( host_state.stage != host_stage_t::RUNNING || !host_state.running ) {
         return;
@@ -153,13 +189,10 @@ void host_render( host_state_t &host_state ) {
         host_state.running = false;
         host_state.stage = host_stage_t::SHUTTINGDOWN;
     }
+    
+    
 }
 
-/**
- * @brief Finalizes the current frame and handles lifecycle transitions.
- *
- * @param[in,out] host_state Mutable host runtime state.
- */
 void host_end_frame( host_state_t &host_state ) {
     if ( host_state.stage == host_stage_t::SHUTDOWN ) {
         return;
@@ -184,13 +217,6 @@ void host_end_frame( host_state_t &host_state ) {
     }
 }
 
-/**
- * @brief Reports whether the host should continue running.
- *
- * @param[in] host_state Current host runtime state.
- *
- * @return True while the main loop should continue executing.
- */
 bool host_is_running( host_state_t &host_state ) {
     return host_state.running &&
            ( host_state.stage != host_stage_t::SHUTTINGDOWN &&
