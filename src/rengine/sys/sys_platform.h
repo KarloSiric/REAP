@@ -33,7 +33,6 @@ struct sys_init_info_t {
     const char *organization_name{ nullptr };
 };
 
-
 struct sys_paths_t {
     char executable_path[SYS_MAX_PATH_LENGTH]{};
     char executable_dir[SYS_MAX_PATH_LENGTH]{};

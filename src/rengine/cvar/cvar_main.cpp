@@ -34,6 +34,7 @@ cvar_error_code_t cvar_init() {
 
 	g_cvar_registry = {};
 	g_cvar_registry.initialized = true;
+
 	return cvar_error_code_t::OK;
 }
 

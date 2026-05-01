@@ -127,7 +127,7 @@ cmd_error_code_t cmd_parse( char *command_line, rcommon::u32 &argc, char **argv 
     argc = 0;
 
     char *cursor_ptr = command_line;
-
+    
     while ( *cursor_ptr != '\0' ) {
         while ( *cursor_ptr != '\0' && std::isspace( static_cast<unsigned char>( *cursor_ptr ) ) ) {
             cursor_ptr++;
@@ -142,7 +142,7 @@ cmd_error_code_t cmd_parse( char *command_line, rcommon::u32 &argc, char **argv 
         while( *cursor_ptr != '\0' && !std::isspace( static_cast<unsigned char>( *cursor_ptr ) ) ) {
             cursor_ptr++;
         }
-
+        
         if ( *cursor_ptr == '\0' ) {
             break;
         }

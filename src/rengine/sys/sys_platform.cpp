@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-20 17:42:16
    Last Modified by: ksiric
-   Last Modified: 2026-04-30 01:12:41
+   Last Modified: 2026-05-01 11:45:14
    ---------------------------------------------------------------------
    Description:
        
@@ -19,7 +19,6 @@
 
 #include <cstring>
 #include <chrono>
-#include <mach-o/dyld.h>
 
 namespace reap::rengine::sys
 {
@@ -108,8 +107,8 @@ bool sys_is_initialized() {
 const char *sys_platform_name( platform_t type ) {
     switch( type ) {
         case platform_t::WINDOWS: return "Windows";
-        case platform_t::LINUX: return "Linux";
-        case platform_t::MACOSX: return "MacOS";
+    case platform_t::LINUX: return "Linux";
+    case platform_t::MACOSX: return "MacOS";
         default: return "Unknown";
     }
 }   
@@ -151,8 +150,8 @@ bool sys_local_time( std::time_t time_value, std::tm &time_out ) {
                 return localtime_s( &time_out, &time_value ) == 0;
 #   else 
                 return localtime_r( &time_value, &time_out ) != nullptr;
-#   endif
-        
+#   endif 
+                
 }
 
 const sys_paths_t &sys_paths() {
@@ -173,8 +172,5 @@ void sys_sleep_milliseconds( rcommon::u64 milliseconds ) {
     sys_platform_sleep_milliseconds( milliseconds );
     return ;
 }   
-    
-    
-    
-    
+
 }       // namespace reap::rengine::sys

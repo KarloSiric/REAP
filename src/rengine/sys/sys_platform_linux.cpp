@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-27 17:32:41
    Last Modified by: ksiric
-   Last Modified: 2026-04-30 16:52:19
+   Last Modified: 2026-04-30 18:27:38
    ---------------------------------------------------------------------
    Description:
        
@@ -124,7 +124,8 @@ sys_error_code_t sys_platform_build_paths(const sys_init_info_t &info_init, sys_
                     info_init.app_name;
     }
     
-    std::filesystem::create_directories( user_path, ec );
+    std::filesystem::create_directories( user_path, ec ); 
+    
     if ( ec ) {
         return sys_error_code_t::ERR_DIRECTORY_CREATE_FAILED;
     }
