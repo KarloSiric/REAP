@@ -19,6 +19,56 @@ enum class cmd_error_code_t : rcommon::u8 {
     ERR_INVALID_CALLBACK
 };
 
+constexpr inline const char *cmd_error_name( const cmd_error_code_t error ) {
+    switch ( error ) {
+    case cmd_error_code_t::OK:
+        return "OK";
+    case cmd_error_code_t::ERR_NOT_INIT:
+        return "ERR_NOT_INIT";
+    case cmd_error_code_t::ERR_IS_INIT:
+        return "ERR_IS_INIT";
+    case cmd_error_code_t::ERR_INVALID_COMMAND:
+        return "ERR_INVALID_COMMAND";
+    case cmd_error_code_t::ERR_COMMAND_ALREADY_EXISTS:
+        return "ERR_COMMAND_ALREADY_EXISTS";
+    case cmd_error_code_t::ERR_COMMAND_NOT_FOUND:
+        return "ERR_COMMAND_NOT_FOUND";
+    case cmd_error_code_t::ERR_REGISTRY_FULL:
+        return "ERR_REGISTRY_FULL";
+    case cmd_error_code_t::ERR_PARSE_FAILED:
+        return "ERR_PARSE_FAILED";
+    case cmd_error_code_t::ERR_INVALID_CALLBACK:
+        return "ERR_INVALID_CALLBACK";
+    default:
+        return "ERR_UNKNOWN";
+    }
+}
+
+constexpr inline const char *cmd_error_desc( const cmd_error_code_t error ) {
+    switch ( error ) {
+    case cmd_error_code_t::OK:
+        return "operation completed successfully";
+    case cmd_error_code_t::ERR_NOT_INIT:
+        return "cmd subsystem is not initialized";
+    case cmd_error_code_t::ERR_IS_INIT:
+        return "cmd subsystem is already initialized";
+    case cmd_error_code_t::ERR_INVALID_COMMAND:
+        return "invalid command name or command line";
+    case cmd_error_code_t::ERR_COMMAND_ALREADY_EXISTS:
+        return "command is already registered";
+    case cmd_error_code_t::ERR_COMMAND_NOT_FOUND:
+        return "command was not found";
+    case cmd_error_code_t::ERR_REGISTRY_FULL:
+        return "command registry is full";
+    case cmd_error_code_t::ERR_PARSE_FAILED:
+        return "command line parsing failed";
+    case cmd_error_code_t::ERR_INVALID_CALLBACK:
+        return "invalid command callback";
+    default:
+        return "unknown cmd error";
+    }
+}
+
 constexpr inline rcommon::com_error_t cmd_error_code( cmd_error_code_t error ) {
     return rcommon::com_error_make( rcommon::com_domain_t::COM_DOMAIN_CMD , static_cast<rcommon::com_u16>( error ) );
 }
