@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-19 01:23:58
    Last Modified by: ksiric
-   Last Modified: 2026-05-02 20:54:46
+   Last Modified: 2026-05-03 00:35:45
    ---------------------------------------------------------------------
    Description:
 
@@ -33,11 +33,6 @@ host_error_code_t host_init( host_state_t &host_state ) {
 	host_state.running = false;
 	host_state.has_focus = true;
 	host_state.frame = {};
-
-	const rcommon::com_f64 now = sys::sys_time_now_seconds();
-
-	host_state.frame.current_time_seconds = now;
-	host_state.frame.previous_time_seconds = now;
 
 	sys::sys_init_info_t sys_info{
 		.argc = host_state.config.argc,
@@ -157,34 +152,18 @@ host_error_code_t host_init( host_state_t &host_state ) {
     const auto cfg_result = cfg::cfg_init();
     // @TODO(karlo - 2.5.2026):Tommorow continue working on this system.      
     if ( cfg_result != cfg::cfg_error_code_t::OK ) {
-        rcommon::com_errorf( cfg_error_code(  ), const char *message, ...)
+        rcommon::com_errorf( cfg_error_code( cfg_result ), "host_init: cfg_init failed: %s", cfg::cfg_error_desc( cfg_result ) );
+        
+        cvar::cvar_shutdown();
+        cmd::cmd_shutdown();       
+        fs::fs_shutdown();
+        log::log_shutdown();
+        sys::sys_shutdown();
+        
+        host_state.running = false;
+        host_state.stage = host_stage_t::SHUTDOWN;
+        return host_error_code_t::ERR_INITIALIZING;
     }   
-       
-       
-       
-       
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
 	// @NOTE: RENDER SYSTEM INIT
 	const auto render_result = render::r_init( host_state.config.window_config );
@@ -193,14 +172,26 @@ host_error_code_t host_init( host_state_t &host_state ) {
 		rc::com_errorf(
 			render::r_error_code( render_result ),
 			"host_init: renderer initialization failed." );
-
-		host_state.running = false;
-		host_state.stage = host_stage_t::SHUTDOWN;
-		return host_error_code_t::ERR_INITIALIZING;
+        
+        cfg::cfg_shutdown();
+        cvar::cvar_shutdown();
+        cmd::cmd_shutdown();       
+        fs::fs_shutdown();
+        log::log_shutdown();
+        sys::sys_shutdown();
+        
+        host_state.running = false;
+        host_state.stage = host_stage_t::SHUTDOWN;
+        return host_error_code_t::ERR_INITIALIZING;
 	}
 
 	host_state.running = true;
 	host_state.stage = host_stage_t::RUNNING;
+    
+    const rcommon::com_f64 now = sys::sys_time_now_seconds();
+
+    host_state.frame.current_time_seconds = now;
+    host_state.frame.previous_time_seconds = now;
 
 	return host_error_code_t::OK;
 }
@@ -208,13 +199,16 @@ host_error_code_t host_init( host_state_t &host_state ) {
 void host_shutdown( host_state_t &host_state ) {
 	host_state.running = false;
 	host_state.stage = host_stage_t::SHUTDOWN;
-
-	// @TODO: Also has to shutdown all the other subsystems in the engine,
-	//        the host has to be able to orchestrate things and
-	//        deal with the proper shutdown and cleaning of everything
-	//        else.
-
-	render::r_shutdown();
+    
+    // @NOTE(karlo): Added shutdown of the entire host system
+    
+    render::r_shutdown();
+    cfg::cfg_shutdown();
+    cvar::cvar_shutdown();
+    cmd::cmd_shutdown();
+    fs::fs_shutdown();
+    log::log_shutdown();
+    sys::sys_shutdown();
 }
 
 void host_begin_frame( host_state_t &host_state ) {

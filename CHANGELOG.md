@@ -2,7 +2,18 @@
 
 All notable changes to REAP and the Fuse Engine runtime are tracked here.
 
-## [Unreleased] - 2026-04-27
+## [0.1.0] - 2026-05-02
+
+### Added
+- Added cleanup of the host initializaion
+
+
+
+
+
+
+
+## [0.1.0] - 2026-04-27
 
 ### Added
 - Added game/engine identity direction for `REAP`, `Fuse Engine`, internal `rEngine`, and `Spark Software`.
