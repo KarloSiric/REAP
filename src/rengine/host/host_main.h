@@ -4,7 +4,25 @@
 #include "rengine/host/host_types.h"
 
 namespace reap::rengine::host
-{
+{ 
+    
+void host_prepare_state_for_init( host_state_t &host_state );    
+
+host_error_code_t host_init_core_engine_systems( host_state_t &host_state );
+
+host_error_code_t host_mount_file_system( void );
+
+host_error_code_t host_register_builtin_cvars( void );
+
+host_error_code_t host_register_builtin_commands( void );
+
+host_error_code_t host_load_startup_config( void );
+
+host_error_code_t host_apply_cvars_to_config( host_state_t &host_state );
+
+host_error_code_t host_init_renderer( host_state_t &host_state );
+
+host_error_code_t host_finish_init( host_state_t &host_state );
 
 host_error_code_t host_init( host_state_t &host_state );
 

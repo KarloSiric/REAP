@@ -18,7 +18,6 @@ enum class log_error_code_t : rcommon::u8 {
       ERR_INVALID_LEVEL
 };
 
-
 constexpr inline const char *log_error_name( const log_error_code_t error ) {
     switch ( error ) {
     case log_error_code_t::OK:

@@ -12,7 +12,6 @@ enum class host_error_code_t : rcommon::u8 {
     ERR_NOT_INIT,
     ERR_IS_INIT,
     ERR_INITIALIZING,
-
 };
 
 constexpr inline const char *host_error_name( const host_error_code_t error ) {
