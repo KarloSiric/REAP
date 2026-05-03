@@ -26,6 +26,8 @@ host_error_code_t host_finish_init( host_state_t &host_state );
 
 host_error_code_t host_init( host_state_t &host_state );
 
+void host_requet_shutdown( host_state_t &host_state );
+
 void host_shutdown( host_state_t &host_state );
 
 void host_begin_frame( host_state_t &host_state );

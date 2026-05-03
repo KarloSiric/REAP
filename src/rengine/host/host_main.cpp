@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-19 01:23:58
    Last Modified by: ksiric
-   Last Modified: 2026-05-04 00:21:24
+   Last Modified: 2026-05-04 01:06:08
    ---------------------------------------------------------------------
    Description:
 
@@ -32,7 +32,6 @@ void host_cmd_echo( rc::u32 argc, char **argv ) {
     for ( rc::u32 i = 1u; i < argc; ++i ) {
         rc::com_printf( "%s%s", argv[i], ( i + 1u < argc ) ? " " : "\n" );
     }
-
     if ( argc <= 1u ) {
         rc::com_printf( "\n" );
     }
@@ -205,8 +204,18 @@ host_error_code_t host_register_builtin_cvars( void ) {
         { "r_height", "720", cvar::CVAR_ARCHIVE },
         { "r_fullscreen", "0", cvar::CVAR_ARCHIVE },
         { "r_vsync", "1", cvar::CVAR_ARCHIVE },
+        { "r_fov", "90", cvar::CVAR_ARCHIVE },
+        { "r_near", "0.1", cvar::CVAR_ARCHIVE },
+        { "r_far", "1000", cvar::CVAR_ARCHIVE },
+        
         { "host_target_fps", "60", cvar::CVAR_ARCHIVE },
-        { "sys_app_name", rc::COM_GAME_INFO.internal_name, cvar::CVAR_READONLY }
+        { "host_timescale", "0.25", cvar::CVAR_ARCHIVE },
+        { "host_max_delta_time", "0.25", cvar::CVAR_ARCHIVE },
+        
+        { "developer", "1", cvar::CVAR_ARCHIVE },
+        { "con_show", "0", cvar::CVAR_ARCHIVE },
+        
+        { "sys_app_name", rc::COM_GAME_INFO.internal_name, cvar::CVAR_READONLY },
     };
 
     for ( const builtin_cvar_t &builtin_cvar : builtin_cvars ) {
@@ -328,6 +337,18 @@ host_error_code_t host_finish_init( host_state_t &host_state ) {
     host_state.frame.previous_time_seconds = now;
 
     return host_error_code_t::OK;
+}
+
+void host_requet_shutdown( host_state_t &host_state )
+{
+    if ( host_state.stage == host_stage_t::SHUTDOWN ) {
+        return ;
+    }
+    
+    host_state.running = false;
+    host_state.stage = host_stage_t::SHUTTINGDOWN;       
+    
+    return ;
 }
 
 host_error_code_t host_init( host_state_t &host_state ) {

@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-22 21:04:15
    Last Modified by: ksiric
-   Last Modified: 2026-04-27 17:37:39
+   Last Modified: 2026-05-04 00:57:06
    ---------------------------------------------------------------------
    Description:
 
@@ -115,7 +115,7 @@ cvar_error_code_t cvar_register( const char *name, const char *default_value, cv
 
 	cvar_t &entry = g_cvar_registry.cvars[g_cvar_registry.cvar_count];
 
-	entry.name = name;
+	// entry.name = name;
 	std::strncpy( entry.value_string, default_value, sizeof( entry.value_string ) - 1 );
 	std::strncpy( entry.default_string, default_value, sizeof( entry.default_string ) - 1 );
 	entry.value_string[sizeof( entry.value_string ) - 1] = '\0';
