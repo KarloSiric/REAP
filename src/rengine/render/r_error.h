@@ -5,18 +5,21 @@
 
 namespace reap::rengine::render
 {
-
+    
 enum class r_error_code_t : rcommon::u8 {
     OK = 0,
 
     ERR_IS_INIT,
     ERR_NOT_INIT,
+    
+    ERR_BACKEND_INIT_FAILED,
 
     ERR_INVALID_WINDOW_CFG,
     ERR_INVALID_VIEWPORT,
 
     ERR_FRAME_ALREADY_ACTIVE,
     ERR_FRAME_NOT_ACTIVE,
+    
 };
 
 constexpr inline const char *R_ErrorName( const r_error_code_t error ) {
@@ -27,6 +30,8 @@ constexpr inline const char *R_ErrorName( const r_error_code_t error ) {
         return "ERR_IS_INIT";
     case r_error_code_t::ERR_NOT_INIT:
         return "ERR_NOT_INIT";
+    case r_error_code_t::ERR_BACKEND_INIT_FAILED:
+        return "ERR_BACKEND_INIT_FAILED";
     case r_error_code_t::ERR_INVALID_WINDOW_CFG:
         return "ERR_INVALID_WINDOW_CFG";
     case r_error_code_t::ERR_INVALID_VIEWPORT:
@@ -46,8 +51,10 @@ constexpr inline const char *R_ErrorDesc( const r_error_code_t error ) {
         return "operation completed successfully";
     case r_error_code_t::ERR_IS_INIT:
         return "render subsystem is already initialized";
-    case r_error_code_t::ERR_NOT_INIT:
+    case r_error_code_t::ERR_NOT_INIT: 
         return "render subsystem is not initialized";
+    case r_error_code_t::ERR_BACKEND_INIT_FAILED:
+        return "failed to initialize render backend";
     case r_error_code_t::ERR_INVALID_WINDOW_CFG:
         return "invalid render window configuration";
     case r_error_code_t::ERR_INVALID_VIEWPORT:

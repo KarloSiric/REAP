@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-05-04 02:29:40
    Last Modified by: ksiric
-   Last Modified: 2026-05-05 00:10:31
+   Last Modified: 2026-05-05 00:59:56
    ---------------------------------------------------------------------
    Description:
        
@@ -64,20 +64,23 @@ sys_error_code_t Sys_CreateWindow( const sys_window_desc_t &window_description, 
     out_window.height = window_description.height;
     out_window.vsync = window_description.vsync;
     out_window.should_close = false;
-    out_window.valid  = true;
+    out_window.valid = true;
     
     return sys_error_code_t::OK;   
 }
 
 void Sys_DestroyWindow( sys_window_t &window ) {
     SDL_Window *sdl_window{ nullptr };
+    
     if ( window.native_window == nullptr ) {
         return ;
     }  
     
     sdl_window = static_cast<SDL_Window *>( window.native_window );
+    
     SDL_DestroyWindow( sdl_window );
     SDL_QuitSubSystem( SDL_INIT_VIDEO ); 
+    
     window = {};
    
     return ; 

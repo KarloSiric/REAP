@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-19 01:23:58
    Last Modified by: ksiric
-   Last Modified: 2026-05-05 00:11:23
+   Last Modified: 2026-05-05 00:44:51
    ---------------------------------------------------------------------
    Description:
 
@@ -126,7 +126,6 @@ host_error_code_t Host_InitCoreEngineSystems( host_state_t &host_state ) {
     }
     // @NOTE: CMD SYSTEM INIT
     const auto cmd_result = cmd::Cmd_Init();
-
     if ( cmd_result != cmd::cmd_error_code_t::OK )
     {
         rcommon::Com_Errorf( Cmd_ErrorCode( cmd_result ), "Host_Init: Cmd_Init failed: %s", Cmd_ErrorDesc( cmd_result ) );
@@ -354,14 +353,14 @@ host_error_code_t Host_CreateWindow( host_state_t &host_state )
 }
 
 host_error_code_t Host_InitRenderer( host_state_t &host_state ) {
-    const auto render_result = render::R_Init( host_state.config.window_config );
+    const auto render_result = render::R_Init( host_state.window, host_state.config.window_config );
     if ( render_result != render::r_error_code_t::OK ) {
         rc::Com_Errorf(
             render::R_ErrorCode( render_result ),
             "Host_Init: renderer initialization failed." );
         return host_error_code_t::ERR_INITIALIZING;
     }
-
+    
     return host_error_code_t::OK;
 }
 
@@ -523,6 +522,7 @@ void Host_Update( host_state_t &host_state ) {
     
     if ( sys::Sys_WindowShouldClose( host_state.window ) ) {
         Host_RequestShutdown( host_state );
+        return ;
     }
     
     // @TODO: will still add it later all, but if it is not requesting shutdown, then we need to process all the events and update the engine state and the game state for that matter.
