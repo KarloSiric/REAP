@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-19 01:23:58
    Last Modified by: ksiric
-   Last Modified: 2026-05-04 01:45:58
+   Last Modified: 2026-05-05 00:11:23
    ---------------------------------------------------------------------
    Description:
 
@@ -333,6 +333,26 @@ host_error_code_t Host_ApplyCvarsToConfig( host_state_t &host_state ) {
     return host_error_code_t::OK;
 }
 
+host_error_code_t Host_CreateWindow( host_state_t &host_state ) 
+{
+    sys::sys_window_desc_t window_description{};
+    
+    window_description.title        = host_state.config.window_config.title;
+    window_description.width        = host_state.config.window_config.viewport.width;
+    window_description.height       = host_state.config.window_config.viewport.height;
+    window_description.fullscreen   = host_state.config.window_config.fullscreen;
+    window_description.vsync        = host_state.config.window_config.vsync; 
+    
+    const auto window_result = sys::Sys_CreateWindow( window_description, host_state.window );
+    if ( window_result != sys::sys_error_code_t::OK ) {
+        rcommon::Com_Errorf( sys::Sys_ErrorCode( window_result ), "Host_CreateWindow: Sys_CreateWindow failed: %s", sys::Sys_ErrorDesc( window_result ) );
+        
+        return host_error_code_t::ERR_INITIALIZING;
+    }
+    
+    return host_error_code_t::OK;
+}
+
 host_error_code_t Host_InitRenderer( host_state_t &host_state ) {
     const auto render_result = render::R_Init( host_state.config.window_config );
     if ( render_result != render::r_error_code_t::OK ) {
@@ -409,6 +429,12 @@ host_error_code_t Host_Init( host_state_t &host_state ) {
         Host_Shutdown( host_state );
         return result;
     }
+    
+    result = Host_CreateWindow( host_state );
+    if ( result != host_error_code_t::OK ) {
+        Host_Shutdown( host_state );
+        return result;
+    }
 
     result = Host_InitRenderer( host_state );
     if ( result != host_error_code_t::OK ) {
@@ -432,6 +458,7 @@ void Host_Shutdown( host_state_t &host_state ) {
     // @NOTE(karlo): Added shutdown of the entire host system
 
     render::R_Shutdown();
+    sys::Sys_DestroyWindow( host_state.window );
     cfg::Cfg_Shutdown();
     cvar::Cvar_Shutdown();
     cmd::Cmd_Shutdown();
@@ -491,6 +518,24 @@ void Host_Update( host_state_t &host_state ) {
 	}
 
 	// @TODO: Update the host stage, and handle input, AI, gameplay etc.
+    
+    sys::Sys_PollWindowEvents( host_state.window );   
+    
+    if ( sys::Sys_WindowShouldClose( host_state.window ) ) {
+        Host_RequestShutdown( host_state );
+    }
+    
+    // @TODO: will still add it later all, but if it is not requesting shutdown, then we need to process all the events and update the engine state and the game state for that matter.
+    
+    /*
+      e.g.
+      Host_UpdateInput( host_state )
+      Host_UpdateConsole( host_state )
+      Host_UpdateGame( host_state )
+      Host_UpdateAudio( host_state )
+      etc etc...
+     
+     */
 }
 
 void Host_Render( host_state_t &host_state ) {

@@ -20,6 +20,8 @@ host_error_code_t Host_LoadStartupConfig( void );
 
 host_error_code_t Host_ApplyCvarsToConfig( host_state_t &host_state );
 
+host_error_code_t Host_CreateWindow( host_state_t &host_state );
+
 host_error_code_t Host_InitRenderer( host_state_t &host_state );
 
 host_error_code_t Host_FinishInit( host_state_t &host_state );

@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-05-04 02:29:40
    Last Modified by: ksiric
-   Last Modified: 2026-05-04 14:54:28
+   Last Modified: 2026-05-05 00:10:31
    ---------------------------------------------------------------------
    Description:
        
@@ -46,6 +46,10 @@ sys_error_code_t Sys_CreateWindow( const sys_window_desc_t &window_description, 
     
     flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL | SDL_WINDOW_HIGH_PIXEL_DENSITY;
     
+    if ( window_description.fullscreen ) {
+        flags |= SDL_WINDOW_FULLSCREEN;
+    }
+    
     sdl_window = SDL_CreateWindow( window_description.title, static_cast<int>( window_description.width ), static_cast<int>( window_description.height ), flags );
     
     if ( sdl_window == nullptr ) {
@@ -66,7 +70,7 @@ sys_error_code_t Sys_CreateWindow( const sys_window_desc_t &window_description, 
 }
 
 void Sys_DestroyWindow( sys_window_t &window ) {
-    SDL_Window *sdl_window = { nullptr };
+    SDL_Window *sdl_window{ nullptr };
     if ( window.native_window == nullptr ) {
         return ;
     }  
@@ -104,6 +108,10 @@ void Sys_PollWindowEvents( sys_window_t &window ) {
                 break;
         }
     }
+}
+
+bool Sys_WindowShouldClose( const sys_window_t &window ) {
+    return window.should_close;   
 }
     
 }       // namespace reap::rengine::sys

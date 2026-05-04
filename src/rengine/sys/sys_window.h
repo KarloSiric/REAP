@@ -1,6 +1,5 @@
 #pragma once
 
-#include "rengine/host/host_types.h"
 #include "rengine/rcommon/com_foundation.h"
 #include "rengine/sys/sys_error.h"
 
@@ -9,8 +8,8 @@ namespace reap::rengine::sys
 
 struct sys_window_desc_t {
     const char *title{ rcommon::COM_GAME_INFO.name };
-    rcommon::u32 width{ host::HOST_DEFAULT_VIEWPORT_WIDTH };
-    rcommon::u32 height{ host::HOST_DEFAULT_VIEWPORT_HEIGHT };
+    rcommon::u32 width{ 1280u };
+    rcommon::u32 height{ 720u };
     bool fullscreen{ false };
     bool vsync{ true };
 };

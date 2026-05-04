@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rengine/rcommon/com_foundation.h"
+#include "rengine/sys/sys_window.h"
 
 namespace reap::rengine::host
 {
@@ -61,6 +62,7 @@ struct host_config_t {
 struct host_state_t {
     host_stage_t stage{ host_stage_t::UNINITIALIZED };
     host_config_t config{};
+    sys::sys_window_t window{};
     bool running{ false };
     bool has_focus{ false };
     frame_t frame{};
