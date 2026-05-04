@@ -221,14 +221,14 @@ Current role of `main.cpp`:
 Current runtime flow is:
 
 1. `main()` initializes `log`
-2. `main()` calls `host_init()`
-3. `host_init()` calls `render::r_init()`
+2. `main()` calls `Host_Init()`
+3. `Host_Init()` calls `render::R_Init()`
 4. the main loop advances through:
-   - `host_begin_frame()`
-   - `host_update()`
-   - `host_render()`
-   - `host_end_frame()`
-5. `host_shutdown()` tears down the renderer
+   - `Host_BeginFrame()`
+   - `Host_Update()`
+   - `Host_Render()`
+   - `Host_EndFrame()`
+5. `Host_Shutdown()` tears down the renderer
 6. `main()` shuts down logging
 
 ### 4.3 Current Runtime Ownership Model
@@ -508,12 +508,12 @@ Current config runtime:
 
 - opens config files directly
 - reads line by line
-- routes each line through `cfg_execute_line()`
+- routes each line through `Cfg_ExecuteLine()`
 - supports nested `exec`
 
 ### 12.2 Single-Line Execution
 
-`cfg_execute_line()` exists so that a single textual line can be executed using the same general rules as cfg file lines.
+`Cfg_ExecuteLine()` exists so that a single textual line can be executed using the same general rules as cfg file lines.
 
 That makes it useful later for:
 

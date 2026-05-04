@@ -19,7 +19,7 @@ enum class cmd_error_code_t : rcommon::u8 {
     ERR_INVALID_CALLBACK
 };
 
-constexpr inline const char *cmd_error_name( const cmd_error_code_t error ) {
+constexpr inline const char *Cmd_ErrorName( const cmd_error_code_t error ) {
     switch ( error ) {
     case cmd_error_code_t::OK:
         return "OK";
@@ -44,7 +44,7 @@ constexpr inline const char *cmd_error_name( const cmd_error_code_t error ) {
     }
 }
 
-constexpr inline const char *cmd_error_desc( const cmd_error_code_t error ) {
+constexpr inline const char *Cmd_ErrorDesc( const cmd_error_code_t error ) {
     switch ( error ) {
     case cmd_error_code_t::OK:
         return "operation completed successfully";
@@ -69,8 +69,8 @@ constexpr inline const char *cmd_error_desc( const cmd_error_code_t error ) {
     }
 }
 
-constexpr inline rcommon::com_error_t cmd_error_code( cmd_error_code_t error ) {
-    return rcommon::com_error_make( rcommon::com_domain_t::COM_DOMAIN_CMD , static_cast<rcommon::com_u16>( error ) );
+constexpr inline rcommon::com_error_t Cmd_ErrorCode( cmd_error_code_t error ) {
+    return rcommon::Com_ErrorMake( rcommon::com_domain_t::COM_DOMAIN_CMD , static_cast<rcommon::com_u16>( error ) );
 }
 
 }

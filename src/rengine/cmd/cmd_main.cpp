@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-21 22:26:01
    Last Modified by: ksiric
-   Last Modified: 2026-04-27 17:37:46
+   Last Modified: 2026-05-04 01:35:52
    ---------------------------------------------------------------------
    Description:
 
@@ -27,9 +27,9 @@ namespace reap::rengine::cmd
 
 cmd_registry_t g_cmd_registery{};
 
-cmd_error_code_t cmd_init( ) {
+cmd_error_code_t Cmd_Init( ) {
     if ( g_cmd_registery.initialized ) {
-        rcommon::com_printf( "cmd_init: command system already initialized." );
+        rcommon::Com_Printf( "Cmd_Init: command system already initialized." );
         return cmd::cmd_error_code_t::ERR_IS_INIT;
     }
 
@@ -41,9 +41,9 @@ cmd_error_code_t cmd_init( ) {
     return cmd::cmd_error_code_t::OK;
 }
 
-void cmd_shutdown() {
+void Cmd_Shutdown() {
     if ( !g_cmd_registery.initialized ) {
-        rcommon::com_printf( "cmd_shutdown: command system is not initialized; nothing to shutdown" );
+        rcommon::Com_Printf( "Cmd_Shutdown: command system is not initialized; nothing to shutdown" );
         return ;
     }
 
@@ -55,40 +55,41 @@ void cmd_shutdown() {
     return ;
 }
 
-cmd_error_code_t cmd_register( const char *cmd_name, cmd_fn_t callback_fn, const char *cmd_description ) {
+cmd_error_code_t Cmd_Register( const char *cmd_name, cmd_fn_t callback_fn, void *extra_data, const char *cmd_description ) {
     if ( !g_cmd_registery.initialized ) {
-        rcommon::com_printf( "cmd_register: command system is not initialized." );
+        rcommon::Com_Printf( "Cmd_Register: command system is not initialized." );
         return cmd::cmd_error_code_t::ERR_NOT_INIT;
     }
 
     // @NOTE: Safety checks that the function has to go through
     if ( cmd_name == nullptr || cmd_name[0] == '\0' ) {
-        rcommon::com_printf( "cmd_register: invalid cmd passed to registery." );
+        rcommon::Com_Printf( "Cmd_Register: invalid cmd passed to registery." );
         return cmd::cmd_error_code_t::ERR_INVALID_COMMAND;
     }
 
-    const cmd_t *command = cmd_find( cmd_name );
+    const cmd_t *command = Cmd_Find( cmd_name );
 
     // @NOTE: command not found !
     if ( command != nullptr ) {
-        rcommon::com_printf( "cmd_register: cmd '%s' already exists and is registered.", cmd_name );
+        rcommon::Com_Printf( "Cmd_Register: cmd '%s' already exists and is registered.", cmd_name );
         return cmd::cmd_error_code_t::ERR_COMMAND_ALREADY_EXISTS;
     }
 
     if ( callback_fn == nullptr ) {
-        rcommon::com_printf( "cmd_register: invalid cmd callback passed to registery." );
+        rcommon::Com_Printf( "Cmd_Register: invalid cmd callback passed to registery." );
         return cmd::cmd_error_code_t::ERR_INVALID_CALLBACK;
     }
 
     rcommon::u32 count = g_cmd_registery.cmd_count;
 
     if ( g_cmd_registery.cmd_count >= CMD_MAX_COMMANDS ) {
-        rcommon::com_printf( "cmd_register: cannot register new cmd, registery is full." );
+        rcommon::Com_Printf( "Cmd_Register: cannot register new cmd, registery is full." );
         return cmd::cmd_error_code_t::ERR_REGISTRY_FULL;
     }
 
     g_cmd_registery.cmd_commands[count].name = cmd_name;
     g_cmd_registery.cmd_commands[count].callback_fn = callback_fn;
+    g_cmd_registery.cmd_commands[count].extra_data = extra_data;
     g_cmd_registery.cmd_commands[count].description = cmd_description;
     count++;
 
@@ -97,14 +98,14 @@ cmd_error_code_t cmd_register( const char *cmd_name, cmd_fn_t callback_fn, const
     return cmd::cmd_error_code_t::OK;
 }
 
-const cmd_t *cmd_find( const char *cmd_name ) {
+const cmd_t *Cmd_Find( const char *cmd_name ) {
     if ( !g_cmd_registery.initialized ) {
-        rcommon::com_printf( "cmd_find: cmd system is not initialized." );
+        rcommon::Com_Printf( "Cmd_Find: cmd system is not initialized." );
         return nullptr;
     }
 
     if ( cmd_name == nullptr || cmd_name[0] == '\0' ) {
-        rcommon::com_printf( "cmd_find: invalid cmd name passed to find." );
+        rcommon::Com_Printf( "Cmd_Find: invalid cmd name passed to find." );
         return nullptr;
     }
 
@@ -117,10 +118,10 @@ const cmd_t *cmd_find( const char *cmd_name ) {
     return nullptr;
 }
 
-cmd_error_code_t cmd_parse( char *command_line, rcommon::u32 &argc, char **argv ) {
+cmd_error_code_t Cmd_Parse( char *command_line, rcommon::u32 &argc, char **argv ) {
 
     if ( command_line == nullptr || command_line[0] == '\0' ) {
-        rcommon::com_printf( "cmd_parse: invalid command line passed for parsing." );
+        rcommon::Com_Printf( "Cmd_Parse: invalid command line passed for parsing." );
         return cmd::cmd_error_code_t::ERR_INVALID_COMMAND;
     }
 
@@ -154,14 +155,14 @@ cmd_error_code_t cmd_parse( char *command_line, rcommon::u32 &argc, char **argv 
     return ( argc > 0u ) ? cmd_error_code_t::OK : cmd_error_code_t::ERR_INVALID_COMMAND;
 }
 
-cmd_error_code_t cmd_execute( const char *command_line ) {
+cmd_error_code_t Cmd_Execute( const char *command_line ) {
     if ( !g_cmd_registery.initialized ) {
-        rcommon::com_printf( "cmd_execute: cmd system is not initialized; nothing to execute." );
+        rcommon::Com_Printf( "Cmd_Execute: cmd system is not initialized; nothing to execute." );
         return cmd::cmd_error_code_t::ERR_NOT_INIT;
     }
 
     if ( command_line == nullptr || command_line[0] == '\0' ) {
-        rcommon::com_printf( "cmd_execute: invalid command line passed to execute." );
+        rcommon::Com_Printf( "Cmd_Execute: invalid command line passed to execute." );
         return cmd::cmd_error_code_t::ERR_INVALID_COMMAND;
     }
 
@@ -173,31 +174,30 @@ cmd_error_code_t cmd_execute( const char *command_line ) {
     strncpy( buffer, command_line, sizeof( buffer ) - 1 );
 
     // @TODO: Parsing the command line in the first place.
-    cmd_error_code_t err = cmd_parse( buffer, cmd_argc, cmd_argv );
+    cmd_error_code_t err = Cmd_Parse( buffer, cmd_argc, cmd_argv );
     
     if ( err != cmd::cmd_error_code_t::OK ) {
-        rcommon::com_errorf( cmd_error_code( err ), "cmd_execute: cmd_parse: invalid parsing command line." );
+        rcommon::Com_Errorf( Cmd_ErrorCode( err ), "Cmd_Execute: Cmd_Parse: invalid parsing command line." );
     }
     
     if ( cmd_argc == 0u || cmd_argv[0] == nullptr || cmd_argv[0][0] == '\0' ) {
-        rcommon::com_printf( "cmd_execute: parsed command line is empty." );
+        rcommon::Com_Printf( "Cmd_Execute: parsed command line is empty." );
         return cmd::cmd_error_code_t::ERR_INVALID_COMMAND;
     }
     
-    const cmd_t *cmd = cmd_find( cmd_argv[0] );
+    const cmd_t *cmd = Cmd_Find( cmd_argv[0] );
     if ( cmd == nullptr ) {
-       rcommon::com_printf( "cmd_execute: command '%s' not found.", cmd_argv[0] );
+       rcommon::Com_Printf( "Cmd_Execute: command '%s' not found.", cmd_argv[0] );
         return cmd::cmd_error_code_t::ERR_COMMAND_NOT_FOUND; 
     }
     
     if ( cmd->callback_fn == nullptr ) {
-        rcommon::com_printf( "cmd_execute: command '%s' has invalid callback.", cmd_argv[0] );
+        rcommon::Com_Printf( "Cmd_Execute: command '%s' has invalid callback.", cmd_argv[0] );
         return cmd::cmd_error_code_t::ERR_INVALID_CALLBACK;
     }
     
-    cmd->callback_fn( cmd_argc, cmd_argv );
+    cmd->callback_fn( cmd->extra_data, cmd_argc, cmd_argv );
     return cmd_error_code_t::OK;
-
 }
 
 } // namespace reap::rengine::cmd

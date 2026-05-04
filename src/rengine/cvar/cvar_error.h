@@ -20,7 +20,7 @@ enum class cvar_error_code_t : rcommon::u8 {
 	ERR_CHEAT_PROTECTED
 };
 
-constexpr inline const char *cvar_error_name( const cvar_error_code_t error ) {
+constexpr inline const char *Cvar_ErrorName( const cvar_error_code_t error ) {
 	switch ( error ) {
 	case cvar_error_code_t::OK:
 		return "OK";
@@ -49,7 +49,7 @@ constexpr inline const char *cvar_error_name( const cvar_error_code_t error ) {
 	}
 }
 
-constexpr inline const char *cvar_error_desc( const cvar_error_code_t error ) {
+constexpr inline const char *Cvar_ErrorDesc( const cvar_error_code_t error ) {
 	switch ( error ) {
 	case cvar_error_code_t::OK:
 		return "success";
@@ -78,8 +78,8 @@ constexpr inline const char *cvar_error_desc( const cvar_error_code_t error ) {
 	}
 }
 
-constexpr inline rcommon::com_error_t cvar_error_code( cvar_error_code_t error ) {
-	return rcommon::com_error_make( rcommon::com_domain_t::COM_DOMAIN_CVAR, static_cast<rcommon::com_u16>( error ) );
+constexpr inline rcommon::com_error_t Cvar_ErrorCode( cvar_error_code_t error ) {
+	return rcommon::Com_ErrorMake( rcommon::com_domain_t::COM_DOMAIN_CVAR, static_cast<rcommon::com_u16>( error ) );
 }
 
 }

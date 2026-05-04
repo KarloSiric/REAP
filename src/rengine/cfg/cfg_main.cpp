@@ -34,7 +34,7 @@ cfg_runtime_state_t g_cfg_runtime_state;
 constexpr const char *CFG_DEFAULT_PATH  = "config/default.cfg";
 constexpr const char *CFG_AUTOEXEC_PATH = "config/autoexec.cfg";
 
-cfg_error_code_t cfg_init() {
+cfg_error_code_t Cfg_Init() {
 	if ( g_cfg_runtime_state.initialized ) {
 		return cfg_error_code_t::ERR_IS_INIT;
 	}
@@ -43,7 +43,7 @@ cfg_error_code_t cfg_init() {
 	return cfg_error_code_t::OK;
 }
 
-cfg_error_code_t cfg_shutdown() {
+cfg_error_code_t Cfg_Shutdown() {
 	if ( !g_cfg_runtime_state.initialized ) {
 		return cfg_error_code_t::ERR_NOT_INIT;
 	}
@@ -51,7 +51,7 @@ cfg_error_code_t cfg_shutdown() {
 	return cfg_error_code_t::OK;
 }
 
-cfg_error_code_t cfg_load_file( const char *path, const bool required ) {
+cfg_error_code_t Cfg_LoadFile( const char *path, const bool required ) {
 	if ( path == nullptr || path[0] == '\0' ) {
 		return cfg_error_code_t::ERR_INVALID_PATH;
 	}
@@ -61,26 +61,26 @@ cfg_error_code_t cfg_load_file( const char *path, const bool required ) {
     
     fs::fs_file_t file{};
     
-    const fs::fs_error_code_t open_result = fs::fs_open( path, fs::fs_open_mode_t::READ_TEXT, file );
+    const fs::fs_error_code_t open_result = fs::FS_Open( path, fs::fs_open_mode_t::READ_TEXT, file );
     if ( open_result != fs::fs_error_code_t::OK ) {
         return required ? cfg_error_code_t::ERR_FILE_OPEN_FAILED : cfg_error_code_t::OK;
     }
     
     if ( file.size == 0u ) {
-        fs::fs_close( file );
+        fs::FS_Close( file );
         return cfg_error_code_t::OK;
     }
     
     if ( file.size >= CFG_MAX_FILE_SIZE ) {
-        fs::fs_close( file );
+        fs::FS_Close( file );
         return cfg_error_code_t::ERR_IO_ERROR;
     }   
     
     char buffer[CFG_MAX_FILE_SIZE]{};
     rcommon::u64 bytes_read{};
     
-    const fs::fs_error_code_t read_result = fs::fs_read( file, buffer, file.size, bytes_read );
-    const fs::fs_error_code_t close_result = fs::fs_close( file );
+    const fs::fs_error_code_t read_result = fs::FS_Read( file, buffer, file.size, bytes_read );
+    const fs::fs_error_code_t close_result = fs::FS_Close( file );
     
     if ( read_result != fs::fs_error_code_t::OK ) {
         return cfg_error_code_t::ERR_IO_ERROR;          
@@ -105,7 +105,7 @@ cfg_error_code_t cfg_load_file( const char *path, const bool required ) {
         char save_line_end = *line_end;
         *line_end = '\0';
         
-        const cfg_error_code_t line_result = cfg_execute_line( line_start );
+        const cfg_error_code_t line_result = Cfg_ExecuteLine( line_start );
         
         if ( line_result != cfg_error_code_t::OK && result == cfg_error_code_t::OK ) {
             result = line_result;
@@ -126,21 +126,21 @@ cfg_error_code_t cfg_load_file( const char *path, const bool required ) {
     return result;
 }
 
-cfg_error_code_t cfg_load_default() {
+cfg_error_code_t Cfg_LoadDefault() {
 	if ( !g_cfg_runtime_state.initialized ) {
 		return cfg_error_code_t::ERR_NOT_INIT;
 	}
-	return cfg_load_file( CFG_DEFAULT_PATH, true );
+	return Cfg_LoadFile( CFG_DEFAULT_PATH, true );
 }
 
-cfg_error_code_t cfg_load_autoexec() {
+cfg_error_code_t Cfg_LoadAutoexec() {
 	if ( !g_cfg_runtime_state.initialized ) {
 		return cfg_error_code_t::ERR_NOT_INIT;
 	}
-	return cfg_load_file( CFG_AUTOEXEC_PATH, false );
+	return Cfg_LoadFile( CFG_AUTOEXEC_PATH, false );
 }
 
-cfg_error_code_t cfg_execute_line( const char *command_line ) {
+cfg_error_code_t Cfg_ExecuteLine( const char *command_line ) {
 	if ( !g_cfg_runtime_state.initialized ) {
 		return cfg_error_code_t::ERR_INVALID_LINE;
 	}
@@ -152,9 +152,9 @@ cfg_error_code_t cfg_execute_line( const char *command_line ) {
 	std::strncpy( line, command_line, sizeof( line ) - 1 );
 
 	// @NOTE: now we continue working, so we first trim whitespaces
-	//  - exec <file>    -> cfg_load_file
-	//  - set / seta     -> cvar::cvar_set
-	//  - otherwise      -> cmd::cmd_execute
+	//  - exec <file>    -> Cfg_LoadFile
+	//  - set / seta     -> cvar::Cvar_Set
+	//  - otherwise      -> cmd::Cmd_Execute
 	// return cfg_error_code_t codes consistently
 
 	char *cursor = line;
@@ -166,7 +166,7 @@ cfg_error_code_t cfg_execute_line( const char *command_line ) {
 	}
 	bool in_quotes = false;
 	for ( char *it = cursor; *it != '\0'; ++it ) {
-		// @NOTE: we skipping these comments here, usual procedure like in the cfg_load_file func
+		// @NOTE: we skipping these comments here, usual procedure like in the Cfg_LoadFile func
 		if ( *it == '"' ) {
 			in_quotes = !in_quotes;
 		}
@@ -218,7 +218,7 @@ cfg_error_code_t cfg_execute_line( const char *command_line ) {
 			}
 		}
 		exec_path[i] = '\0';
-		return cfg_load_file( exec_path, false );
+		return Cfg_LoadFile( exec_path, false );
 	}
 	if ( std::strcmp( command, "set" ) == 0 || std::strcmp( command, "seta" ) == 0 ) {
 		while ( std::isspace( static_cast<unsigned char>( *cursor ) ) ) {
@@ -264,12 +264,12 @@ cfg_error_code_t cfg_execute_line( const char *command_line ) {
 		if ( cvar_value[0] == '\0' ) {
 			return cfg_error_code_t::ERR_PARSE_FAILED;
 		}
-		if ( cvar::cvar_set( cvar_name, cvar_value ) != cvar::cvar_error_code_t::OK ) {
+		if ( cvar::Cvar_Set( cvar_name, cvar_value ) != cvar::cvar_error_code_t::OK ) {
 			return cfg_error_code_t::ERR_PARSE_FAILED;
 		}
 		return cfg_error_code_t::OK;
 	}
-	if ( cmd::cmd_execute( line ) != cmd::cmd_error_code_t::OK ) {
+	if ( cmd::Cmd_Execute( line ) != cmd::cmd_error_code_t::OK ) {
 		return cfg_error_code_t::ERR_COMMAND_FAILED;
 	}
 	return cfg_error_code_t::OK;

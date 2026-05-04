@@ -35,22 +35,22 @@ struct cvar_registry_t {
 constexpr rcommon::u32 CVAR_REGISTER_ALLOWED_FLAGS =
 	CVAR_ARCHIVE | CVAR_READONLY | CVAR_CHEAT | CVAR_DEV;
 
-cvar_error_code_t cvar_init();
+cvar_error_code_t Cvar_Init();
 
-cvar_error_code_t cvar_register( const char *name, const char *default_value, cvar_flags_t flags );
+cvar_error_code_t Cvar_Register( const char *name, const char *default_value, cvar_flags_t flags );
 
-cvar_error_code_t cvar_set( const char *name, const char *value );
+cvar_error_code_t Cvar_Set( const char *name, const char *value );
 
-cvar_error_code_t cvar_shutdown();
+cvar_error_code_t Cvar_Shutdown();
 
-const cvar_t *cvar_find( const char *name );
+const cvar_t *Cvar_Find( const char *name );
 
-const char *cvar_get_string( const char *name );
+const char *Cvar_GetString( const char *name );
 
-rcommon::u32 cvar_get_int( const char *name );
+rcommon::u32 Cvar_GetInt( const char *name );
 
-rcommon::f32 cvar_get_float( const char *name );
+rcommon::f32 Cvar_GetFloat( const char *name );
 
-bool cvar_get_bool( const char *name );
+bool Cvar_GetBool( const char *name );
 
 }

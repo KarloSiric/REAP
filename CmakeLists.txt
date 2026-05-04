@@ -48,6 +48,9 @@ else()
     message(STATUS "No vendored GLM headers yet. Add thirdparty/glm/glm/glm.hpp.")
 endif()
 
+find_package(SDL3 REQUIRED CONFIG REQUIRED COMPONENTS SDL3)
+list(APPEND REAP_LINK_LIBS SDL3::SDL3)
+
 file(GLOB_RECURSE REAP_GAME_SOURCES CONFIGURE_DEPENDS
     "${REAP_SRC_DIR}/*.cpp"
     "${REAP_SRC_DIR}/*.cxx"

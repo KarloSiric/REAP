@@ -105,13 +105,13 @@ Packed surfaced-error API used when subsystem-local typed errors need to cross s
 
 | Function | Description |
 |----------|-------------|
-| `com_error_ok( code )` | True when code equals `OK` |
-| `com_error_failed( code )` | True when code is not `OK` |
-| `com_error_name( code )` | String name of common error code |
-| `com_domain_name( domain )` | String name of domain |
-| `com_error_make( domain, local_error_code )` | Pack domain and local code |
-| `com_error_domain( error )` | Extract packed domain |
-| `com_error_code( error )` | Extract packed local code |
+| `Com_ErrorOk( code )` | True when code equals `OK` |
+| `Com_ErrorFailed( code )` | True when code is not `OK` |
+| `Com_ErrorName( code )` | String name of common error code |
+| `Com_DomainName( domain )` | String name of domain |
+| `Com_ErrorMake( domain, local_error_code )` | Pack domain and local code |
+| `Com_ErrorDomain( error )` | Extract packed domain |
+| `Com_ErrorCode( error )` | Extract packed local code |
 
 ---
 
@@ -131,11 +131,11 @@ Formatted output helpers shared by subsystems.
 
 | Function | Description |
 |----------|-------------|
-| `com_printf( const char *message, ... )` | General formatted output |
-| `com_dprintf( const char *message, ... )` | Debug-oriented formatted output |
-| `com_vprintf( const char *message, va_list args )` | `va_list` print variant |
-| `com_errorf( com_error_t error, const char *message, ... )` | Formatted surfaced error output |
-| `com_verrorf( com_error_t error, const char *message, va_list args )` | `va_list` error variant |
+| `Com_Printf( const char *message, ... )` | General formatted output |
+| `Com_DPrintf( const char *message, ... )` | Debug-oriented formatted output |
+| `Com_VPrintf( const char *message, va_list args )` | `va_list` print variant |
+| `Com_Errorf( com_error_t error, const char *message, ... )` | Formatted surfaced error output |
+| `Com_VErrorf( com_error_t error, const char *message, va_list args )` | `va_list` error variant |
 
 ---
 
@@ -163,9 +163,9 @@ Defines log severities, channels, records, and runtime configuration.
 
 | Function | Description |
 |----------|-------------|
-| `log_level_name( level )` | String name of log level |
-| `log_channel_name( channel )` | String name of log channel |
-| `log_channel_bit( channel )` | Bitmask for channel |
+| `Log_LevelName( level )` | String name of log level |
+| `Log_ChannelName( channel )` | String name of log channel |
+| `Log_ChannelBit( channel )` | Bitmask for channel |
 
 ---
 
@@ -179,15 +179,15 @@ Public logger lifecycle, configuration, and emission API.
 
 | Function | Description |
 |----------|-------------|
-| `log_init( const log_config_t &config = {} )` | Initialize logging subsystem |
-| `log_shutdown()` | Shutdown logger |
-| `log_get_config()` | Get active config |
-| `log_set_config( const log_config_t &config )` | Replace runtime config |
-| `log_level_enabled( level, channel )` | Check if event would be accepted |
-| `log_channel_enabled( channel_mask, channel )` | Check a channel bit in a mask |
-| `log_emit( const log_record_t &record )` | Emit fully-built record |
-| `log_emitf( ... )` | Build and emit formatted record |
-| `log_emitfv( ... )` | `va_list` formatted emit |
+| `Log_Init( const log_config_t &config = {} )` | Initialize logging subsystem |
+| `Log_Shutdown()` | Shutdown logger |
+| `Log_GetConfig()` | Get active config |
+| `Log_SetConfig( const log_config_t &config )` | Replace runtime config |
+| `Log_LevelEnabled( level, channel )` | Check if event would be accepted |
+| `Log_ChannelEnabled( channel_mask, channel )` | Check a channel bit in a mask |
+| `Log_Emit( const log_record_t &record )` | Emit fully-built record |
+| `Log_Emitf( ... )` | Build and emit formatted record |
+| `Log_Emitfv( ... )` | `va_list` formatted emit |
 
 #### Macro Layer
 
@@ -222,13 +222,13 @@ Platform/compiler detection and timing/path utility API.
 
 | Function | Description |
 |----------|-------------|
-| `sys_platform_type()` | Return build platform |
-| `sys_compiler_type()` | Return build compiler |
-| `sys_platform_name( type )` | String name of platform |
-| `sys_compiler_name( type )` | String name of compiler |
-| `sys_path_basename( const char *path )` | Basename view into path |
-| `sys_time_now_seconds()` | Monotonic time in seconds |
-| `sys_local_time( std::time_t time_value, std::tm &time_out )` | Local-time conversion helper |
+| `Sys_PlatformType()` | Return build platform |
+| `Sys_CompilerType()` | Return build compiler |
+| `Sys_PlatformName( type )` | String name of platform |
+| `Sys_CompilerName( type )` | String name of compiler |
+| `Sys_PathBasename( const char *path )` | Basename view into path |
+| `Sys_TimeNowSeconds()` | Monotonic time in seconds |
+| `Sys_LocalTime( std::time_t time_value, std::tm &time_out )` | Local-time conversion helper |
 
 ---
 
@@ -264,13 +264,13 @@ Top-level runtime lifecycle API used by the executable entry point.
 
 | Function | Description |
 |----------|-------------|
-| `host_init( host_state_t &host_state, const host_config_t &host_config )` | Initialize host runtime |
-| `host_shutdown( host_state_t &host_state )` | Shutdown host runtime |
-| `host_begin_frame( host_state_t &host_state, f32 delta_time_seconds )` | Begin current frame |
-| `host_update( host_state_t &host_state )` | Update host simulation |
-| `host_render( host_state_t &host_state )` | Render current frame |
-| `host_end_frame( host_state_t &host_state )` | Finalize current frame |
-| `host_is_running( host_state_t &host_state )` | Main-loop continuation query |
+| `Host_Init( host_state_t &host_state, const host_config_t &host_config )` | Initialize host runtime |
+| `Host_Shutdown( host_state_t &host_state )` | Shutdown host runtime |
+| `Host_BeginFrame( host_state_t &host_state, f32 delta_time_seconds )` | Begin current frame |
+| `Host_Update( host_state_t &host_state )` | Update host simulation |
+| `Host_Render( host_state_t &host_state )` | Render current frame |
+| `Host_EndFrame( host_state_t &host_state )` | Finalize current frame |
+| `Host_IsRunning( host_state_t &host_state )` | Main-loop continuation query |
 
 ---
 
@@ -286,12 +286,12 @@ Defines the current renderer lifecycle contract.
 
 | Function | Description |
 |----------|-------------|
-| `r_init( const host::window_config_t &window_config )` | Initialize renderer |
-| `r_shutdown()` | Shutdown renderer |
-| `r_begin_frame( f32 delta_time_seconds )` | Begin a render frame |
-| `r_render_frame()` | Submit/render current frame |
-| `r_render_end()` | End current frame |
-| `r_is_initialized()` | Query init state |
+| `R_Init( const host::window_config_t &window_config )` | Initialize renderer |
+| `R_Shutdown()` | Shutdown renderer |
+| `R_BeginFrame( f32 delta_time_seconds )` | Begin a render frame |
+| `R_RenderFrame()` | Submit/render current frame |
+| `R_EndFrame()` | End current frame |
+| `R_IsInitialized()` | Query init state |
 
 ---
 
@@ -322,12 +322,12 @@ Fixed-registry command backend for textual command dispatch.
 
 | Function | Description |
 |----------|-------------|
-| `cmd_init()` | Initialize command system |
-| `cmd_shutdown()` | Shutdown command system |
-| `cmd_register( const char *cmd_name, cmd_fn_t callback_fn, const char *cmd_description )` | Register command |
-| `cmd_find( const char *cmd_name )` | Find command by name |
-| `cmd_parse( char *command_line, u32 &argc, char **argv )` | Tokenize command line |
-| `cmd_execute( const char *command_line )` | Parse and dispatch command |
+| `Cmd_Init()` | Initialize command system |
+| `Cmd_Shutdown()` | Shutdown command system |
+| `Cmd_Register( const char *cmd_name, cmd_fn_t callback_fn, const char *cmd_description )` | Register command |
+| `Cmd_Find( const char *cmd_name )` | Find command by name |
+| `Cmd_Parse( char *command_line, u32 &argc, char **argv )` | Tokenize command line |
+| `Cmd_Execute( const char *command_line )` | Parse and dispatch command |
 
 ---
 
@@ -369,15 +369,15 @@ Fixed-registry console variable system with cached typed views.
 
 | Function | Description |
 |----------|-------------|
-| `cvar_init()` | Initialize cvar system |
-| `cvar_register( const char *name, const char *default_value, cvar_flags_t flags )` | Register cvar |
-| `cvar_set( const char *name, const char *value )` | Change cvar value |
-| `cvar_shutdown()` | Shutdown cvar system |
-| `cvar_find( const char *name )` | Find cvar by name |
-| `cvar_get_string( const char *name )` | Get string value |
-| `cvar_get_int( const char *name )` | Get cached integer value |
-| `cvar_get_float( const char *name )` | Get cached float value |
-| `cvar_get_bool( const char *name )` | Get cached boolean value |
+| `Cvar_Init()` | Initialize cvar system |
+| `Cvar_Register( const char *name, const char *default_value, cvar_flags_t flags )` | Register cvar |
+| `Cvar_Set( const char *name, const char *value )` | Change cvar value |
+| `Cvar_Shutdown()` | Shutdown cvar system |
+| `Cvar_Find( const char *name )` | Find cvar by name |
+| `Cvar_GetString( const char *name )` | Get string value |
+| `Cvar_GetInt( const char *name )` | Get cached integer value |
+| `Cvar_GetFloat( const char *name )` | Get cached float value |
+| `Cvar_GetBool( const char *name )` | Get cached boolean value |
 
 ---
 
@@ -400,12 +400,12 @@ Config runtime used for loading startup/runtime config files and executing confi
 
 | Function | Description |
 |----------|-------------|
-| `cfg_init()` | Initialize cfg subsystem |
-| `cfg_shutdown()` | Shutdown cfg subsystem |
-| `cfg_load_file( const char *path, bool required = false )` | Load cfg file from path |
-| `cfg_load_default()` | Load default startup cfg |
-| `cfg_load_autoexec()` | Load optional autoexec cfg |
-| `cfg_execute_line( const char *command_line )` | Execute a single cfg-style command line |
+| `Cfg_Init()` | Initialize cfg subsystem |
+| `Cfg_Shutdown()` | Shutdown cfg subsystem |
+| `Cfg_LoadFile( const char *path, bool required = false )` | Load cfg file from path |
+| `Cfg_LoadDefault()` | Load default startup cfg |
+| `Cfg_LoadAutoexec()` | Load optional autoexec cfg |
+| `Cfg_ExecuteLine( const char *command_line )` | Execute a single cfg-style command line |
 
 #### Supported Line Forms
 
@@ -443,8 +443,8 @@ The next major public API expected to be added is the filesystem layer.
 
 Planned direction:
 
-- `fs_init()`
-- `fs_shutdown()`
+- `FS_Init()`
+- `FS_Shutdown()`
 - mount/search path registration
 - engine-owned file open/read helpers
 - later archive integration for `rpk` or another package format

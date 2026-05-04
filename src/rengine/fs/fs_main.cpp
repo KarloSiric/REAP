@@ -37,7 +37,7 @@ fs_runtime_state_t g_fs_runtime_state{};
 
 } // namespace
 
-fs_error_code_t fs_init() {
+fs_error_code_t FS_Init() {
 	if ( g_fs_runtime_state.initialized ) {
 		return fs_error_code_t::ERR_IS_INIT;
 	}
@@ -48,7 +48,7 @@ fs_error_code_t fs_init() {
 	return fs_error_code_t::OK;
 }
 
-fs_error_code_t fs_shutdown() {
+fs_error_code_t FS_Shutdown() {
 	if ( !g_fs_runtime_state.initialized ) {
 		return fs_error_code_t::ERR_NOT_INIT;
 	}
@@ -57,15 +57,15 @@ fs_error_code_t fs_shutdown() {
 	return fs_error_code_t::OK;
 }
 
-rcommon::u32 fs_mount_count() {
+rcommon::u32 FS_MountCount() {
 	return g_fs_runtime_state.mount_count;
 }
 
-bool fs_is_initialized() {
+bool FS_IsInitialized() {
 	return g_fs_runtime_state.initialized;
 }
 
-fs_error_code_t fs_mount_directory( const char *virtual_root, const char *physical_path, rcommon::u32 flags, rcommon::u32 priority ) {
+fs_error_code_t FS_MountDirectory( const char *virtual_root, const char *physical_path, rcommon::u32 flags, rcommon::u32 priority ) {
 	if ( !g_fs_runtime_state.initialized ) {
 		return fs_error_code_t::ERR_NOT_INIT;
 	}
@@ -102,7 +102,7 @@ fs_error_code_t fs_mount_directory( const char *virtual_root, const char *physic
 	return fs_error_code_t::OK;
 }
 
-fs_error_code_t fs_unmount_directory( const char *virtual_root ) {
+fs_error_code_t FS_UnmountDirectory( const char *virtual_root ) {
 	if ( !g_fs_runtime_state.initialized ) {
 		return fs_error_code_t::ERR_NOT_INIT;
 	}
@@ -123,7 +123,7 @@ fs_error_code_t fs_unmount_directory( const char *virtual_root ) {
 	return fs_error_code_t::ERR_MOUNT_NOT_FOUND;
 }
 
-fs_error_code_t fs_set_write_path( const char *physical_path ) {
+fs_error_code_t FS_SetWritePath( const char *physical_path ) {
 	if ( !g_fs_runtime_state.initialized ) {
 		return fs_error_code_t::ERR_NOT_INIT;
 	}
@@ -138,7 +138,7 @@ fs_error_code_t fs_set_write_path( const char *physical_path ) {
 	return fs_error_code_t::OK;
 }
 
-const char *fs_get_write_path() {
+const char *FS_GetWritePath() {
 	if ( !g_fs_runtime_state.initialized ) {
 		return nullptr;
 	}
@@ -148,7 +148,7 @@ const char *fs_get_write_path() {
 	return g_fs_runtime_state.write_path;
 }
 
-fs_error_code_t fs_resolve_path( const char *virtual_path, char *out_resolved_path, rcommon::u32 out_resolved_path_size ) {
+fs_error_code_t FS_ResolvePath( const char *virtual_path, char *out_resolved_path, rcommon::u32 out_resolved_path_size ) {
 	if ( !g_fs_runtime_state.initialized ) {
 		return fs_error_code_t::ERR_NOT_INIT;
 	}
@@ -210,18 +210,18 @@ fs_error_code_t fs_resolve_path( const char *virtual_path, char *out_resolved_pa
 	return fs_error_code_t::ERR_PATH_NOT_FOUND;
 }
 
-bool fs_exists( const char *virtual_path ) {
+bool FS_Exists( const char *virtual_path ) {
 	if ( !g_fs_runtime_state.initialized ) {
 		return false;
 	}
 	char resolved_path[FS_MAX_PATH_LENGTH]{};
 
-	fs_error_code_t err = fs_resolve_path( virtual_path, resolved_path, sizeof( resolved_path ) );
+	fs_error_code_t err = FS_ResolvePath( virtual_path, resolved_path, sizeof( resolved_path ) );
 
 	return err == fs_error_code_t::OK;
 }
 
-fs_error_code_t fs_get_file_info( const char *virtual_path, fs_file_info_t &out_info ) {
+fs_error_code_t FS_GetFileInfo( const char *virtual_path, fs_file_info_t &out_info ) {
 	if ( !g_fs_runtime_state.initialized ) {
 		return fs_error_code_t::ERR_NOT_INIT;
 	}
@@ -229,7 +229,7 @@ fs_error_code_t fs_get_file_info( const char *virtual_path, fs_file_info_t &out_
 	if ( virtual_path == nullptr || virtual_path[0] == '\0' ) {
 		return fs_error_code_t::ERR_INVALID_PATH;
 	}
-	fs_error_code_t err = fs_resolve_path( virtual_path, out_info.resolved_path, sizeof( out_info.resolved_path ) );
+	fs_error_code_t err = FS_ResolvePath( virtual_path, out_info.resolved_path, sizeof( out_info.resolved_path ) );
 	if ( err != fs_error_code_t::OK ) {
 		return err;
 	}
@@ -255,7 +255,7 @@ fs_error_code_t fs_get_file_info( const char *virtual_path, fs_file_info_t &out_
 	return fs_error_code_t::OK;
 }
 
-static const char *fs_open_mode_to_c_mode( const fs_open_mode_t mode ) {
+static const char *FS_OpenModeToCMode( const fs_open_mode_t mode ) {
 	switch ( mode ) {
 	case fs_open_mode_t::READ_TEXT:
 		return "r";
@@ -274,7 +274,7 @@ static const char *fs_open_mode_to_c_mode( const fs_open_mode_t mode ) {
 	}
 }
 
-fs_error_code_t fs_open( const char *virtual_path, fs_open_mode_t mode, fs_file_t &file ) {
+fs_error_code_t FS_Open( const char *virtual_path, fs_open_mode_t mode, fs_file_t &file ) {
 	if ( !g_fs_runtime_state.initialized ) {
 		return fs_error_code_t::ERR_NOT_INIT;
 	}
@@ -282,7 +282,7 @@ fs_error_code_t fs_open( const char *virtual_path, fs_open_mode_t mode, fs_file_
 	if ( virtual_path == nullptr || virtual_path[0] == '\0' ) {
 		return fs_error_code_t::ERR_INVALID_PATH;
 	}
-	const char *c_mode = fs_open_mode_to_c_mode( mode );
+	const char *c_mode = FS_OpenModeToCMode( mode );
 	if ( c_mode == nullptr ) {
 		return fs_error_code_t::ERR_INVALID_MODE;
 	}
@@ -291,7 +291,7 @@ fs_error_code_t fs_open( const char *virtual_path, fs_open_mode_t mode, fs_file_
 	const bool append_mode = mode == fs_open_mode_t::APPEND_TEXT || mode == fs_open_mode_t::APPEND_BINARY;
 	char resolved_path[FS_MAX_PATH_LENGTH]{};
 	if ( read_mode ) {
-		const fs_error_code_t err = fs_resolve_path( virtual_path, resolved_path, sizeof( resolved_path ) );
+		const fs_error_code_t err = FS_ResolvePath( virtual_path, resolved_path, sizeof( resolved_path ) );
 		if ( err != fs_error_code_t::OK ) {
 			return err;
 		}
@@ -340,7 +340,7 @@ fs_error_code_t fs_open( const char *virtual_path, fs_open_mode_t mode, fs_file_
 	return fs_error_code_t::OK;
 }
 
-fs_error_code_t fs_close( fs_file_t &file ) {
+fs_error_code_t FS_Close( fs_file_t &file ) {
 	if ( !g_fs_runtime_state.initialized ) {
 		return fs_error_code_t::ERR_NOT_INIT;
 	}
@@ -365,7 +365,7 @@ fs_error_code_t fs_close( fs_file_t &file ) {
 	return fs_error_code_t::OK;
 }
 
-fs_error_code_t fs_read( fs_file_t &file, void *buffer, rcommon::u64 bytes_to_read, rcommon::u64 &bytes_read_out ) {
+fs_error_code_t FS_Read( fs_file_t &file, void *buffer, rcommon::u64 bytes_to_read, rcommon::u64 &bytes_read_out ) {
 	bytes_read_out = 0u;
 
 	if ( !g_fs_runtime_state.initialized ) {
@@ -411,7 +411,7 @@ fs_error_code_t fs_read( fs_file_t &file, void *buffer, rcommon::u64 bytes_to_re
 	return fs_error_code_t::OK;
 }
 
-fs_error_code_t fs_write( fs_file_t &file, const void *buffer, rcommon::u64 bytes_to_write, rcommon::u64 &bytes_written_out ) {
+fs_error_code_t FS_Write( fs_file_t &file, const void *buffer, rcommon::u64 bytes_to_write, rcommon::u64 &bytes_written_out ) {
 	bytes_written_out = 0u;
 
 	if ( !g_fs_runtime_state.initialized ) {
@@ -454,7 +454,7 @@ fs_error_code_t fs_write( fs_file_t &file, const void *buffer, rcommon::u64 byte
 	return fs_error_code_t::OK;
 }
 
-fs_error_code_t fs_seek( fs_file_t &file, rcommon::i64 offset, fs_seek_origin_t origin ) {
+fs_error_code_t FS_Seek( fs_file_t &file, rcommon::i64 offset, fs_seek_origin_t origin ) {
 	if ( !g_fs_runtime_state.initialized ) {
 		return fs_error_code_t::ERR_NOT_INIT;
 	}
@@ -499,7 +499,7 @@ fs_error_code_t fs_seek( fs_file_t &file, rcommon::i64 offset, fs_seek_origin_t 
 	return fs_error_code_t::OK;
 }
 
-fs_error_code_t fs_tell( fs_file_t &file, rcommon::u64 &out_position ) {
+fs_error_code_t FS_Tell( fs_file_t &file, rcommon::u64 &out_position ) {
 	out_position = 0u;
 
 	if ( !g_fs_runtime_state.initialized ) {
@@ -527,7 +527,7 @@ fs_error_code_t fs_tell( fs_file_t &file, rcommon::u64 &out_position ) {
 	return fs_error_code_t::OK;
 }
 
-fs_error_code_t fs_read_entire_file( const char *virtual_path, void *buffer, rcommon::u64 bytes_to_read, rcommon::u64 &bytes_read_out ) {
+fs_error_code_t FS_ReadEntireFile( const char *virtual_path, void *buffer, rcommon::u64 bytes_to_read, rcommon::u64 &bytes_read_out ) {
 	bytes_read_out = 0u;
 
 	if ( !g_fs_runtime_state.initialized ) {
@@ -539,24 +539,24 @@ fs_error_code_t fs_read_entire_file( const char *virtual_path, void *buffer, rco
 	}
 
 	fs_file_t file{};
-	fs_error_code_t err = fs_open( virtual_path, fs_open_mode_t::READ_BINARY, file );
+	fs_error_code_t err = FS_Open( virtual_path, fs_open_mode_t::READ_BINARY, file );
 
 	if ( err != fs_error_code_t::OK ) {
 		return err;
 	}
 
 	if ( file.size > bytes_to_read ) {
-		fs_close( file );
+		FS_Close( file );
 		return fs_error_code_t::ERR_BUFFER_TOO_SMALL;
 	}
 
 	if ( file.size == 0u ) {
-		return fs_close( file );
+		return FS_Close( file );
 	}
 
 	const rcommon::u64 expected_size = file.size;
-	err = fs_read( file, buffer, expected_size, bytes_read_out );
-	const fs_error_code_t close_err = fs_close( file );
+	err = FS_Read( file, buffer, expected_size, bytes_read_out );
+	const fs_error_code_t close_err = FS_Close( file );
 
 	if ( err != fs_error_code_t::OK ) {
 		return err;

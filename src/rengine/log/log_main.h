@@ -8,40 +8,40 @@
 namespace reap::rengine::log
 {
 
-log_error_code_t log_init( const log_config_t &config = {} );
+log_error_code_t Log_Init( const log_config_t &config = {} );
 
-void log_shutdown();
+void Log_Shutdown();
 
-const log_config_t &log_get_config();
+const log_config_t &Log_GetConfig();
 
-log_error_code_t log_set_config( const log_config_t &config );
+log_error_code_t Log_SetConfig( const log_config_t &config );
 
-bool log_level_enabled( const log_level_t log_level, const log_channel_t channel );
+bool Log_LevelEnabled( const log_level_t log_level, const log_channel_t channel );
 
-bool log_channel_enabled( const rcommon::com_u32 channel_mask, const log_channel_t channel );
+bool Log_ChannelEnabled( const rcommon::com_u32 channel_mask, const log_channel_t channel );
 
-void log_emit( const log_record_t &record );
+void Log_Emit( const log_record_t &record );
 
-void log_emitf( const log_level_t log_level, const log_channel_t channel,
+void Log_Emitf( const log_level_t log_level, const log_channel_t channel,
                 const char *file, const char *function, const rcommon::com_i32 line,
                 const char *format, ... );
 
-void log_emitfv( const log_level_t log_level, const log_channel_t channel,
+void Log_Emitfv( const log_level_t log_level, const log_channel_t channel,
                  const char *file, const char *function, const rcommon::com_i32 line,
                  const char *format, va_list args );
 
 }
 
 #define REAP_LOG_IF_ENABLED( LOG_LEVEL, LOG_CHANNEL )                                                           \
-	if ( reap::rengine::log::log_level_enabled( ( LOG_LEVEL ), ( LOG_CHANNEL ) ) )
+	if ( reap::rengine::log::Log_LevelEnabled( ( LOG_LEVEL ), ( LOG_CHANNEL ) ) )
 
 #define REAP_LOG( LOG_LEVEL, LOG_CHANNEL, LOG_MESSAGE )                                                         \
     REAP_LOGF( ( LOG_LEVEL ), ( LOG_CHANNEL ), "%s", ( LOG_MESSAGE ) )
 
 #define REAP_LOGF( LOG_LEVEL, LOG_CHANNEL, LOG_FORMAT, ... )                                                    \
     do {                                                                                                        \
-        if ( reap::rengine::log::log_level_enabled( ( LOG_LEVEL), ( LOG_CHANNEL ) ) ) {                          \
-            reap::rengine::log::log_emitf(                                                                      \
+        if ( reap::rengine::log::Log_LevelEnabled( ( LOG_LEVEL), ( LOG_CHANNEL ) ) ) {                          \
+            reap::rengine::log::Log_Emitf(                                                                      \
                 ( LOG_LEVEL ), ( LOG_CHANNEL ), __FILE__, __func__, __LINE__, ( LOG_FORMAT )                     \
 				__VA_OPT__( , ) __VA_ARGS__ );                                                             \
         }                                                                                                       \
@@ -49,8 +49,8 @@ void log_emitfv( const log_level_t log_level, const log_channel_t channel,
 
 #define REAP_LOGF_IF( LOG_CONDITION, LOG_LEVEL, LOG_CHANNEL, LOG_FORMAT, ... )                                  \
     do {                                                                                                        \
-        if ( ( LOG_CONDITION ) && reap::rengine::log::log_level_enabled( ( LOG_LEVEL ), (LOG_CHANNEL ) ) ) {    \
-            reap::rengine::log::log_emitf(                                                                      \
+        if ( ( LOG_CONDITION ) && reap::rengine::log::Log_LevelEnabled( ( LOG_LEVEL ), (LOG_CHANNEL ) ) ) {    \
+            reap::rengine::log::Log_Emitf(                                                                      \
                 ( LOG_LEVEL ), ( LOG_CHANNEL ), __FILE__, __func__, __LINE__, ( LOG_FORMAT )                    \
 				__VA_OPT__( , ) __VA_ARGS__ );                                                             \
         }                                                                                                       \

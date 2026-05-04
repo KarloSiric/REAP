@@ -56,26 +56,26 @@ struct sys_runtime_state_t {
 
 extern sys_runtime_state_t g_sys_runtime_state;
 
-sys_error_code_t sys_init( const sys_init_info_t &init_info );
-sys_error_code_t sys_shutdown();
+sys_error_code_t Sys_Init( const sys_init_info_t &init_info );
+sys_error_code_t Sys_Shutdown();
 
-bool sys_is_initialized();
+bool Sys_IsInitialized();
 
-platform_t sys_platform_type();
-compiler_t sys_compiler_type();
+platform_t Sys_PlatformType();
+compiler_t Sys_CompilerType();
 
-const char *sys_platform_name( platform_t type );
-const char *sys_compiler_name( compiler_t type );
+const char *Sys_PlatformName( platform_t type );
+const char *Sys_CompilerName( compiler_t type );
 
-const sys_paths_t &sys_paths();
-sys_error_code_t sys_get_paths( sys_paths_t &out_paths );
+const sys_paths_t &Sys_Paths();
+sys_error_code_t Sys_GetPaths( sys_paths_t &out_paths );
 
-const char *sys_path_basename( const char *path );
+const char *Sys_PathBasename( const char *path );
 
-rcommon::com_f64 sys_time_now_seconds();
-void sys_sleep_milliseconds( rcommon::u64 milliseconds );
+rcommon::com_f64 Sys_TimeNowSeconds();
+void Sys_SleepMilliseconds( rcommon::u64 milliseconds );
 
-bool sys_local_time( std::time_t time_value, std::tm &time_out );
+bool Sys_LocalTime( std::time_t time_value, std::tm &time_out );
 
 /* CROSS PLATFORM AND COMPILER DETECTION */
 

@@ -4,40 +4,40 @@
 #include "rengine/host/host_types.h"
 
 namespace reap::rengine::host
-{ 
-    
-void host_prepare_state_for_init( host_state_t &host_state );    
+{
 
-host_error_code_t host_init_core_engine_systems( host_state_t &host_state );
+void Host_PrepareStateForInit( host_state_t &host_state );
 
-host_error_code_t host_mount_file_system( void );
+host_error_code_t Host_InitCoreEngineSystems( host_state_t &host_state );
 
-host_error_code_t host_register_builtin_cvars( void );
+host_error_code_t Host_MountFileSystem( void );
 
-host_error_code_t host_register_builtin_commands( void );
+host_error_code_t Host_RegisterBuiltinCvars( void );
 
-host_error_code_t host_load_startup_config( void );
+host_error_code_t Host_RegisterBuiltinCommands( host_state_t &host_state );
 
-host_error_code_t host_apply_cvars_to_config( host_state_t &host_state );
+host_error_code_t Host_LoadStartupConfig( void );
 
-host_error_code_t host_init_renderer( host_state_t &host_state );
+host_error_code_t Host_ApplyCvarsToConfig( host_state_t &host_state );
 
-host_error_code_t host_finish_init( host_state_t &host_state );
+host_error_code_t Host_InitRenderer( host_state_t &host_state );
 
-host_error_code_t host_init( host_state_t &host_state );
+host_error_code_t Host_FinishInit( host_state_t &host_state );
 
-void host_requet_shutdown( host_state_t &host_state );
+host_error_code_t Host_Init( host_state_t &host_state );
 
-void host_shutdown( host_state_t &host_state );
+void Host_RequestShutdown( host_state_t &host_state );
 
-void host_begin_frame( host_state_t &host_state );
+void Host_Shutdown( host_state_t &host_state );
 
-void host_update( host_state_t &host_state );
+void Host_BeginFrame( host_state_t &host_state );
 
-void host_render( host_state_t &host_state );
+void Host_Update( host_state_t &host_state );
 
-void host_end_frame( host_state_t &host_state );
+void Host_Render( host_state_t &host_state );
 
-bool host_is_running( host_state_t &host_state );
+void Host_EndFrame( host_state_t &host_state );
+
+bool Host_IsRunning( host_state_t &host_state );
 
 }

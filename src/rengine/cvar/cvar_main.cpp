@@ -26,9 +26,9 @@ namespace reap::rengine::cvar {
 
 cvar_registry_t g_cvar_registry;
 
-cvar_error_code_t cvar_init() {
+cvar_error_code_t Cvar_Init() {
 	if ( g_cvar_registry.initialized ) {
-		rcommon::com_printf( "cvar_init: %s: %s\n", cvar_error_name( cvar_error_code_t::ERR_IS_INIT ), cvar_error_desc( cvar_error_code_t::ERR_IS_INIT ) );
+		rcommon::Com_Printf( "Cvar_Init: %s: %s\n", Cvar_ErrorName( cvar_error_code_t::ERR_IS_INIT ), Cvar_ErrorDesc( cvar_error_code_t::ERR_IS_INIT ) );
 		return cvar_error_code_t::ERR_IS_INIT;
 	}
 
@@ -39,7 +39,7 @@ cvar_error_code_t cvar_init() {
 }
 
 // @NOTE(karlo): helper func for parsing the proper bool lower
-bool cvar_parse_bool( const char *value ) {
+bool Cvar_ParseBool( const char *value ) {
 	// @NOTE(karlo) -> for design wise choice I went for nullptr, 0, false, "", "false", "off", "no" to be a bool false value.
 	if ( value == nullptr || value[0] == '\0' ) {
 		return false;
@@ -64,19 +64,19 @@ bool cvar_parse_bool( const char *value ) {
 	return ( std::atoi( lower ) != 0 );
 }
 
-cvar_error_code_t cvar_register( const char *name, const char *default_value, cvar_flags_t flags ) {
+cvar_error_code_t Cvar_Register( const char *name, const char *default_value, cvar_flags_t flags ) {
 	if ( !g_cvar_registry.initialized ) {
-		rcommon::com_printf( "cvar_register: %s: %s\n", cvar_error_name( cvar_error_code_t::ERR_NOT_INIT ), cvar_error_desc( cvar_error_code_t::ERR_NOT_INIT ) );
+		rcommon::Com_Printf( "Cvar_Register: %s: %s\n", Cvar_ErrorName( cvar_error_code_t::ERR_NOT_INIT ), Cvar_ErrorDesc( cvar_error_code_t::ERR_NOT_INIT ) );
 		return cvar_error_code_t::ERR_NOT_INIT;
 	}
 
 	if ( name == nullptr || name[0] == '\0' ) {
-		rcommon::com_printf( "cvar_register: %s: %s\n", cvar_error_name( cvar_error_code_t::ERR_INVALID_CVAR ), cvar_error_desc( cvar_error_code_t::ERR_INVALID_CVAR ) );
+		rcommon::Com_Printf( "Cvar_Register: %s: %s\n", Cvar_ErrorName( cvar_error_code_t::ERR_INVALID_CVAR ), Cvar_ErrorDesc( cvar_error_code_t::ERR_INVALID_CVAR ) );
 		return cvar_error_code_t::ERR_INVALID_CVAR;
 	}
 
 	if ( default_value == nullptr || default_value[0] == '\0' ) {
-		rcommon::com_printf( "cvar_register: %s: %s\n", cvar_error_name( cvar_error_code_t::ERR_INVALID_DEFAULT_VALUE ), cvar_error_desc( cvar_error_code_t::ERR_INVALID_DEFAULT_VALUE ) );
+		rcommon::Com_Printf( "Cvar_Register: %s: %s\n", Cvar_ErrorName( cvar_error_code_t::ERR_INVALID_DEFAULT_VALUE ), Cvar_ErrorDesc( cvar_error_code_t::ERR_INVALID_DEFAULT_VALUE ) );
 		return cvar_error_code_t::ERR_INVALID_DEFAULT_VALUE;
 	}
 
@@ -89,27 +89,27 @@ cvar_error_code_t cvar_register( const char *name, const char *default_value, cv
 	rcommon::u32 flags_bits = static_cast<rcommon::u32>( flags );
 
 	if ( ( flags_bits & CVAR_MODIFIED ) != 0u ) {
-		rcommon::com_printf( "cvar_register: %s: %s\n", cvar_error_name( cvar_error_code_t::ERR_INVALID_FLAG ), cvar_error_desc( cvar_error_code_t::ERR_INVALID_FLAG ) );
+		rcommon::Com_Printf( "Cvar_Register: %s: %s\n", Cvar_ErrorName( cvar_error_code_t::ERR_INVALID_FLAG ), Cvar_ErrorDesc( cvar_error_code_t::ERR_INVALID_FLAG ) );
 		return cvar_error_code_t::ERR_INVALID_FLAG;
 	}
 
 	// @NOTE(karlo): Additional safety checking for the masking part.
 	if ( ( flags_bits & ~CVAR_REGISTER_ALLOWED_FLAGS ) != 0 ) {
-		rcommon::com_printf( "cvar_register: %s: %s\n", cvar_error_name( cvar_error_code_t::ERR_INVALID_FLAG ), cvar_error_desc( cvar_error_code_t::ERR_INVALID_FLAG ) );
+		rcommon::Com_Printf( "Cvar_Register: %s: %s\n", Cvar_ErrorName( cvar_error_code_t::ERR_INVALID_FLAG ), Cvar_ErrorDesc( cvar_error_code_t::ERR_INVALID_FLAG ) );
 		return cvar_error_code_t::ERR_INVALID_FLAG;
 	}
 
 	// @NOTE(karlo): checking if we have that cvar already
-	const cvar_t *cvar = cvar_find( name );
+	const cvar_t *cvar = Cvar_Find( name );
 
 	// @NOTE(karlo): checking not by strcmp but by checking pointer dangling
 	if ( cvar != nullptr ) {
-		rcommon::com_printf( "cvar_register: %s: %s\n", cvar_error_name( cvar_error_code_t::ERR_CVAR_ALREADY_EXISTS ), cvar_error_desc( cvar_error_code_t::ERR_CVAR_ALREADY_EXISTS ) );
+		rcommon::Com_Printf( "Cvar_Register: %s: %s\n", Cvar_ErrorName( cvar_error_code_t::ERR_CVAR_ALREADY_EXISTS ), Cvar_ErrorDesc( cvar_error_code_t::ERR_CVAR_ALREADY_EXISTS ) );
 		return cvar_error_code_t::ERR_CVAR_ALREADY_EXISTS;
 	}
 
 	if ( g_cvar_registry.cvar_count >= CVAR_MAX_CVARS ) {
-		rcommon::com_printf( "cvar_register: %s: %s\n", cvar_error_name( cvar_error_code_t::ERR_REGISTRY_FULL ), cvar_error_desc( cvar_error_code_t::ERR_REGISTRY_FULL ) );
+		rcommon::Com_Printf( "Cvar_Register: %s: %s\n", Cvar_ErrorName( cvar_error_code_t::ERR_REGISTRY_FULL ), Cvar_ErrorDesc( cvar_error_code_t::ERR_REGISTRY_FULL ) );
 		return cvar_error_code_t::ERR_REGISTRY_FULL;
 	}
 
@@ -123,7 +123,7 @@ cvar_error_code_t cvar_register( const char *name, const char *default_value, cv
 	entry.value_int = std::atoi( default_value );
 	entry.value_float = std::atof( default_value );
 	entry.flags = flags;
-	entry.value_bool = cvar_parse_bool( entry.value_string );
+	entry.value_bool = Cvar_ParseBool( entry.value_string );
 	g_cvar_registry.cvar_count++;
 
 	return cvar_error_code_t::OK;
@@ -131,23 +131,23 @@ cvar_error_code_t cvar_register( const char *name, const char *default_value, cv
 
 // @TODO(karlo): adding other functions tommorow
 
-cvar_error_code_t cvar_set( const char *name, const char *value ) {
+cvar_error_code_t Cvar_Set( const char *name, const char *value ) {
 	if ( !g_cvar_registry.initialized ) {
-		rcommon::com_printf( "cvar_set: %s: %s\n", cvar_error_name( cvar_error_code_t::ERR_NOT_INIT ), cvar_error_desc( cvar_error_code_t::ERR_NOT_INIT ) );
+		rcommon::Com_Printf( "Cvar_Set: %s: %s\n", Cvar_ErrorName( cvar_error_code_t::ERR_NOT_INIT ), Cvar_ErrorDesc( cvar_error_code_t::ERR_NOT_INIT ) );
 		return cvar_error_code_t::ERR_NOT_INIT;
 	}
 
 	if ( name == nullptr || name[0] == '\0' ) {
-        rcommon::com_printf( "cvar_set: %s: %s\n",
-                             cvar_error_name( cvar_error_code_t::ERR_INVALID_CVAR ),
-                             cvar_error_desc( cvar_error_code_t::ERR_INVALID_CVAR ) );
+        rcommon::Com_Printf( "Cvar_Set: %s: %s\n",
+                             Cvar_ErrorName( cvar_error_code_t::ERR_INVALID_CVAR ),
+                             Cvar_ErrorDesc( cvar_error_code_t::ERR_INVALID_CVAR ) );
         return cvar_error_code_t::ERR_INVALID_CVAR;
 	}
     
     if ( value == nullptr ) {
-        rcommon::com_printf( "cvar_set: %s: %s\n",
-                             cvar_error_name( cvar_error_code_t::ERR_INVALID_CVAR ),
-                             cvar_error_desc( cvar_error_code_t::ERR_INVALID_CVAR ) );
+        rcommon::Com_Printf( "Cvar_Set: %s: %s\n",
+                             Cvar_ErrorName( cvar_error_code_t::ERR_INVALID_CVAR ),
+                             Cvar_ErrorDesc( cvar_error_code_t::ERR_INVALID_CVAR ) );
         return cvar_error_code_t::ERR_INVALID_CVAR;
         
     }
@@ -161,22 +161,22 @@ cvar_error_code_t cvar_set( const char *name, const char *value ) {
         }
     }
     if ( target == nullptr ) {
-        rcommon::com_printf( "cvar_set: %s: %s\n",
-                             cvar_error_name( cvar_error_code_t::ERR_CVAR_NOT_FOUND ),
-                             cvar_error_desc( cvar_error_code_t::ERR_CVAR_NOT_FOUND ) );
+        rcommon::Com_Printf( "Cvar_Set: %s: %s\n",
+                             Cvar_ErrorName( cvar_error_code_t::ERR_CVAR_NOT_FOUND ),
+                             Cvar_ErrorDesc( cvar_error_code_t::ERR_CVAR_NOT_FOUND ) );
         return cvar_error_code_t::ERR_CVAR_NOT_FOUND;
     } 
     if ( ( static_cast<rcommon::u32>( target->flags ) & CVAR_READONLY ) != 0 ) {
-        rcommon::com_printf( "cvar_set: %s: %s\n", cvar_error_name( cvar_error_code_t::ERR_READONLY ), cvar_error_desc( cvar_error_code_t::ERR_READONLY ) );
+        rcommon::Com_Printf( "Cvar_Set: %s: %s\n", Cvar_ErrorName( cvar_error_code_t::ERR_READONLY ), Cvar_ErrorDesc( cvar_error_code_t::ERR_READONLY ) );
         return cvar_error_code_t::ERR_READONLY;
     }
     
     // @TODO(karlo): later this will need to be replaced with real cheats if we enable these and stuff 
     const bool cheats_enabled = false;
     if ( ( static_cast<rcommon::u32>( target->flags ) & CVAR_CHEAT ) != 0 && !cheats_enabled ) {
-        rcommon::com_printf( "cvar_set: %s: %s\n",
-                             cvar_error_name( cvar_error_code_t::ERR_CHEAT_PROTECTED ),
-                             cvar_error_desc( cvar_error_code_t::ERR_CHEAT_PROTECTED ) );
+        rcommon::Com_Printf( "Cvar_Set: %s: %s\n",
+                             Cvar_ErrorName( cvar_error_code_t::ERR_CHEAT_PROTECTED ),
+                             Cvar_ErrorDesc( cvar_error_code_t::ERR_CHEAT_PROTECTED ) );
         return cvar_error_code_t::ERR_CHEAT_PROTECTED;
     }
     
@@ -185,16 +185,16 @@ cvar_error_code_t cvar_set( const char *name, const char *value ) {
     
     target->value_int = static_cast<rcommon::u32>( std::atoi( target->value_string ) );
     target->value_float = static_cast<rcommon::f32>( std::atof( target->value_string ) );
-    target->value_bool = cvar_parse_bool( target->value_string );
+    target->value_bool = Cvar_ParseBool( target->value_string );
     
     target->flags = static_cast<cvar_flags_t>( static_cast<rcommon::u32>( target->flags ) | CVAR_MODIFIED );
     
     return cvar_error_code_t::OK;
 }
 
-cvar_error_code_t cvar_shutdown() {
+cvar_error_code_t Cvar_Shutdown() {
     if ( !g_cvar_registry.initialized ) {
-        rcommon::com_printf( "cvar_shutdown: %s: %s\n", cvar_error_name( cvar_error_code_t::ERR_NOT_INIT ), cvar_error_desc( cvar_error_code_t::ERR_NOT_INIT ) );
+        rcommon::Com_Printf( "Cvar_Shutdown: %s: %s\n", Cvar_ErrorName( cvar_error_code_t::ERR_NOT_INIT ), Cvar_ErrorDesc( cvar_error_code_t::ERR_NOT_INIT ) );
         return cvar_error_code_t::ERR_NOT_INIT;
     }
     g_cvar_registry = {};
@@ -202,7 +202,7 @@ cvar_error_code_t cvar_shutdown() {
     return cvar_error_code_t::OK;
 }
 
-const cvar_t *cvar_find( const char *name ) {
+const cvar_t *Cvar_Find( const char *name ) {
     if ( !g_cvar_registry.initialized ) {
         return nullptr;
     }
@@ -223,7 +223,7 @@ const cvar_t *cvar_find( const char *name ) {
     return cvar;
 }
 
-const char *cvar_get_string( const char *name ) {
+const char *Cvar_GetString( const char *name ) {
     if ( !g_cvar_registry.initialized ) {
         return nullptr;
     }
@@ -232,7 +232,7 @@ const char *cvar_get_string( const char *name ) {
         return nullptr;
     }
     
-    const cvar_t *cvar = cvar_find( name );
+    const cvar_t *cvar = Cvar_Find( name );
     
     if ( cvar == nullptr ) {
         // @TODO: we just return an empty string
@@ -242,7 +242,7 @@ const char *cvar_get_string( const char *name ) {
     return cvar->value_string;
 }
 
-rcommon::u32 cvar_get_int( const char *name ) {
+rcommon::u32 Cvar_GetInt( const char *name ) {
     if ( !g_cvar_registry.initialized ) {
         return (rcommon::u32)0u;
     }
@@ -251,7 +251,7 @@ rcommon::u32 cvar_get_int( const char *name ) {
         return (rcommon::u32)0u;
     }
     
-    const cvar_t *cvar = cvar_find( name );
+    const cvar_t *cvar = Cvar_Find( name );
     
     if ( cvar == nullptr ) {
         return (rcommon::u32)0u;
@@ -260,7 +260,7 @@ rcommon::u32 cvar_get_int( const char *name ) {
     return cvar->value_int;
 }
 
-rcommon::f32 cvar_get_float( const char *name ) {
+rcommon::f32 Cvar_GetFloat( const char *name ) {
     if ( !g_cvar_registry.initialized ) {
         return (rcommon::f32)0.0f;
     }
@@ -269,7 +269,7 @@ rcommon::f32 cvar_get_float( const char *name ) {
         return (rcommon::f32)0.0f;
     }
     
-    const cvar_t *cvar = cvar_find( name );
+    const cvar_t *cvar = Cvar_Find( name );
     
     if ( cvar == nullptr ) {
         return (rcommon::f32)0.0f;
@@ -278,7 +278,7 @@ rcommon::f32 cvar_get_float( const char *name ) {
     return cvar->value_float;
 }
 
-bool cvar_get_bool( const char *name ) {
+bool Cvar_GetBool( const char *name ) {
     if ( !g_cvar_registry.initialized ) {
         return false;
     }
@@ -287,7 +287,7 @@ bool cvar_get_bool( const char *name ) {
         return false;
     }
     
-    const cvar_t *cvar = cvar_find( name );
+    const cvar_t *cvar = Cvar_Find( name );
     
     if ( cvar == nullptr ) {
         return false;

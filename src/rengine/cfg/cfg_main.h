@@ -10,13 +10,13 @@ constexpr rcommon::u32 CFG_MAX_LINE_LENGTH = 1024u;
 constexpr rcommon::u32 CFG_MAX_PATH_LENGTH = 260u;
 constexpr rcommon::u64 CFG_MAX_FILE_SIZE = 64u * 1024;
 
-cfg_error_code_t cfg_init();
-cfg_error_code_t cfg_shutdown();
+cfg_error_code_t Cfg_Init();
+cfg_error_code_t Cfg_Shutdown();
 
-cfg_error_code_t cfg_load_file( const char *path, bool required = false );
-cfg_error_code_t cfg_load_default();
-cfg_error_code_t cfg_load_autoexec();
+cfg_error_code_t Cfg_LoadFile( const char *path, bool required = false );
+cfg_error_code_t Cfg_LoadDefault();
+cfg_error_code_t Cfg_LoadAutoexec();
 
-cfg_error_code_t cfg_execute_line( const char *command_line );
+cfg_error_code_t Cfg_ExecuteLine( const char *command_line );
 
 }

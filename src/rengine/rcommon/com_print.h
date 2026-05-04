@@ -11,15 +11,15 @@ namespace reap::rengine::rcommon
 
 constexpr usize COM_MSG_MAX = 2048u;
 
-void com_printf( const char *message, ... );
+void Com_Printf( const char *message, ... );
 
-void com_dprintf( const char *message, ... );
+void Com_DPrintf( const char *message, ... );
 
-void com_vprintf( const char *message, va_list args );
+void Com_VPrintf( const char *message, va_list args );
 
-void com_errorf( const com_error_t error, const char *message, ... );
+void Com_Errorf( const com_error_t error, const char *message, ... );
 
-void com_verrorf( const com_error_t error, const char *message, va_list args );
+void Com_VErrorf( const com_error_t error, const char *message, va_list args );
 
 }
 

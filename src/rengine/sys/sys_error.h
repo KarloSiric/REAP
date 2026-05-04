@@ -27,7 +27,7 @@ enum class sys_error_code_t : rcommon::u8 {
 	ERR_INTERNAL_ERROR
 };
 
-constexpr inline const char *sys_error_name( const sys_error_code_t error ) {
+constexpr inline const char *Sys_ErrorName( const sys_error_code_t error ) {
     switch ( error ) {
     case sys_error_code_t::OK:
         return "OK";
@@ -60,7 +60,7 @@ constexpr inline const char *sys_error_name( const sys_error_code_t error ) {
     }
 }
 
-constexpr inline const char *sys_error_desc( const sys_error_code_t error ) {
+constexpr inline const char *Sys_ErrorDesc( const sys_error_code_t error ) {
     switch ( error ) {
     case sys_error_code_t::OK:
         return "operation completed successfully";
@@ -93,8 +93,8 @@ constexpr inline const char *sys_error_desc( const sys_error_code_t error ) {
     }
 }
 
-constexpr inline rcommon::com_error_t sys_error_code( sys_error_code_t error ) {
-	return rcommon::com_error_make( rcommon::com_domain_t::COM_DOMAIN_SYS, static_cast<rcommon::com_u16>( error ) );
+constexpr inline rcommon::com_error_t Sys_ErrorCode( sys_error_code_t error ) {
+	return rcommon::Com_ErrorMake( rcommon::com_domain_t::COM_DOMAIN_SYS, static_cast<rcommon::com_u16>( error ) );
 }
 
 }

@@ -31,8 +31,8 @@ render_runtime_state_t g_render_runtime_state{};
 namespace reap::rengine::render 
 {
     
-r_error_code_t r_init( const host::window_config_t &window_config ) {
-    if ( r_is_initialized() ) {
+r_error_code_t R_Init( const host::window_config_t &window_config ) {
+    if ( R_IsInitialized() ) {
         REAP_LOG_WARNING( log::log_channel_t::RENDER, "renderer already initialized." );
         return r_error_code_t::ERR_IS_INIT;
     }
@@ -60,8 +60,8 @@ r_error_code_t r_init( const host::window_config_t &window_config ) {
     return r_error_code_t::OK;
 }
 
-void r_shutdown() {
-    if ( !r_is_initialized() ) {
+void R_Shutdown() {
+    if ( !R_IsInitialized() ) {
         REAP_LOG_INFO( log::log_channel_t::RENDER, "renderer was not initialized; nothing to shutdown." );
         return ;
     }
@@ -72,8 +72,8 @@ void r_shutdown() {
     REAP_LOG_INFO( log::log_channel_t::RENDER, "renderer shutdown complete." );
 }
 
-r_error_code_t r_begin_frame( const rcommon::com_f32 delta_time_seconds ) {
-    if ( !r_is_initialized() ) {
+r_error_code_t R_BeginFrame( const rcommon::com_f32 delta_time_seconds ) {
+    if ( !R_IsInitialized() ) {
         return r_error_code_t::ERR_NOT_INIT;
     }
     
@@ -87,8 +87,8 @@ r_error_code_t r_begin_frame( const rcommon::com_f32 delta_time_seconds ) {
     return r_error_code_t::OK;
 }
 
-r_error_code_t r_render_frame() {
-    if ( !r_is_initialized() ) {
+r_error_code_t R_RenderFrame() {
+    if ( !R_IsInitialized() ) {
         return r_error_code_t::ERR_NOT_INIT;
     }
     
@@ -99,8 +99,8 @@ r_error_code_t r_render_frame() {
     return r_error_code_t::OK;
 }
 
-r_error_code_t r_render_end() {
-    if ( !r_is_initialized() ) {
+r_error_code_t R_EndFrame() {
+    if ( !R_IsInitialized() ) {
         return r_error_code_t::ERR_NOT_INIT;
     }
     
@@ -113,7 +113,7 @@ r_error_code_t r_render_end() {
     return r_error_code_t::OK;
 }
 
-bool r_is_initialized() {
+bool R_IsInitialized() {
     return g_render_runtime_state.initialized;
 }
 

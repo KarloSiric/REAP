@@ -25,7 +25,7 @@ namespace reap::rengine::sys
 
 sys_runtime_state_t g_sys_runtime_state;
 
-platform_t sys_platform_type() {
+platform_t Sys_PlatformType() {
 #   if      REAP_PLATFORM_WINDOWS
                 return platform_t::WINDOWS;
 #   elif    REAP_PLATFORM_MACOS
@@ -37,7 +37,7 @@ platform_t sys_platform_type() {
 #   endif
 }    
 
-compiler_t sys_compiler_type() {
+compiler_t Sys_CompilerType() {
 #   if      REAP_COMPILER_MSVC
                 return compiler_t::MSVC;
 #   elif    REAP_COMPILER_CLANG
@@ -49,7 +49,7 @@ compiler_t sys_compiler_type() {
 #   endif
 }
 
-sys_error_code_t sys_init( const sys_init_info_t &info_init ) {
+sys_error_code_t Sys_Init( const sys_init_info_t &info_init ) {
     if ( g_sys_runtime_state.initialized ) {
         return sys_error_code_t::ERR_IS_INIT;
     }
@@ -76,7 +76,7 @@ sys_error_code_t sys_init( const sys_init_info_t &info_init ) {
     g_sys_runtime_state.argc = info_init.argc;
     g_sys_runtime_state.argv = info_init.argv;
     
-    sys_error_code_t paths_result = sys_platform_build_paths( info_init, g_sys_runtime_state.sys_paths );
+    sys_error_code_t paths_result = Sys_PlatformBuildPaths( info_init, g_sys_runtime_state.sys_paths );
     
     if ( paths_result != sys_error_code_t::OK ) {
         g_sys_runtime_state = {};
@@ -88,7 +88,7 @@ sys_error_code_t sys_init( const sys_init_info_t &info_init ) {
     return sys_error_code_t::OK;
 }
 
-sys_error_code_t sys_shutdown() {
+sys_error_code_t Sys_Shutdown() {
     if ( !g_sys_runtime_state.initialized ) {
         return sys_error_code_t::ERR_NOT_INIT;
     }
@@ -100,11 +100,11 @@ sys_error_code_t sys_shutdown() {
     return sys_error_code_t::OK;
 }
 
-bool sys_is_initialized() {
+bool Sys_IsInitialized() {
     return g_sys_runtime_state.initialized;
 }
 
-const char *sys_platform_name( platform_t type ) {
+const char *Sys_PlatformName( platform_t type ) {
     switch( type ) {
         case platform_t::WINDOWS: return "Windows";
     case platform_t::LINUX: return "Linux";
@@ -113,7 +113,7 @@ const char *sys_platform_name( platform_t type ) {
     }
 }   
 
-const char *sys_compiler_name( compiler_t type ) {
+const char *Sys_CompilerName( compiler_t type ) {
     switch( type ) {
         case compiler_t::CLANG: return "Clang";
         case compiler_t::GCC: return "GCC";
@@ -122,7 +122,7 @@ const char *sys_compiler_name( compiler_t type ) {
     }
 }
 
-const char *sys_path_basename( const char *path ) {
+const char *Sys_PathBasename( const char *path ) {
     if ( path == nullptr || path[0] == '\0' ) {
         return "";
     }
@@ -138,13 +138,13 @@ const char *sys_path_basename( const char *path ) {
     return basename;
 }
 
-rcommon::com_f64 sys_time_now_seconds() {
+rcommon::com_f64 Sys_TimeNowSeconds() {
     const auto now = std::chrono::steady_clock::now();
     const auto seconds = std::chrono::duration<rcommon::com_f64>( now.time_since_epoch() );
     return seconds.count();
 }
 
-bool sys_local_time( std::time_t time_value, std::tm &time_out ) {
+bool Sys_LocalTime( std::time_t time_value, std::tm &time_out ) {
 
 #   if      REAP_PLATFORM_WINDOWS 
                 return localtime_s( &time_out, &time_value ) == 0;
@@ -154,11 +154,11 @@ bool sys_local_time( std::time_t time_value, std::tm &time_out ) {
                 
 }
 
-const sys_paths_t &sys_paths() {
+const sys_paths_t &Sys_Paths() {
     return g_sys_runtime_state.sys_paths;
 }
 
-sys_error_code_t sys_get_paths( sys_paths_t &out_paths ) {
+sys_error_code_t Sys_GetPaths( sys_paths_t &out_paths ) {
     if ( !g_sys_runtime_state.initialized ) {
         return sys_error_code_t::ERR_NOT_INIT;
     }   
@@ -168,8 +168,8 @@ sys_error_code_t sys_get_paths( sys_paths_t &out_paths ) {
     return sys_error_code_t::OK;
 }
  
-void sys_sleep_milliseconds( rcommon::u64 milliseconds ) {
-    sys_platform_sleep_milliseconds( milliseconds );
+void Sys_SleepMilliseconds( rcommon::u64 milliseconds ) {
+    Sys_PlatformSleepMilliseconds( milliseconds );
     return ;
 }   
 

@@ -34,7 +34,7 @@ enum class fs_error_code_t : rcommon::u8 {
     ERR_IO_ERROR
 };
 
-constexpr inline const char *fs_error_name( const fs_error_code_t error ) {
+constexpr inline const char *FS_ErrorName( const fs_error_code_t error ) {
     switch ( error ) {
     case fs_error_code_t::OK:
         return "OK";
@@ -81,7 +81,7 @@ constexpr inline const char *fs_error_name( const fs_error_code_t error ) {
     }
 }
 
-constexpr inline const char *fs_error_desc( const fs_error_code_t error ) {
+constexpr inline const char *FS_ErrorDesc( const fs_error_code_t error ) {
     switch ( error ) {
     case fs_error_code_t::OK:
         return "operation completed successfully";
@@ -128,8 +128,8 @@ constexpr inline const char *fs_error_desc( const fs_error_code_t error ) {
     }
 }
 
-constexpr inline rcommon::com_error_t fs_error_code( fs_error_code_t  error ) {
-    return rcommon::com_error_make( rcommon::com_domain_t::COM_DOMAIN_FS, static_cast<rcommon::com_u16>( error ) );
+constexpr inline rcommon::com_error_t FS_ErrorCode( fs_error_code_t  error ) {
+    return rcommon::Com_ErrorMake( rcommon::com_domain_t::COM_DOMAIN_FS, static_cast<rcommon::com_u16>( error ) );
 }
 
 }

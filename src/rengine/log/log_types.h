@@ -77,7 +77,7 @@ struct log_config_t {
     char file_path[REAP_LOG_FILE_PATH_MAX]{ "reap.log" };
 };
 
-constexpr inline const char *log_level_name( const log_level_t log_level ) {
+constexpr inline const char *Log_LevelName( const log_level_t log_level ) {
 	switch ( log_level ) {
         case log_level_t::TRACE:        return "TRACE";
         case log_level_t::DEBUG:        return "DEBUG";
@@ -89,7 +89,7 @@ constexpr inline const char *log_level_name( const log_level_t log_level ) {
 	}
 }
 
-constexpr inline const char *log_channel_name( const log_channel_t channel ) {
+constexpr inline const char *Log_ChannelName( const log_channel_t channel ) {
     switch ( channel ) {
         case log_channel_t::CORE:      return "CORE";
         case log_channel_t::HOST:      return "HOST";
@@ -110,7 +110,7 @@ constexpr inline const char *log_channel_name( const log_channel_t channel ) {
     }
 }
 
-constexpr inline rcommon::com_u32 log_channel_bit( const log_channel_t channel ) {
+constexpr inline rcommon::com_u32 Log_ChannelBit( const log_channel_t channel ) {
     return 1u << static_cast<rcommon::com_u32>( channel );
 }
 

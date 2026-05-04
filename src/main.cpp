@@ -27,18 +27,18 @@ int main(int argc, char const *argv[])
     host_state.config.argc = argc;
     host_state.config.argv = argv;
     
-    if ( host::host_init( host_state ) != host::host_error_code_t::OK ) {
+    if ( host::Host_Init( host_state ) != host::host_error_code_t::OK ) {
         return ( EXIT_FAILURE );
     }
     
-    while( host::host_is_running( host_state ) ) {
-        host::host_begin_frame( host_state );
-        host::host_update( host_state );
-        host::host_render( host_state );
-        host::host_end_frame( host_state );
+    while( host::Host_IsRunning( host_state ) ) {
+        host::Host_BeginFrame( host_state );
+        host::Host_Update( host_state );
+        host::Host_Render( host_state );
+        host::Host_EndFrame( host_state );
     }
     
-    host::host_shutdown( host_state );
+    host::Host_Shutdown( host_state );
     
     return ( EXIT_SUCCESS );
 }

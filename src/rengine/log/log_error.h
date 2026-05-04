@@ -18,7 +18,7 @@ enum class log_error_code_t : rcommon::u8 {
       ERR_INVALID_LEVEL
 };
 
-constexpr inline const char *log_error_name( const log_error_code_t error ) {
+constexpr inline const char *Log_ErrorName( const log_error_code_t error ) {
     switch ( error ) {
     case log_error_code_t::OK:
         return "OK";
@@ -41,7 +41,7 @@ constexpr inline const char *log_error_name( const log_error_code_t error ) {
     }
 }
 
-constexpr inline const char *log_error_desc( const log_error_code_t error ) {
+constexpr inline const char *Log_ErrorDesc( const log_error_code_t error ) {
     switch ( error ) {
     case log_error_code_t::OK:
         return "operation completed successfully";
@@ -64,8 +64,8 @@ constexpr inline const char *log_error_desc( const log_error_code_t error ) {
     }
 }
 
-constexpr inline rcommon::com_error_t log_error_code( log_error_code_t error ) {
-    return rcommon::com_error_make( rcommon::com_domain_t::COM_DOMAIN_LOG, static_cast<rcommon::com_u16>( error ) );
+constexpr inline rcommon::com_error_t Log_ErrorCode( log_error_code_t error ) {
+    return rcommon::Com_ErrorMake( rcommon::com_domain_t::COM_DOMAIN_LOG, static_cast<rcommon::com_u16>( error ) );
 }
 
 }

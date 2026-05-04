@@ -18,7 +18,7 @@ enum class cfg_error_code_t : rcommon::u8 {
 	ERR_IO_ERROR
 };
 
-constexpr inline const char *cfg_error_name( const cfg_error_code_t error ) {
+constexpr inline const char *Cfg_ErrorName( const cfg_error_code_t error ) {
 	switch ( error ) {
 	case cfg_error_code_t::OK:
 		return "OK";
@@ -43,7 +43,7 @@ constexpr inline const char *cfg_error_name( const cfg_error_code_t error ) {
 	}
 }
 
-constexpr inline const char *cfg_error_desc( const cfg_error_code_t error ) {
+constexpr inline const char *Cfg_ErrorDesc( const cfg_error_code_t error ) {
 	switch ( error ) {
 	case cfg_error_code_t::OK:
 		return "operation completed successfully";
@@ -68,8 +68,8 @@ constexpr inline const char *cfg_error_desc( const cfg_error_code_t error ) {
 	}
 }
 
-constexpr inline rcommon::com_error_t cfg_error_code( const cfg_error_code_t error ) {
-	return rcommon::com_error_make( rcommon::com_domain_t::COM_DOMAIN_CFG, static_cast<rcommon::u16>( error ) );
+constexpr inline rcommon::com_error_t Cfg_ErrorCode( const cfg_error_code_t error ) {
+	return rcommon::Com_ErrorMake( rcommon::com_domain_t::COM_DOMAIN_CFG, static_cast<rcommon::u16>( error ) );
 }
 
 }

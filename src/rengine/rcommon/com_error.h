@@ -37,15 +37,15 @@ enum class com_error_code_t : com_u8 {
 	ERR_INTERNAL_ERROR
 };
 
-constexpr bool com_error_ok( const com_error_code_t code ) {
+constexpr bool Com_ErrorOk( const com_error_code_t code ) {
 	return code == com_error_code_t::OK;
 }
 
-constexpr bool com_error_failed( const com_error_code_t code ) {
+constexpr bool Com_ErrorFailed( const com_error_code_t code ) {
 	return code != com_error_code_t::OK;
 }
 
-constexpr inline const char *com_error_name( const com_error_code_t code ) {
+constexpr inline const char *Com_ErrorName( const com_error_code_t code ) {
 	switch ( code ) {
 	case com_error_code_t::OK:
 		return "OK";
@@ -76,7 +76,7 @@ constexpr inline const char *com_error_name( const com_error_code_t code ) {
 	}
 }
 
-constexpr inline const char *com_domain_name( const com_domain_t domain ) {
+constexpr inline const char *Com_DomainName( const com_domain_t domain ) {
 	switch ( domain ) {
 	case com_domain_t::COM_DOMAIN_HOST:
 		return "HOST";
@@ -105,15 +105,15 @@ constexpr inline const char *com_domain_name( const com_domain_t domain ) {
 	}
 }
 
-constexpr inline com_error_t com_error_make( const com_domain_t domain, const com_u16 local_error_code ) {
+constexpr inline com_error_t Com_ErrorMake( const com_domain_t domain, const com_u16 local_error_code ) {
 	return ( static_cast<com_error_t>( domain ) << 16u ) | static_cast<com_error_t>( local_error_code );
 }
 
-constexpr inline com_domain_t com_error_domain( const com_error_t error ) {
+constexpr inline com_domain_t Com_ErrorDomain( const com_error_t error ) {
 	return static_cast<com_domain_t>( ( error >> 16u ) & 0xFFFFu );
 }
 
-constexpr inline com_u16 com_error_code( const com_error_t error ) {
+constexpr inline com_u16 Com_ErrorCode( const com_error_t error ) {
 	return static_cast<com_u16>( error & 0xFFFFu );
 }
 
