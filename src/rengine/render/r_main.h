@@ -2,6 +2,7 @@
 
 #include "rengine/host/host_types.h"
 #include "rengine/render/r_error.h"
+#include "rengine/render/r_gl.h"
 
 namespace reap::rengine::render
 {
@@ -15,7 +16,7 @@ struct render_runtime_state_t {
     rcommon::u32 viewport_width{ 0u };    
     rcommon::u32 viewport_height{ 0u };    
     
-    void *gl_context{ nullptr };
+    r_gl_state_t gl_state{};
 };
 
 r_error_code_t R_Init( const sys::sys_window_t &window, const host::window_config_t &window_config );

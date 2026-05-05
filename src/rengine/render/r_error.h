@@ -13,6 +13,8 @@ enum class r_error_code_t : rcommon::u8 {
     ERR_NOT_INIT,
     
     ERR_BACKEND_INIT_FAILED,
+    
+    ERR_OPENGL_INIT,
 
     ERR_INVALID_WINDOW_CFG,
     ERR_INVALID_VIEWPORT,
@@ -32,6 +34,8 @@ constexpr inline const char *R_ErrorName( const r_error_code_t error ) {
         return "ERR_NOT_INIT";
     case r_error_code_t::ERR_BACKEND_INIT_FAILED:
         return "ERR_BACKEND_INIT_FAILED";
+    case r_error_code_t::ERR_OPENGL_INIT:
+        return "ERR_OPENGL_INIT";
     case r_error_code_t::ERR_INVALID_WINDOW_CFG:
         return "ERR_INVALID_WINDOW_CFG";
     case r_error_code_t::ERR_INVALID_VIEWPORT:
@@ -55,6 +59,8 @@ constexpr inline const char *R_ErrorDesc( const r_error_code_t error ) {
         return "render subsystem is not initialized";
     case r_error_code_t::ERR_BACKEND_INIT_FAILED:
         return "failed to initialize render backend";
+    case r_error_code_t::ERR_OPENGL_INIT:
+        return "failed to initialize OpenGL context";
     case r_error_code_t::ERR_INVALID_WINDOW_CFG:
         return "invalid render window configuration";
     case r_error_code_t::ERR_INVALID_VIEWPORT:
