@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-19 01:23:58
    Last Modified by: ksiric
-   Last Modified: 2026-05-06 02:33:19
+   Last Modified: 2026-05-06 10:43:55
    ---------------------------------------------------------------------
    Description:
 
@@ -345,7 +345,6 @@ host_error_code_t Host_CreateWindow( host_state_t &host_state )
     const auto window_result = sys::Sys_CreateWindow( window_description, host_state.window );
     if ( window_result != sys::sys_error_code_t::OK ) {
         rcommon::Com_Errorf( sys::Sys_ErrorCode( window_result ), "Host_CreateWindow: Sys_CreateWindow failed: %s", sys::Sys_ErrorDesc( window_result ) );
-        
         return host_error_code_t::ERR_INITIALIZING;
     }
     

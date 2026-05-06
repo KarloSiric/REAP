@@ -79,7 +79,7 @@ bool Sys_LocalTime( std::time_t time_value, std::tm &time_out );
 
 /* CROSS PLATFORM AND COMPILER DETECTION */
 
-#   if  defined( _WIN32 ) 
+#   if  defined( _WIN32 ) || defined( __WIN32__ ) || defined( WIN32 ) || defined( MINGW32 )
 #       define REAP_PLATFORM_WINDOWS    1
 #   else
 #       define REAP_PLATFORM_WINDOWS    0

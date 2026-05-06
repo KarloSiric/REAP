@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-05-05 22:02:15
    Last Modified by: ksiric
-   Last Modified: 2026-05-06 03:11:01
+   Last Modified: 2026-05-06 11:18:08
    ---------------------------------------------------------------------
    Description:
        
@@ -17,6 +17,7 @@
 #include "rengine/render/r_gl.h"
 #include "rengine/log/log_main.h"
 #include "rengine/sys/sys_opengl.h"
+#include "rengine/sys/sys_platform.h"
 
 #include <SDL3/SDL.h>
 
@@ -33,18 +34,39 @@ r_error_code_t R_GLInit( const sys::sys_window_t &window, bool vsync, r_gl_state
     
     sdl_window = static_cast<SDL_Window *>( window.native_window );
     
-    if ( 
-        SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 4 )  != 0    ||
-        SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 1 )  != 0    ||
-        SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK,SDL_GL_CONTEXT_PROFILE_CORE )                       != 0    ||
-        SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 )           != 0    ||
-        SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 24 )            != 0    ||
-        SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 8 )           != 0     )  
-    {
-        REAP_LOG_ERROR( log::log_channel_t::RENDER, "SDL_GL_SetAttribute failed: %s", SDL_GetError() );
-        
-        return r_error_code_t::ERR_OPENGL_INIT;       
-    }
+    // @NOTE: For apple we have different specifications 
+    #if REAP_PLATFORM_MACOS
+        if ( 
+            !SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, SYS_GL_CONTEXT_MAJOR ) ||
+            !SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, SYS_GL_CONTEXT_MINOR ) ||
+            !SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK,SDL_GL_CONTEXT_PROFILE_CORE ) ||
+            !SDL_GL_SetAttribute( SDL_GL_CONTEXT_FLAGS, SYS_GL_CONTEXT_FLAGS ) ||
+            !SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 ) ||
+            !SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 24 )  ||
+            !SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 8 ) )  
+        {
+            REAP_LOG_ERROR( log::log_channel_t::RENDER, "SDL_GL_SetAttribute failed: %s", SDL_GetError() );
+            
+            return r_error_code_t::ERR_OPENGL_INIT;       
+        }
+    // @NOTE: For windows and linux we can use different versions and approaches
+    #elif REAP_PLATFORM_WINDOWS || REAP_PLATFORM_LINUX 
+        if ( 
+            !SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, SYS_GL_CONTEXT_MAJOR ) ||
+            !SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, SYS_GL_CONTEXT_MINOR ) ||
+            !SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK,SDL_GL_CONTEXT_PROFILE_CORE ) ||
+            !SDL_GL_SetAttribute( SDL_GL_CONTEXT_FLAGS, SYS_GL_CONTEXT_FLAGS ) ||
+            !SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 ) ||
+            !SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 24 )  ||
+            !SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 8 ) )  
+        {
+            REAP_LOG_ERROR( log::log_channel_t::RENDER, "SDL_GL_SetAttribute failed: %s", SDL_GetError() );
+            
+            return r_error_code_t::ERR_OPENGL_INIT;       
+        }
+    #else 
+        #error "Unsupported platform for OpenGL context creation."    
+    #endif
     
     SDL_GLContext gl_context{ nullptr };
     gl_context = SDL_GL_CreateContext( sdl_window );
@@ -54,7 +76,11 @@ r_error_code_t R_GLInit( const sys::sys_window_t &window, bool vsync, r_gl_state
         return r_error_code_t::ERR_OPENGL_INIT;
     }
     
-    if ( SDL_GL_MakeCurrent( sdl_window, gl_context ) != 0 ) {
+    if ( !SDL_GL_SetSwapInterval( vsync ? 1 : 0 ) ) {
+        REAP_LOG_ERROR( log::log_channel_t::RENDER, "SDL_GL_SetSwapInterval failed: %s", SDL_GetError() );
+    }
+    
+    if ( !SDL_GL_MakeCurrent( sdl_window, gl_context ) ) {
         SDL_GL_DestroyContext( gl_context );
         REAP_LOG_ERROR( log::log_channel_t::RENDER, "SDL_GL_MakeCurrent failed: %s", SDL_GetError() );
         return r_error_code_t::ERR_OPENGL_INIT;
@@ -65,6 +91,13 @@ r_error_code_t R_GLInit( const sys::sys_window_t &window, bool vsync, r_gl_state
     
     if ( gl_version == 0 ) {
         SDL_GL_DestroyContext( gl_context );
+        REAP_LOG_ERROR( log::log_channel_t::RENDER, "Error loading GLAD library, cannot locate OpenGL functions." );
+        return r_error_code_t::ERR_OPENGL_INIT;
+    }
+    
+    if ( !GLAD_GL_VERSION_4_1 ) {
+        SDL_GL_DestroyContext( gl_context );
+        REAP_LOG_ERROR( log::log_channel_t::RENDER, "OpenGL 4.1 core profile is required." );
         return r_error_code_t::ERR_OPENGL_INIT;
     }
     
@@ -78,7 +111,7 @@ void R_GLShutdown( r_gl_state_t &gl_state )
     if ( gl_state.context == nullptr ) {
         return ;
     }
-    
+
     SDL_GL_DestroyContext( static_cast<SDL_GLContext>( gl_state.context ) );
     gl_state.context = nullptr;
     

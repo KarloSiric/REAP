@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-20 21:01:21
    Last Modified by: ksiric
-   Last Modified: 2026-05-06 03:13:08
+   Last Modified: 2026-05-06 10:49:12
    ---------------------------------------------------------------------
    Description:
        
@@ -62,16 +62,13 @@ r_error_code_t R_Init( const sys::sys_window_t &window, const host::window_confi
     
     // @TODO: Need to setup the SDL openGL context because we are using SDL as the main layer and we need to give it the context for the renderer.
     
+    // @NOTE: Calling "R_GLinit" setting up the OpengGL pipeline getting things ready!
     const auto gl_result = R_GLInit( window, window_config.vsync, g_render_runtime_state.gl_state );
     
     if ( gl_result != r_error_code_t::OK ) {
         return gl_result;
     }
     
-    if ( SDL_GL_SetSwapInterval( window_config.vsync ? 1 : 0 ) != 0 ) {
-        REAP_LOG_ERROR( log::log_channel_t::RENDER, "SDL_GL_SetSwapInterval failed: %s", SDL_GetError() );
-    }
-
     return r_error_code_t::OK;
 }
 
