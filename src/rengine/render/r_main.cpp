@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-20 21:01:21
    Last Modified by: ksiric
-   Last Modified: 2026-05-06 00:29:25
+   Last Modified: 2026-05-06 03:13:08
    ---------------------------------------------------------------------
    Description:
        
@@ -29,7 +29,7 @@ r_error_code_t R_Init( const sys::sys_window_t &window, const host::window_confi
     if ( R_IsInitialized() ) {
         REAP_LOG_WARNING( log::log_channel_t::RENDER, "renderer already initialized." );
         return r_error_code_t::ERR_IS_INIT;
-    }
+    } 
     
     if ( !window.valid || window.native_window == nullptr ) {
         REAP_LOG_ERROR( log::log_channel_t::RENDER, "invalid sys window." );
@@ -96,10 +96,15 @@ r_error_code_t R_BeginFrame( const rcommon::com_f32 delta_time_seconds ) {
     if ( g_render_runtime_state.in_frame ) {
         return r_error_code_t::ERR_FRAME_ALREADY_ACTIVE;
     }
+        
+    const auto gl_result = R_GLBeginFrame( *g_render_runtime_state.window ); 
+    if ( gl_result != r_error_code_t::OK ) {
+        return r_error_code_t::ERR_BEGIN_DRAW;
+    }
     
     ( void )delta_time_seconds;
     g_render_runtime_state.in_frame = true;
-    
+
     return r_error_code_t::OK;
 }
 
@@ -122,6 +127,11 @@ r_error_code_t R_EndFrame() {
     
     if ( !g_render_runtime_state.in_frame ) {
         return r_error_code_t::ERR_FRAME_NOT_ACTIVE;
+    }
+    
+    const auto gl_result = R_GLEndFrame( *g_render_runtime_state.window );
+    if ( gl_result != r_error_code_t::OK ) {
+        return r_error_code_t::ERR_END_DRAW;
     }
     
     g_render_runtime_state.in_frame = false;

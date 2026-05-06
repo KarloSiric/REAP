@@ -68,4 +68,4 @@ struct host_state_t {
     frame_t frame{};
 };
 
-}
+}       // namespace reap::rengine::host

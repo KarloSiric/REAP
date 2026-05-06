@@ -1,6 +1,7 @@
 CompileFlags:
   Add:
     - -I/Users/karlosiric/Documents/MyProjects/REAP/src
+    - -I/Users/karlosiric/Documents/MyProjects/REAP/thirdparty/glad/include
     - -I/opt/homebrew/include
     - -I/opt/homebrew/Cellar/raylib/5.0/include
 
@@ -12,4 +13,3 @@ CompileFlags:
     - -std=c17
   Remove:
     - -std=c++*
-

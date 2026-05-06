@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.20)
 project(REAP
     VERSION 0.1.0
     DESCRIPTION "REAP game engine and gameplay sandbox"
-    LANGUAGES CXX
+    LANGUAGES C CXX
 )
 
 set(CMAKE_CXX_STANDARD 20)
@@ -21,6 +21,15 @@ set(REAP_THIRDPARTY_DIR "${REAP_ROOT_DIR}/thirdparty")
 
 # Optional dependencies: only enabled when the corresponding files exist.
 set(REAP_LINK_LIBS "")
+
+if (EXISTS "${REAP_THIRDPARTY_DIR}/glad/src/gl.c")
+    message(STATUS "Found vendored glad")
+    add_library(glad STATIC "${REAP_THIRDPARTY_DIR}/glad/src/gl.c")
+    target_include_directories(glad PUBLIC "${REAP_THIRDPARTY_DIR}/glad/include")
+    list(APPEND REAP_LINK_LIBS glad)
+else()
+    message(STATUS "No vendored glad yet. Add thirdparty/glad before enabling modern OpenGL loading.")
+endif()
 
 if (EXISTS "${REAP_THIRDPARTY_DIR}/raylib/CMakeLists.txt")
     message(STATUS "Found vendored raylib")

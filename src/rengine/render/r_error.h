@@ -11,17 +11,15 @@ enum class r_error_code_t : rcommon::u8 {
 
     ERR_IS_INIT,
     ERR_NOT_INIT,
-    
-    ERR_BACKEND_INIT_FAILED,
-    
     ERR_OPENGL_INIT,
-
+    ERR_OPENGL_BEGIN_DRAW,
+    ERR_OPENGL_END_DRAW,
+    ERR_BEGIN_DRAW,
+    ERR_END_DRAW,
     ERR_INVALID_WINDOW_CFG,
     ERR_INVALID_VIEWPORT,
-
     ERR_FRAME_ALREADY_ACTIVE,
     ERR_FRAME_NOT_ACTIVE,
-    
 };
 
 constexpr inline const char *R_ErrorName( const r_error_code_t error ) {
@@ -32,10 +30,16 @@ constexpr inline const char *R_ErrorName( const r_error_code_t error ) {
         return "ERR_IS_INIT";
     case r_error_code_t::ERR_NOT_INIT:
         return "ERR_NOT_INIT";
-    case r_error_code_t::ERR_BACKEND_INIT_FAILED:
-        return "ERR_BACKEND_INIT_FAILED";
     case r_error_code_t::ERR_OPENGL_INIT:
         return "ERR_OPENGL_INIT";
+    case r_error_code_t::ERR_OPENGL_BEGIN_DRAW:
+        return "ERR_OPENGL_BEGIN_DRAW";
+    case r_error_code_t::ERR_OPENGL_END_DRAW:
+        return "ERR_OPENGL_END_DRAW";
+    case r_error_code_t::ERR_BEGIN_DRAW:
+        return "ERR_BEGIN_DRAW";
+    case r_error_code_t::ERR_END_DRAW:
+        return "ERR_END_DRAW";
     case r_error_code_t::ERR_INVALID_WINDOW_CFG:
         return "ERR_INVALID_WINDOW_CFG";
     case r_error_code_t::ERR_INVALID_VIEWPORT:
@@ -57,10 +61,16 @@ constexpr inline const char *R_ErrorDesc( const r_error_code_t error ) {
         return "render subsystem is already initialized";
     case r_error_code_t::ERR_NOT_INIT: 
         return "render subsystem is not initialized";
-    case r_error_code_t::ERR_BACKEND_INIT_FAILED:
-        return "failed to initialize render backend";
     case r_error_code_t::ERR_OPENGL_INIT:
         return "failed to initialize OpenGL context";
+    case r_error_code_t::ERR_OPENGL_BEGIN_DRAW:
+        return "failed to start OpenGL drawing";
+    case r_error_code_t::ERR_OPENGL_END_DRAW:
+        return "failed to end OpenGL drawing";
+    case r_error_code_t::ERR_BEGIN_DRAW:
+        return "failed to begin draw the frame";
+    case r_error_code_t::ERR_END_DRAW:
+        return "failed to end draw the frame";
     case r_error_code_t::ERR_INVALID_WINDOW_CFG:
         return "invalid render window configuration";
     case r_error_code_t::ERR_INVALID_VIEWPORT:
@@ -78,4 +88,4 @@ constexpr inline rcommon::com_error_t R_ErrorCode( r_error_code_t code ) {
     return rcommon::Com_ErrorMake( rcommon::com_domain_t::COM_DOMAIN_RENDER , static_cast<rcommon::u16>( code ) );
 }
 
-}
+}       // namespace reap::rengine::render

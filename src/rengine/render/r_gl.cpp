@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-05-05 22:02:15
    Last Modified by: ksiric
-   Last Modified: 2026-05-06 00:28:38
+   Last Modified: 2026-05-06 03:11:01
    ---------------------------------------------------------------------
    Description:
        
@@ -14,9 +14,9 @@
    Version: 0.1.0
  ======================================================================
                                                                        */
-
 #include "rengine/render/r_gl.h"
 #include "rengine/log/log_main.h"
+#include "rengine/sys/sys_opengl.h"
 
 #include <SDL3/SDL.h>
 
@@ -42,7 +42,7 @@ r_error_code_t R_GLInit( const sys::sys_window_t &window, bool vsync, r_gl_state
         SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 8 )           != 0     )  
     {
         REAP_LOG_ERROR( log::log_channel_t::RENDER, "SDL_GL_SetAttribute failed: %s", SDL_GetError() );
-
+        
         return r_error_code_t::ERR_OPENGL_INIT;       
     }
     
@@ -57,6 +57,14 @@ r_error_code_t R_GLInit( const sys::sys_window_t &window, bool vsync, r_gl_state
     if ( SDL_GL_MakeCurrent( sdl_window, gl_context ) != 0 ) {
         SDL_GL_DestroyContext( gl_context );
         REAP_LOG_ERROR( log::log_channel_t::RENDER, "SDL_GL_MakeCurrent failed: %s", SDL_GetError() );
+        return r_error_code_t::ERR_OPENGL_INIT;
+    }
+    
+    // @NOTE: need to load the GLAD here for the rest of the OpenGL functions will rely on it.
+    const auto gl_version = gladLoadGL( reinterpret_cast<GLADloadfunc>( SDL_GL_GetProcAddress ) );
+    
+    if ( gl_version == 0 ) {
+        SDL_GL_DestroyContext( gl_context );
         return r_error_code_t::ERR_OPENGL_INIT;
     }
     
@@ -78,6 +86,40 @@ void R_GLShutdown( r_gl_state_t &gl_state )
     
     return ;
 }
-    
-}       // namespace reap::rengine::render
 
+r_error_code_t R_GLBeginFrame( const sys::sys_window_t &window )
+{
+    if ( window.native_window == nullptr || !window.valid ) {
+        return r_error_code_t::ERR_INVALID_WINDOW_CFG;
+    }
+    
+    if ( window.width == 0u || window.height == 0u ) {
+        return r_error_code_t::ERR_INVALID_VIEWPORT;
+    }
+    
+    glViewport( 0, 0, static_cast<GLsizei>( window.width ), static_cast<GLsizei>( window.height ) );
+    
+    glEnable( GL_DEPTH_TEST );
+    glDepthFunc( GL_LEQUAL );
+    
+    glClearColor( 0.04f, 0.045f, 0.05f, 1.0f );
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+ 
+    return r_error_code_t::OK;
+}
+
+r_error_code_t R_GLEndFrame( const sys::sys_window_t &window )
+{
+    SDL_Window *sdl_window{ nullptr };
+    if ( !window.valid || window.native_window == nullptr ) {
+        return r_error_code_t::ERR_INVALID_WINDOW_CFG;
+    }
+    
+    sdl_window = static_cast<SDL_Window *>( window.native_window );
+    
+    SDL_GL_SwapWindow( sdl_window );
+    
+    return r_error_code_t::OK;
+}
+
+}       // namespace reap::rengine::render

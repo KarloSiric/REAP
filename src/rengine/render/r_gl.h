@@ -12,5 +12,9 @@ struct r_gl_state_t {
 r_error_code_t R_GLInit( const sys::sys_window_t &window, bool vsync, r_gl_state_t &gl_state );
 
 void R_GLShutdown( r_gl_state_t &gl_state );
+
+r_error_code_t R_GLBeginFrame( const sys::sys_window_t &window );
+
+r_error_code_t R_GLEndFrame( const sys::sys_window_t &window );
     
 }       // namespace reap::rengine::render

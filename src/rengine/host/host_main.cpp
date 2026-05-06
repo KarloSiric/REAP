@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-19 01:23:58
    Last Modified by: ksiric
-   Last Modified: 2026-05-05 21:49:00
+   Last Modified: 2026-05-06 02:33:19
    ---------------------------------------------------------------------
    Description:
 
@@ -583,4 +583,4 @@ bool Host_IsRunning( host_state_t &host_state ) {
 	return host_state.running && ( host_state.stage != host_stage_t::SHUTTINGDOWN && host_state.stage != host_stage_t::SHUTDOWN );
 }
 
-} // namespace reap::rengine::host
+}       // namespace reap::rengine::host
