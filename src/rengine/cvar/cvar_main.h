@@ -1,7 +1,6 @@
 #pragma once
 
 #include "rengine/cvar/cvar_error.h"
-#include "rengine/rcommon/com_foundation.h"
 
 #define CVAR_MAX_CVARS 256u
 

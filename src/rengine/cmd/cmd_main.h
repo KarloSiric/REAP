@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rengine/cmd/cmd_error.h"
-#include "rengine/rcommon/com_foundation.h"
+#include "rengine/rcommon/com_main.h"
 
 namespace reap::rengine::cmd
 {

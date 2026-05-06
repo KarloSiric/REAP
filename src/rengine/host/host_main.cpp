@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-04-19 01:23:58
    Last Modified by: ksiric
-   Last Modified: 2026-05-06 10:43:55
+   Last Modified: 2026-05-06 14:53:53
    ---------------------------------------------------------------------
    Description:
 
@@ -335,7 +335,7 @@ host_error_code_t Host_ApplyCvarsToConfig( host_state_t &host_state ) {
 host_error_code_t Host_CreateWindow( host_state_t &host_state ) 
 {
     sys::sys_window_desc_t window_description{};
-    
+     
     window_description.title        = host_state.config.window_config.title;
     window_description.width        = host_state.config.window_config.viewport.width;
     window_description.height       = host_state.config.window_config.viewport.height;
